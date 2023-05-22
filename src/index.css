@@ -1,16 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.example-enter {
+  scale: 0.1;
 }
+
+.example-enter.example-enter-active {
+  scale: 1;
+  transition: all 500ms ease-in-out;
+}
+
+.example-leave {
+  scale: 1;
+}
+
+.example-leave.example-leave-active {
+  scale: 0;
+  transition: all 500ms ease-out;
+}
+
+.example-appear {
+  opacity: 0.01;
+}
+
+.example-appear.example-appear-active {
+  opacity: 1;
+  transition: opacity 2s ease-in;
+}
+
