@@ -1,10 +1,11 @@
 {
   "files": {
     "main.css": "/static/css/main.b260175c.css",
-    "main.js": "/static/js/main.61a06eda.js",
+    "main.js": "/static/js/main.cf153fb7.js",
     "static/js/787.9817ca73.chunk.js": "/static/js/787.9817ca73.chunk.js",
     "static/media/Jacques_bg.png": "/static/media/Jacques_bg.6fe990bff82c7ca7da1c.png",
     "static/media/Jacques_only_alt.png": "/static/media/Jacques_only_alt.8a6ee2781eaddda7a7f1.png",
+    "static/media/resume_Jacques.pdf": "/static/media/resume_Jacques.1467b2d8b2f5aa4862ed.pdf",
     "static/media/book.png": "/static/media/book.b90b778850ded6e8ae13.png",
     "static/media/board-game.png": "/static/media/board-game.b4ed4def4b0e3bc1aff5.png",
     "static/media/mountain.png": "/static/media/mountain.33f4ada53642033871c9.png",
@@ -12,11 +13,11 @@
     "static/media/logo.svg": "/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/index.html",
     "main.b260175c.css.map": "/static/css/main.b260175c.css.map",
-    "main.61a06eda.js.map": "/static/js/main.61a06eda.js.map",
+    "main.cf153fb7.js.map": "/static/js/main.cf153fb7.js.map",
     "787.9817ca73.chunk.js.map": "/static/js/787.9817ca73.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b260175c.css",
-    "static/js/main.61a06eda.js"
+    "static/js/main.cf153fb7.js"
   ]
 }
