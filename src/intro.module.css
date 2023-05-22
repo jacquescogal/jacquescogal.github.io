@@ -1,4 +1,78 @@
+/* Mouse scroll */
+
+@keyframes scrollDown {
+    0% {
+      transform: scale(1, 1.2) translate(0px,0px);
+    }
+    25% {
+        transform: scale(1, 1.2) translate(0px,10px) ;
+      }
+    
+    50% {
+        transform: scale(1, 1.2)  translate(0px,0px) ;
+    }
+
+    75% {
+        transform: scale(1, 1.2)  translate(0px,10px) ;
+    }
+  
+    100% {
+      transform: scale(1, 1.2) translate(0px,0px);
+    }
+  }
+
+.mouse-scroll{
+    animation: scrollDown 2s infinite linear ;
+}
+
+.mouse-scroll-regular{
+    transform: scale(1,1.2);
+}
+
+
+/* Mouse side-to-side */
+
+@keyframes sideToSide {
+    0% {
+        opacity: 1;
+      transform: translate(0px,0px) rotateZ(0deg);
+    }
+    75% {
+        opacity: 1;
+        transform: translate(-40px,0px) rotateZ(-20deg) ;
+      }
+    100% {
+        opacity: 0;
+      transform: translate(-40px,0px) rotateZ(-20deg);
+    }
+  }
+
+.mouse-side{
+    animation: sideToSide 1s infinite ease-in ;
+}
+
 /* Styling dialogue animate on spawn */
+
+
+@keyframes bubbleUp{
+    0%{
+        transform:rotateZ(10deg) scale(0);
+    }
+    25%{
+        transform: rotateZ(-10deg) scale(1);
+    }
+    75%{
+        transform:  rotateZ(10deg) scale(1);
+    }
+    100%{
+        transform:rotateZ(-10deg) scale(0);
+    }
+}
+
+.dialogue-box{
+    scale: (0);
+    animation: bubbleUp 1s 1 linear ;
+}
 
 .dialogue{
     color: rgb(0 0 0);

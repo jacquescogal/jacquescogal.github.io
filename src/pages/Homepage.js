@@ -16,6 +16,7 @@ const Homepage = () => {
   const [experienceRef,setExperienceRef]=useState(null);
   const [projectRef,setProjectRef]=useState(null);
   const [contactRef,setContactRef]=useState(null);
+  const [setHeaderHighlight]=useState(null);
   return (
     <>
     <div className='fixed w-full h-full bg-slate-950 -z-50'/>

@@ -17,14 +17,6 @@ body {
   transition: all 500ms ease-in-out;
 }
 
-.example-leave {
-  scale: 1;
-}
-
-.example-leave.example-leave-active {
-  scale: 0;
-  transition: all 500ms ease-out;
-}
 
 .example-appear {
   opacity: 0.01;

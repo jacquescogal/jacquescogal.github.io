@@ -1,21 +1,47 @@
 import React, { useEffect, useState,onClick} from 'react'
 
-const TGP = ({speed=10,toGenerate,className,onClick}) => {
+const TGP = ({speed=10,preoccupy=true,quickLeave=true,toGenerate,className,onClick}) => {
     const [text,setText]=useState("");
     const [countDown,setCountdown]=useState(5);
+    const [deleteLock,setDeleteLock]=useState(false);
 
     useEffect(()=>{
-        console.log(toGenerate)
-        setText("");
-        if (countDown==0) setCountdown(5);
-        else if (countDown>0) setCountdown(0);
+        if (quickLeave){
+            setText("");
+            if (countDown==0) setCountdown(5);
+            else if (countDown>0) setCountdown(0);
+        }
+        else{
+            setDeleteLock(true)
+        }
     },[toGenerate])
+
+    useEffect(()=>{
+        const timeout=setTimeout(()=>{
+            if (deleteLock){
+            if (text.length>0 && text.slice(0)===toGenerate.slice(0,text.length)){
+                setDeleteLock(false)
+                if (countDown==0) setCountdown(5);
+                else if (countDown>0) setCountdown(0);
+            }
+            else if (text.length>0){
+                setText(text.slice(0,-1));
+            }
+            else{
+                setDeleteLock(false)
+                if (countDown==0) setCountdown(5);
+                else if (countDown>0) setCountdown(0);
+            }
+        }
+        },speed);
+        return ()=>clearTimeout(timeout);
+    },[deleteLock,text])
 
 
     
     useEffect(()=>{
         const timeout=setTimeout(()=>{
-            if (text!==toGenerate && text.length<=toGenerate.length) {
+            if (deleteLock==false && text!==toGenerate && text.length<=toGenerate.length) {
                 if (text.length>0 && text.slice(0,-1)!==toGenerate.slice(0,text.length-1)) {
                     setText(toGenerate.slice(0,text.length));
                 }
@@ -32,7 +58,7 @@ const TGP = ({speed=10,toGenerate,className,onClick}) => {
             }
         },speed);
         return ()=>clearTimeout(timeout);
-    },[countDown])
+    },[countDown,deleteLock])
 
 
     const generateRandomChar=()=>{
@@ -44,7 +70,7 @@ const TGP = ({speed=10,toGenerate,className,onClick}) => {
   return (
     <div  >
     <p className={className} onClick={onClick}>{text}</p>
-    <p className={className+' invisible h-0'}>{toGenerate}</p>
+    <p className={className+((preoccupy)?' invisible h-0':' hidden')}>{toGenerate}</p>
     </div>
   )
 }
