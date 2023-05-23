@@ -1,6 +1,6 @@
 import React, { useEffect, useState,onClick} from 'react'
 
-const TGP = ({speed=10,preoccupy=true,quickLeave=true,toGenerate,className,onClick}) => {
+const TGP = ({speed=10,preoccupy=true,quickLeave=true,toGenerate,className,onClick,style,onAnimationEnd}) => {
     const [text,setText]=useState("");
     const [countDown,setCountdown]=useState(5);
     const [deleteLock,setDeleteLock]=useState(false);
@@ -69,8 +69,8 @@ const TGP = ({speed=10,preoccupy=true,quickLeave=true,toGenerate,className,onCli
 
   return (
     <div  >
-    <p className={className} onClick={onClick}>{text}</p>
-    <p className={className+((preoccupy)?' invisible h-0':' hidden')}>{toGenerate}</p>
+    <p className={className} onClick={onClick} style={style} onAnimationEnd={onAnimationEnd}>{text}</p>
+    <p className={className+((preoccupy)?' invisible h-0':' hidden')} style={style}>{toGenerate}</p>
     </div>
   )
 }

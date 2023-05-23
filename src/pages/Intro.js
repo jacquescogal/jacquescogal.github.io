@@ -215,7 +215,7 @@ const Intro = ({setIntroRef}) => {
     </div>
     </div>
     <div className='flex flex-row'>
-    <TGP toGenerate={"//"+imageCaption} className='text-left text-green-200 opacity-100' speed={1} quickLeave={false}/> <span className={"transition ease-out duration-200 relative flex h-3 w-3 mx-1 "+((navHover===1)?"opacity-100":"opacity-0")} >
+    <TGP toGenerate={"//"+imageCaption} className='text-right text-green-200 opacity-100' speed={1} quickLeave={false}/> <span className={"transition ease-out duration-200 relative flex h-3 w-3 mx-1 "+((navHover===1)?"opacity-100":"opacity-0")} >
   <span className="animate-ping absolute inline-flex inset-y-1/2 h-full w-full rounded-full bg-green-300 opacity-75"></span>
   <span className="relative inline-flex inset-y-1/2 rounded-full h-3 w-3 bg-green-400"></span>
 </span>
@@ -235,7 +235,7 @@ const Intro = ({setIntroRef}) => {
         <TGP toGenerate={"Navigate: "+((navHover===1)?"Hover image for my About Me":((navHover===2)?"Scroll or use nav bar for my Experience, Projects and Etc.":""))} className={"text-left text-green-200 text-xl"} quickLeave={false} speed={1}/>
         <div className='flex flex-row content-center items-center'>
           <div className={'group flex flex-row content-center items-center cursor-default '} onMouseEnter={()=>{setNavHover(1)}} onMouseLeave={()=>{setNavHover(0)}} >
-          <MouseSVG className={'h-20 w-20 self-end '+((navHover!==1)?" fill-white ":" fill-green-300 "+introStyle['mouse-side'])}/>
+          <MouseSVG className={'h-20 w-20 self-end '+((navHover===1)?" fill-green-300 "+introStyle['mouse-side']:" fill-white")}/>
           </div>
         <TGP toGenerate={"|"} className={"text-left text-green-200 text-8xl"} onClick={()=>{onButtonClick()}}/>
         <div className='flex flex-row content-center items-center cursor-default' onMouseEnter={()=>{setNavHover(2)}} onMouseLeave={()=>{setNavHover(0)}}>

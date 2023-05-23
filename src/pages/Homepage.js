@@ -19,10 +19,13 @@ const Homepage = () => {
   const [setHeaderHighlight]=useState(null);
   return (
     <>
+    
     <div className='fixed w-full h-full bg-slate-950 -z-50'/>
+    
+    <About setAboutRef={setAboutRef}/>
+    
     <Header introRef={introRef} aboutRef={aboutRef} experienceRef={experienceRef} projectRef={projectRef} contactRef={contactRef}/>
     <Intro setIntroRef={setIntroRef}/>
-    <About setAboutRef={setAboutRef}/>
     <Experience setExperienceRef={setExperienceRef}/>
     <Project setProjectRef={setProjectRef}/>
     <Contact setContactRef={setContactRef}/>
