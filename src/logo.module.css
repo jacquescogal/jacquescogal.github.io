@@ -5,10 +5,6 @@
       top: 50%;
       left: 50%;
       margin-right: -50%;
-      transform: translate(-50%, -50%);
-      background-color: green;
-    transition: all 0.5s ease-out;
-    transform: rotate(180deg) translate(0px, 5px);
 }
 
 .logo-group-two {
@@ -16,12 +12,8 @@
       top: 50%;
       left: 50%;
       margin-right: -50%;
-      transform: translate(-50%, -50%);
-      background-color: green;
-    transition: all 0.5s ease-out;
-    transform: rotate(180deg) translate(0px, 5px);
 }
-
+/* 
 .logo-text{
     animation: logo-anim 1s ease-in-out 0s 1;
     
@@ -72,7 +64,7 @@
         
     transform: skew(-0deg,-0deg) rotate(180deg) translate(-22px,12px);
     }
-}
+} */
 
 .logo-group-two .btn-line {
     position: absolute;

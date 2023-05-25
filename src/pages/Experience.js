@@ -5,20 +5,19 @@ const Experience = ({setExperienceRef}) => {
     useEffect(()=>{
         setExperienceRef(experienceRef);
     },[experienceRef])
+
+    const skills={
+      programming_languages:10,
+      work:10
+    }
   return (
     <>
-    <div ref={experienceRef} data-te-animation-init
-  data-te-animation-start="onScroll"
-  data-te-animation="[slide-right_1s_ease-in-out]">Experiences</div>
-    <p className='text-6xl xl:text-9xl bold font-serif opacity-100'>Cogal Jacques Tracy Pasaol</p>
-    <p className='text-6xl xl:text-9xl bold font-serif opacity-100'>Cogal Jacques Tracy Pasaol</p>
-    <p className='text-6xl xl:text-9xl bold font-serif opacity-100'>Cogal Jacques Tracy Pasaol</p>
-    <p className='text-6xl xl:text-9xl bold font-serif opacity-100'>Cogal Jacques Tracy Pasaol</p>
-    <p className='text-6xl xl:text-9xl bold font-serif opacity-100'>Cogal Jacques Tracy Pasaol</p>
-    <p className='text-6xl xl:text-9xl bold font-serif opacity-100'>Cogal Jacques Tracy Pasaol</p>
-    <p className='text-6xl xl:text-9xl bold font-serif opacity-100'>Cogal Jacques Tracy Pasaol</p>
-    <p className='text-6xl xl:text-9xl bold font-serif opacity-100'>Cogal Jacques Tracy Pasaol</p>
-    <p className='text-6xl xl:text-9xl bold font-serif opacity-100'>Cogal Jacques Tracy Pasaol</p>
+    <div ref={experienceRef} className='text-slate-950 bg-slate-950 h-screen'>
+    <div className='rounded-lg bg-teal-300 shadow-2xl shadow-teal-700 w-40 h-40'>
+      test
+    </div>
+    
+    </div>
     </>
   )
 }

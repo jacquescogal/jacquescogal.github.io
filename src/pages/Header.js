@@ -2,7 +2,8 @@ import React, { useState,useEffect,useCallback,useRef } from 'react'
 import menuStyle from '../menu.module.css'
 import TGP from '../components/TGP';
 import TGS from '../components/TGS';
-const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef}) => {
+import Logo from '../components/Logo';
+const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeaderLoaded}) => {
   const [menuClosed,setMenuClosed]=useState(true);
   const [itemLoad,setitemLoad]=useState(0);
   const [lastScrollY,setLastScrollY]=useState(0);
@@ -14,7 +15,7 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef}) => {
 
   const menu=[
     
-    {id:1,name:'About',ref:aboutRef},
+    {id:1,name:'Profile',ref:aboutRef},
     {id:2,name:'Experiences',ref:experienceRef},
     {id:3,name:'Projects',ref:projectRef},
     {id:4,name:'Contact',ref:contactRef}
@@ -52,7 +53,7 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef}) => {
     if (menuClosed || itemLoad>=5) return;
     const timeout=setTimeout(()=>{setitemLoad(itemLoad+1);console.log(itemLoad)},100);
     return ()=>clearTimeout(timeout);
-  },)
+  },[menuClosed,itemLoad])
 
   // for scrolling on click
   const handleRefClick = (ref) => {
@@ -62,16 +63,23 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef}) => {
     window.scrollTo({top: y, behavior: 'smooth'});
   };
 
+  //Check header loaded to prevent jumping
+  useEffect(()=>{
+    const timeout=setTimeout(()=>{
+      setHeaderLoaded(true);
+    },0)
+    return ()=>clearTimeout(timeout);
+  },[])
+
   return (
     <>
     {/* For desktop */}
-    <div ref={navBarRef} className={'sticky top-0 transition ease-in-out duration-500 hidden md:block bg-slate-950 backdrop-blur z-50 '+((isOpen)?'translate-y-0':'-translate-y-full')}>
-        <div className='grid grid-cols-8'>
-        
-        {/* Brand */}
-        <div className='left-0 pl-20 text-white col-span-1'>
-            <TGP toGenerate={"jacques cogal"} className='pt-4 text-left' speed={5} onClick={()=>handleRefClick(introRef)}/>
+    <div ref={navBarRef} className={'sticky top-0 transition ease-in-out duration-500 block bg-slate-950 backdrop-blur z-40 w-screen '+((isOpen)?'translate-y-0':'-translate-y-full')}>
+    <div className='left-32 top-0 fixed pt-4'>
+            <Logo />
         </div>
+        
+        <div className='grid grid-cols-8'>
 
         {/* Holds size */}
         <div className='col-span-1 text-white pt-4 invisible'>Placeholder</div>
@@ -86,44 +94,6 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef}) => {
             )}
         </div>
         </div>
-    </div>
-
-    {/* For mobile */}
-    <div className={'md:hidden'}>
-    {/* Backdrop */}
-    <div className={'transition ease-in-out duration-500 fixed w-full h-full bg-black '+((menuClosed)?'opacity-0':'opacity-50')}/>
-    <div className={'transition ease-in-out duration-500 fixed w-full h-full bg-gradient-to-r from-gray-900 '+((menuClosed)?'opacity-0':'opacity-100')}/>
-    {/* the menu buton */}
-    <div  className={menuClosed?menuStyle['menu-btn']:menuStyle['menu-btn-close']} onClick={()=>{setMenuClosed(!menuClosed);
-    if (itemLoad>0) setitemLoad(0);}}>
-            <div className={menuStyle['btn-line']}></div>
-            <div className={menuStyle['btn-line']}></div>
-            <div className={menuStyle['btn-line']}></div>
-    </div>
-    {/* Navigation text */}
-    <p  className={menuStyle['menu-nav'] + ' transition ease-in-out duration-500' + ((menuClosed)?' opacity-100':' opacity-0')}  onClick={()=>{setMenuClosed(!menuClosed)}}>
-        Navigation
-    </p>
-
-    {/* The loading of the menu items */}
-    <div className={"fixed transform translate-y-16 items-start"}>
-    <p className={'transform transition ease-in-out duration-500 text-left origin-left text-4xl py-8 '+ ((!menuClosed && itemLoad>0)?' rotate-0 translate-x-8 opacity-100':'rotate-90 -translate-x-64 translate-y-64 opacity-0')}>
-        <span className='cursor-pointer'>Home</span>
-    </p>
-    <p className={'transform transition ease-in-out duration-500 text-left origin-left text-4xl py-8 '+ ((!menuClosed && itemLoad>1)?' rotate-0 translate-x-8 opacity-100':'rotate-90 -translate-x-64 translate-y-64 opacity-0')}>
-        <span className='cursor-pointer'>Experience</span>
-    </p>
-    <p className={'transform transition ease-in-out duration-500 text-left origin-left text-4xl py-8 '+ ((!menuClosed && itemLoad>2)?' rotate-0 translate-x-8 opacity-100':'rotate-90 -translate-x-64 translate-y-64 opacity-0')}>
-        <span className='cursor-pointer'>Achievements</span>
-    </p>
-    <p className={'transform transition ease-in-out duration-500 text-left origin-left text-4xl py-8 '+ ((!menuClosed && itemLoad>3)?' rotate-0 translate-x-8 opacity-100':'rotate-90 -translate-x-64 translate-y-64 opacity-0')}>
-        <span className='cursor-pointer'>Projects</span>
-    </p>
-    <p className={'transform transition ease-in-out duration-500 text-left origin-left text-4xl py-8 '+ ((!menuClosed && itemLoad>4)?' rotate-0 translate-x-8 opacity-100':'rotate-90 -translate-x-64 translate-y-64 opacity-0')}>
-        <span className='cursor-pointer'>Contact me</span>
-    </p>
-    </div>
-
     </div>
 
     </>

@@ -1,14 +1,14 @@
 import React, { useEffect, useState,onClick} from 'react'
 
-const TGP = ({speed=10,preoccupy=true,quickLeave=true,toGenerate,className,onClick,style,onAnimationEnd}) => {
+const TGP = ({speed=10,preoccupy=true,quickLeave=true,toGenerate,className,onClick,style,onAnimationEnd,randomChoice=5}) => {
     const [text,setText]=useState("");
-    const [countDown,setCountdown]=useState(5);
+    const [countDown,setCountdown]=useState(randomChoice);
     const [deleteLock,setDeleteLock]=useState(false);
 
     useEffect(()=>{
         if (quickLeave){
             setText("");
-            if (countDown==0) setCountdown(5);
+            if (countDown==0) setCountdown(randomChoice);
             else if (countDown>0) setCountdown(0);
         }
         else{
@@ -21,7 +21,7 @@ const TGP = ({speed=10,preoccupy=true,quickLeave=true,toGenerate,className,onCli
             if (deleteLock){
             if (text.length>0 && text.slice(0)===toGenerate.slice(0,text.length)){
                 setDeleteLock(false)
-                if (countDown==0) setCountdown(5);
+                if (countDown==0) setCountdown(randomChoice);
                 else if (countDown>0) setCountdown(0);
             }
             else if (text.length>0){
@@ -29,7 +29,7 @@ const TGP = ({speed=10,preoccupy=true,quickLeave=true,toGenerate,className,onCli
             }
             else{
                 setDeleteLock(false)
-                if (countDown==0) setCountdown(5);
+                if (countDown==0) setCountdown(randomChoice);
                 else if (countDown>0) setCountdown(0);
             }
         }
@@ -46,14 +46,14 @@ const TGP = ({speed=10,preoccupy=true,quickLeave=true,toGenerate,className,onCli
                     setText(toGenerate.slice(0,text.length));
                 }
                 if (countDown>0) {
-                    if (countDown==5) setText(text.substring(0,text.length).concat(generateRandomChar()));
+                    if (countDown==randomChoice) setText(text.substring(0,text.length).concat(generateRandomChar()));
                     else setText(text.substring(0,text.length-1).concat(generateRandomChar()));
                     setCountdown(countDown-1);
                 }
                 else{
                     if (text.length>0) setText(text.substring(0,text.length-1).concat(toGenerate[text.length-1]))
                     else setText(toGenerate[0])
-                    setCountdown(5);
+                    setCountdown(randomChoice);
                 }
             }
         },speed);
@@ -69,7 +69,7 @@ const TGP = ({speed=10,preoccupy=true,quickLeave=true,toGenerate,className,onCli
 
   return (
     <div  >
-    <p className={className} onClick={onClick} style={style} onAnimationEnd={onAnimationEnd}>{text}</p>
+    <p  className={className} onClick={onClick} style={style} onAnimationEnd={onAnimationEnd}>{text}</p>
     <p className={className+((preoccupy)?' invisible h-0':' hidden')} style={style}>{toGenerate}</p>
     </div>
   )

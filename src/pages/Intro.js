@@ -26,6 +26,7 @@ const Intro = ({setIntroRef}) => {
   const imageRef=useRef(null);
   const introRef=useRef(null);
   const [inImage,setInImage]=useState(false);
+  const [loaded,setLoaded]=useState(false);
   const [transitChange,setTransitChange]=useState(false);
   const [imageCaption,setImageCaption]=useState("Try hovering over me")
   const [navHover,setNavHover]=useState(0);
@@ -148,7 +149,7 @@ const Intro = ({setIntroRef}) => {
   
 
   return (
-    <div className='flex justify-center'>
+    <div className='flex justify-center sectionLoad' onAnimationEnd={()=>{setLoaded(true)}}>
     <div>    
       <p ref={introRef} className='hidden'>Intro</p>
     <div className='flex flex-row bg-slate-950 px-10 py-5'>
@@ -156,9 +157,9 @@ const Intro = ({setIntroRef}) => {
       
       {/* Image */}
       
-    <div className='flex flex-col'>
-      <div className='flex static h-96 w-96' onMouseEnter={()=>setInImage(true)} onMouseLeave={()=>{handleExitImage();imageRef.current.style.transform = `perspective(1000px) rotateX(${0}deg) rotateY(${0}deg)`}}>
-    <div ref={imageRef} className="static h-96 w-96 cursor-pointer blur-none overflow-hidden group rounded-lg"   >
+    <div className='flex flex-col imageLoad'>
+      <div className='flex static h-96 w-96' onMouseMove={()=>{if(loaded)setInImage(true);}} onMouseLeave={()=>{handleExitImage();imageRef.current.style.transform = `perspective(1000px) rotateX(${0}deg) rotateY(${0}deg)`}}>
+    <div ref={imageRef} className=" static h-96 w-96 cursor-pointer blur-none overflow-hidden group rounded-lg"   >
     <img  className={" absolute transition duration-500 ease-in-out transform -z-20 scale-100 group-hover:scale-110 "  +((transitChange)?'':introStyle['img-hover'])} src={cropImage} alt="image description"
     style={(inImage)?{top: `${Math.floor(((imageRef.current?.offsetTop+Math.floor(imageRef.current?.clientHeight/2))-mousePos.y)/16)}px`, 
     left: `${Math.floor(((imageRef.current?.offsetLeft+Math.floor(imageRef.current?.clientWidth/2))-mousePos.x)/16)}px`}:{top:'0px',left:'0px'}} 
@@ -215,7 +216,7 @@ const Intro = ({setIntroRef}) => {
     </div>
     </div>
     <div className='flex flex-row'>
-    <TGP toGenerate={"//"+imageCaption} className='text-right text-green-200 opacity-100' speed={1} quickLeave={false}/> <span className={"transition ease-out duration-200 relative flex h-3 w-3 mx-1 "+((navHover===1)?"opacity-100":"opacity-0")} >
+    <TGP toGenerate={"//"+imageCaption} className='text-left text-green-200 opacity-100' speed={1} quickLeave={false}/> <span className={"transition ease-out duration-200 relative flex h-3 w-3 mx-1 "+((navHover===1)?"opacity-100":"opacity-0")} >
   <span className="animate-ping absolute inline-flex inset-y-1/2 h-full w-full rounded-full bg-green-300 opacity-75"></span>
   <span className="relative inline-flex inset-y-1/2 rounded-full h-3 w-3 bg-green-400"></span>
 </span>

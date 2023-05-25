@@ -1,0 +1,33 @@
+.imageLoad{
+    opacity:1;
+    animation:fade-in 2s ease-in-out 0s 1;
+}
+
+@keyframes fade-in {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+    
+}
+
+.sectionLoad{
+    transform: translate(0px,0px);
+    animation:section-load 1s ease-out 0s 1;
+}
+
+@keyframes section-load {
+    0%{
+        transform: translate(0px,-100px);
+        
+        opacity: 0;
+    }
+    100%{
+        transform: translate(0px,0px);
+        
+        opacity: 1;
+    }
+    
+}
