@@ -17,7 +17,7 @@ const Homepage = () => {
   const [projectRef,setProjectRef]=useState(null);
   const [contactRef,setContactRef]=useState(null);
   const [setHeaderHighlight]=useState(null);
-  const [logoLoaded,setLogoLoaded]=useState(false);
+  const [logoLoaded,setLogoLoaded]=useState(true);
   const [headerLoaded,setHeaderLoaded]=useState(false);
 
   return (
