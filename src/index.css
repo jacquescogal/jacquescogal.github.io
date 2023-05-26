@@ -8,24 +8,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.example-enter {
-  scale: 0.1;
-}
-
-.example-enter.example-enter-active {
-  scale: 1;
-  transition: all 500ms ease-in-out;
-}
-
-
-.example-appear {
-  opacity: 0.01;
-}
-
-.example-appear.example-appear-active {
-  opacity: 1;
-  transition: opacity 2s ease-in;
-}
 
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
@@ -35,4 +17,25 @@ body {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
+}
+.parent{
+  width:50%;
+  float:left;
+  
+  cursor: grab;
+}
+.child{
+  width:1000px;
+  float:left;
+  font-size:15px;
+  font-family:arial;
+  padding:10px;
+  cursor: pointer;
+}
+
+.timeline {
+  width:50%;
+  float:left;
+  cursor: grab;
+  overflow: auto;
 }

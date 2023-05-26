@@ -74,7 +74,7 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
   return (
     <>
     {/* For desktop */}
-    <div ref={navBarRef} className={'sticky top-0 transition ease-in-out duration-500 block bg-slate-950 backdrop-blur z-40 w-screen '+((isOpen)?'translate-y-0':'-translate-y-full')}>
+    <div ref={navBarRef} className={'sticky top-0 transition ease-in-out duration-500 block bg-slate-950 backdrop-blur z-40 '+((isOpen)?'translate-y-0':'-translate-y-full')}>
     <div className='left-32 top-0 fixed pt-4'>
             <Logo />
         </div>

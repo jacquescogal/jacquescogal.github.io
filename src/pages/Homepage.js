@@ -30,7 +30,7 @@ const Homepage = () => {
     {(headerLoaded)?
     <><Intro setIntroRef={setIntroRef}/>
     <Experience setExperienceRef={setExperienceRef}/>
-    <Zoom >
+    <Zoom onReveal={()=>{console.log("revealed")}}>
     <Project setProjectRef={setProjectRef}/>
     </Zoom>
     <Contact setContactRef={setContactRef}/></>:<></>}
