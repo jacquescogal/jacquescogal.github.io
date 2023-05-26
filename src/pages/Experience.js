@@ -34,45 +34,79 @@ const Experience = ({setExperienceRef}) => {
       }
     ]
 
-    const slider = document.querySelector('.parent');
-    let mouseDown = false;
-    let startX, scrollLeft;
+    const slider = document.querySelector('.items');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+  
+    const dragMouseDownHandler=(e)=>{
+      isDown = true;
+      slider.classList.add('active');
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+      cancelMomentumTracking();
+    }
 
-const startDragging = (e)=> {
-  e.preventDefault();
-  mouseDown = true;
-  startX = e.pageX - slider.offsetLeft;
-  scrollLeft = slider.scrollLeft;
-};
-const stopDragging = (e)=> {
-  e.preventDefault();
-  mouseDown = false;
-};
+    const dragMouseLeaveHandler=()=>{
+      isDown = false;
+      slider.classList.remove('active');
+    }
 
-const doDrag=(e)=>{
-  if(!mouseDown) { return; }
-  const x = e.pageX - slider.offsetLeft;
-  const scroll = x - startX;
-  slider.scrollLeft = scrollLeft + 200;
-}
+    const dragMouseUpHandler=()=>{
+      isDown = false;
+      slider.classList.remove('active');
+      beginMomentumTracking();
+    }
+    
+    const dragMouseMoveHandler=(e)=>{
+      if(!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 3; //scroll-fast
+      var prevScrollLeft = slider.scrollLeft;
+      slider.scrollLeft = scrollLeft - walk;
+      velX = slider.scrollLeft - prevScrollLeft;
+    }
+    
+    
+    // Momentum 
+    
+    var velX = 0;
+    var momentumID;
+    
+    function beginMomentumTracking(){
+      cancelMomentumTracking();
+      momentumID = requestAnimationFrame(momentumLoop);
+    }
+    function cancelMomentumTracking(){
+      cancelAnimationFrame(momentumID);
+    }
+    function momentumLoop(){
+      slider.scrollLeft += velX;
+      velX *= 0.95; 
+      if (Math.abs(velX) > 0.5){
+        momentumID = requestAnimationFrame(momentumLoop);
+      }
+    }
+
 
 
 
   return (
     <>
-    <div ref={experienceRef} className='text-white h-screen w-full flex flex-col '>
+    <div ref={experienceRef} className='text-white  '>
 
     {/* First line */}
     <TGP toGenerate={"Experience"} className={"text-white text-6xl"}/>
-    <div className={' scroll-smooth snap-x h-20 rounded-lg bg-slate-950 grid grid-cols-12 gap-96 content-center mx-auto overflow-y-clip  overflow-x-auto w-1/2 parent' } 
-    onMouseDown={(e)=>{startDragging(e);}} onMouseUp={(e)=>{stopDragging(e)}} onMouseLeave={(e)=>{stopDragging(e);}} onMouseMove={(e)=>{doDrag(e);}} onscroll={(e)=>{stopDragging(e)}}
-    >
+
+    <div class="items " 
+      onMouseDown={(e)=>{dragMouseDownHandler(e)}}
+      onMouseLeave={()=>{dragMouseLeaveHandler()}}
+      onMouseUp={()=>{dragMouseUpHandler()}}
+      onWheel={()=>{cancelMomentumTracking()}}
+      onMouseMove={(e)=>{dragMouseMoveHandler(e)}}>
       {workExperience.map((exp)=>
-        <div className="grid grid-cols-3 gap-96">
-        <div className='w-screen bg-black'/>
-        <div id={exp.Id} className='snap-center transition transform ease-in-out duration-500 rounded-full h-4 w-40 bg-black  hover:scale-150 ' on>{exp.Id}</div>
-        <div className='w-screen bg-black'/>
-        </div>
+        <div id={exp.Id} className=' item mx-40 '>{exp.Id}</div>
       )}
     </div>
     
