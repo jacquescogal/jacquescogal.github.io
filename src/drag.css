@@ -23,7 +23,8 @@
     .items {
       position: relative;
       width: 100%;
-      overflow-x: hidden;
+      height: 100%;
+      overflow-x: scroll;
       overflow-y: visible;
       white-space: nowrap;
       transition: all 0.2s;
@@ -34,9 +35,14 @@
       padding-top: 40px;
       padding-bottom: 40px;
       text-align:center;
-      padding-left: 50%;
-      padding-right: 50%;
+      padding-inline-start: 50%;
+      padding-inline-end: 50%;
+      scrollbar-width: none;
     }
+
+    .items::-webkit-scrollbar{
+        display: none;
+      }
 
     .items.active {
       background: rgba(255, 255, 255, 0.3);
@@ -49,22 +55,20 @@
       display: inline-block;
       min-height: 40px;
       min-width: 40px;
+      top:20%;
       transition: transform 0.3s ease;
+      margin-right: 50vw;
+      /* transform: translateY(50%); */
     }
 
-    .drag-item:not(:last-child) {
-        background-color: red;
-        margin-right: 1000px;
-        top:0;
-        bottom: 0;
-        margin-top: auto;
-        margin-bottom: auto;
-    }
-
-    .drag-item:hover {
-        
-        transform: scale(2);
+    .drag-item.active {
+        transform: translateY(50%) scale(2);
       }
+
+    /* .drag-item:not(:last-child) {
+        background-color: red;
+    } */
+
 
     .drag-line{
         position: absolute; 
@@ -74,20 +78,5 @@
         right: 0; 
         margin-left: 50%; 
         margin-right: 50%; 
-        top:0;
-        bottom: 0;
-        margin-top: auto;
-        margin-bottom: auto;
-
-    }
-
-    @media screen and (max-width: 500px) {
-      .drag-item {
-        min-height: 200px;
-        min-width: 200px;
-      }
-      .drag-line {
-        min-height: 200px;
-        min-width: 200px;
-      }
+        top:20%;
     }

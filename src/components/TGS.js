@@ -5,7 +5,6 @@ const TGS = ({speed=10,toGenerate,className,onClick}) => {
     const [countDown,setCountdown]=useState(5);
 
     useEffect(()=>{
-        console.log(toGenerate)
         setText("");
         if (countDown==0) setCountdown(5);
         else if (countDown>0) setCountdown(0);

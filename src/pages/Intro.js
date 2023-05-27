@@ -5,7 +5,6 @@ import outlineImage from '../Jacques_outline.png'
 import TGP from '../components/TGP';
 import TGS from '../components/TGS';
 import introStyle from '../intro.module.css'
-import { CSSTransitionGroup } from 'react-transition-group'
 import bookImage from '../book.png'
 import playImage from '../board-game.png'
 import goalImage from '../mountain.png'
@@ -149,7 +148,7 @@ const Intro = ({setIntroRef}) => {
   
 
   return (
-    <div className='flex justify-center sectionLoad' onAnimationEnd={()=>{setLoaded(true)}}>
+    <div className='flex justify-center sectionLoad hidden' onAnimationEnd={()=>{setLoaded(true)}}>
     <div>    
       <p ref={introRef} className='hidden'>Intro</p>
     <div className='flex flex-row bg-slate-950 px-10 py-5'>

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef,useState } from 'react'
 import TGP from '../components/TGP';
+import useScrollSnap from "react-use-scroll-snap";
 
 const Experience = ({setExperienceRef}) => {
     const experienceRef=useRef(null);
@@ -34,7 +35,7 @@ const Experience = ({setExperienceRef}) => {
       }
     ]
 
-    const slider = document.querySelector('.items');
+    
     let isDown = false;
     let startX;
     let scrollLeft;
@@ -44,6 +45,7 @@ const Experience = ({setExperienceRef}) => {
     let dragged=false;
   
     const dragMouseDownHandler=(e)=>{
+      setUseTouch(false)
       isDown = true;
       slider.classList.add('active');
       startX = e.pageX - slider.offsetLeft;
@@ -56,7 +58,7 @@ const Experience = ({setExperienceRef}) => {
     const dragMouseLeaveHandler=()=>{
       if (isDown){
       isDown = false;
-      slider.classList.remove('active');
+      // slider.classList.remove('active');
       beginMomentumTracking();
       }
     }
@@ -64,7 +66,7 @@ const Experience = ({setExperienceRef}) => {
     const dragMouseUpHandler=()=>{
       if (isDown){
       isDown = false;
-      slider.classList.remove('active');
+      // slider.classList.remove('active');
       beginMomentumTracking();
       }
     }
@@ -85,7 +87,7 @@ const Experience = ({setExperienceRef}) => {
 
     
     // Momentum 
-    
+    const slider = document.querySelector('.items');
     var velX = 0;
     var momentumID;
     
@@ -97,6 +99,8 @@ const Experience = ({setExperienceRef}) => {
       cancelAnimationFrame(momentumID);
     }
     function momentumLoop(){
+      //Need:
+      //velX , dragged, toRight, startVelocity, 
       if (dragged==true) {
       slider.scrollLeft += velX;
       velX *= 0.95; 
@@ -138,12 +142,13 @@ const Experience = ({setExperienceRef}) => {
     }
 
     function snapMomentum(){
+      console.log(snapTo,scrollMarks,velX,slider.scrollLeft)
       if (toRight) {
-        velX = Math.max(velX*0.98,0.2); 
+        velX = Math.max(velX*0.98,10); 
         slider.scrollLeft = Math.min(slider.scrollLeft+velX,snapTo);
       }
       else {
-        velX = Math.min(velX*0.98,-0.2); 
+        velX = Math.min(velX*0.98,-10); 
         slider.scrollLeft = Math.max(slider.scrollLeft+velX,snapTo);
       }
       if (Math.abs(snapTo-slider.scrollLeft)>0){
@@ -151,17 +156,35 @@ const Experience = ({setExperienceRef}) => {
       }
     }
 
-     const handleScroll = (event) => {
-        const { scrollWidth, scrollLeft, clientWidth } = event.currentTarget;
-        const scroll = scrollWidth - scrollLeft - clientWidth
-        const mid=scrollLeft+clientWidth/2;
-        console.log(mid);
-    }
+    // legacy support for intersection observer not being available
+    //  const handleScroll = (e) => {
+    //   var atSnappingPoint = e.target.scrollLeft % e.target.offsetWidth === 0;
+    //   var timeOut         = atSnappingPoint ? 0 : 150; //see notes
+    //   currentHighlight?.classList.remove('active');
+    //   if (isDown) return
+
+    //   clearTimeout(e.target.scrollTimeout); //clear previous timeout
+  
+    //   e.target.scrollTimeout = setTimeout(function() {
+    //       console.log('Scrolling stopped!');
+    //       let i;
+    //       for (i=0;i<scrollMarks.length;++i){
+    //         if (scrollMarks[i]==e.target.scrollLeft) break;
+    //       }
+    //       scrollRefs.current[i]?.classList.add('active')
+    //       setCurrentHighlight(scrollRefs.current[i]);
+    //   }, timeOut);
+    // }
     const [scrollMarks,setScrollMarks]=useState([]);
     const scrollRefs=useRef([])
     const [elementDiff,setElementDiff]=useState(0);
 
     useEffect(()=>{
+      dragLineSizer();
+    },[scrollRefs])
+
+    const dragLineSizer=()=>{
+      console.log(window.innerWidth,window.innerHeight)
       const scrollMarks=[]
       for (var i=0;i<scrollRefs.current.length;++i){
         scrollMarks[i]=scrollRefs.current[i]?.offsetLeft+scrollRefs.current[i]?.clientWidth/2-window.innerWidth/2
@@ -170,54 +193,79 @@ const Experience = ({setExperienceRef}) => {
         setElementDiff(scrollRefs.current[1]?.offsetLeft-scrollRefs.current[0]?.offsetLeft);
       }
       setScrollMarks(scrollMarks)
-    },[scrollRefs])
+    }
 
+    const [useTouch,setUseTouch]=useState(false);
+
+    const handleIntersectionObserver = ()=>{
+      let options = {
+        root: document.getElementById("drag-hold"),
+        rootMargin: '0px -40% 0px -40%', //top-right-bottom-left
+        threshold: 0
+      }
+      //Target define
+      const targets = document.getElementById("drag-hold").querySelectorAll(".drag-item")
+      //Define observer
+      const activeHeader = (target)=>{
+        const headerObserver = new IntersectionObserver((entries,observer)=>{
+          entries.forEach(entry=>{
+            if (entry.isIntersecting){
+              entry.target.classList.add('active')
+            }
+            else{
+              entry.target.classList.remove('active')
+            }
+          })
+          observer.disconnect()
+        },options)
+        headerObserver.observe(target)
+      }
+  
+      //Loop through targets
+      targets.forEach(activeHeader)
+    }
+  
+    useEffect(()=>{
+      handleIntersectionObserver();
+    },[])
+
+    window.addEventListener("resize", (e)=>{
+      console.log("HELLO")
+      clearTimeout(e.target.resizeTimeout);
+      e.target.resizeTimeout=setTimeout(()=>{
+        console.log("resize")
+        dragLineSizer()
+      },500);
+    });
   return (
     <>
-    <div ref={experienceRef} className='bg-black flex flex-col h-80 '>
+    <div ref={experienceRef} className='flex flex-col h-80 '>
 
     {/* First line */}
     <TGP toGenerate={"Experience"} className={"text-white text-6xl"}/>
 
-    <div class="items h-40" 
-      onMouseDown={(e)=>{dragMouseDownHandler(e)}}
+    <div id='drag-hold' className={"items bg-slate-950 "+((useTouch)? " snap-mandatory snap-x ":"")} 
+      onMouseDown={(e)=>{setUseTouch(false);dragMouseDownHandler(e);}}
       onMouseLeave={()=>{dragMouseLeaveHandler()}}
       onMouseUp={(e)=>{dragMouseUpHandler()}}
-      onWheel={()=>{cancelMomentumTracking()}}
+      onWheel={()=>{cancelMomentumTracking();setUseTouch(true)}}
       onMouseMove={(e)=>{dragMouseMoveHandler(e)}}
+      onTouchStart={()=>{setUseTouch(true)}}
+      onScroll={(e)=>{handleIntersectionObserver()}}
       >
         <div className='drag-line  bg-green-200'
         style={{width:`${scrollRefs.current[scrollRefs.current.length-1]?.offsetLeft-scrollRefs.current[0]?.offsetLeft}px`}}></div>
       {workExperience.map((exp,i)=>
       <>
-        <div id={i} ref={ref => (scrollRefs.current[i] = ref)} className=' drag-item rounded-full bg-green-200  hover:scale-110'
-        style={{transform: `translateY(${50}%) `+((true)?`scale(5)`: `scale(2)`),transformOrigin:'center'}}
+        <div key={i}  id={exp.Id} ref={ref => (scrollRefs.current[i] = ref)} className=' drag-item rounded-full bg-green-200 snap-center '
         >
+          <div className='absolute bg-white h-12 w-12 top-12'>
           <p className='absolute top-screen text-white'>{i}</p>
+          </div>
           </div>
         </>
       )}
-
-
     </div>
-
-    <div class="items h-40" 
-      >
-        <div className='drag-line  bg-green-200'
-        style={{width:`${scrollRefs.current[scrollRefs.current.length-1]?.offsetLeft-scrollRefs.current[0]?.offsetLeft}px`}}></div>
-      {workExperience.map((exp,i)=>
-      <>
-        <div id={i} className=' drag-item rounded-full bg-green-200  hover:scale-110'
-        style={{transform: `translateY(${50}%) `+((true)?`scale(5)`: `scale(2)`),transformOrigin:'center'}}
-        >
-          <p className='absolute top-screen text-white'>{i}</p>
-          </div>
-        </>
-      )}
-
-
-    </div>
-    
     </div>
     </>
   )

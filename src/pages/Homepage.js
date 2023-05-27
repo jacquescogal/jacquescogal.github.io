@@ -6,7 +6,7 @@ import LogoLoad from './LogoLoad';
 import Experience from './Experience';
 import Project from './Project';
 import Contact from './Contact';
-import { Zoom } from 'react-reveal';
+import Test from './Test';
 
 const Homepage = () => {
   const [isOpen,setIsOpen]=useState(false);
@@ -30,9 +30,8 @@ const Homepage = () => {
     {(headerLoaded)?
     <><Intro setIntroRef={setIntroRef}/>
     <Experience setExperienceRef={setExperienceRef}/>
-    <Zoom onReveal={()=>{console.log("revealed")}}>
+    <Test/>
     <Project setProjectRef={setProjectRef}/>
-    </Zoom>
     <Contact setContactRef={setContactRef}/></>:<></>}
     </>
     :
