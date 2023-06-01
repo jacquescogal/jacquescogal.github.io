@@ -17,7 +17,7 @@ const Homepage = () => {
   const [projectRef,setProjectRef]=useState(null);
   const [contactRef,setContactRef]=useState(null);
   const [setHeaderHighlight]=useState(null);
-  const [logoLoaded,setLogoLoaded]=useState(true);
+  const [logoLoaded,setLogoLoaded]=useState(false);
   const [headerLoaded,setHeaderLoaded]=useState(false);
 
   return (
@@ -28,9 +28,8 @@ const Homepage = () => {
     <>
     <Header introRef={introRef} aboutRef={aboutRef} experienceRef={experienceRef} projectRef={projectRef} contactRef={contactRef} setHeaderLoaded={setHeaderLoaded} />
     {(headerLoaded)?
-    <><Intro setIntroRef={setIntroRef}/>
+    <><Intro setIntroRef={setIntroRef} setAboutRef={setAboutRef}/>
     <Experience setExperienceRef={setExperienceRef}/>
-    <Test/>
     <Project setProjectRef={setProjectRef}/>
     <Contact setContactRef={setContactRef}/></>:<></>}
     </>

@@ -1,5 +1,4 @@
 import React from 'react'
-import '../Carousell.css'
 import { useEffect } from 'react';
 const Test = () => {
   const options = document.querySelectorAll('.option');

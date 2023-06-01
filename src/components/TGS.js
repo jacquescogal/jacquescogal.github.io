@@ -1,11 +1,12 @@
 import React, { useEffect, useState,onClick} from 'react'
 
-const TGS = ({speed=10,toGenerate,className,onClick}) => {
+const TGS = ({speed=10,toGenerate,className,onClick,setIsAnimating=(()=>{})}) => {
     const [text,setText]=useState("");
     const [countDown,setCountdown]=useState(5);
 
     useEffect(()=>{
         setText("");
+        setIsAnimating(true);
         if (countDown==0) setCountdown(5);
         else if (countDown>0) setCountdown(0);
     },[toGenerate])
@@ -28,6 +29,9 @@ const TGS = ({speed=10,toGenerate,className,onClick}) => {
                     else setText(toGenerate[0])
                     setCountdown(5);
                 }
+            }
+            else{
+                setIsAnimating(false)
             }
         },speed);
         return ()=>clearTimeout(timeout);

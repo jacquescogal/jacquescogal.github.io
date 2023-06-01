@@ -1,48 +1,103 @@
-import React, { useEffect, useRef,useState } from 'react'
+import React, { useEffect, useRef,useState,createRef } from 'react'
 import TGP from '../components/TGP';
 import useScrollSnap from "react-use-scroll-snap";
 
+import '../drag.css';
+import TGS from '../components/TGS';
+import MultilineTGS from '../components/MultilineTGS';
+
 const Experience = ({setExperienceRef}) => {
-    const experienceRef=useRef(null);
+
+  const [, updateState] = React.useState();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
+
+  const [activeGroup,setActiveGroup]=useState("work")
+  
+  const experienceRef=useRef(null);
     useEffect(()=>{
         setExperienceRef(experienceRef);
     },[experienceRef])
 
     const workExperience=[
       {
-        Id:"Deloitte Touché Tohmatsu Limited",
-        Role:"Auditor",
+        Id:"Deloitte Touché Tohmatsu",
+        Role:"Audit Intern",
         Date:"Dec 2017 - Feb 2018",
-        Description:"Conducted financial compliance tests on client's financial records. Performed tasks under audit procedures to ensure reasonable assurance. Handled sensitive financial information with utmost care."
+        Description:"Conducted financial compliance tests on client's financial records. Performed tasks under audit procedures to ensure reasonable assurance. ",
+        imageURL:require('../images/deloitte_logo.jpg'),
+        logos:[{Id:"MS Office",imageURL:require("../images/ms_logo.jpg")}]
       },
       {
         Id:"Novelship",
-        Role:"Business Analyst",
+        Role:"Business Analyst Intern",
         Date:"May 2022 - Aug 2022",
-        Description:"Develoepd and implemented a new KPI utilizing Python Web-scraping and automation. Analyzed other KPI to improve sales in certain demographics. Conducted analytics on market figures to guide future marketing efforts."
-      },
+        Description:"Developed and implemented a new KPI utilizing Python from Web-scraping and automation. Analyzed figures to guide future efforts.",
+        imageURL:require('../images/novelship_logo.jpg'),
+        logos:[{Id:"Python",imageURL:require("../images/python_logo.png")},{Id:"Tableau",imageURL:require("../images/tb_logo.jpg")},{Id:"MS Office",imageURL:require("../images/ms_logo.jpg")}]    
+    },
       {
         Id:"Zuellig Pharma",
-        Role:"Data Analyst",
+        Role:"Data Analyst Part-Timer",
         Date:"Sep 2022 - Dec 2022",
-        Description:"Automated the processing of big and fuzzy data for analytics and machine learning. Research-guided data-cleaning to improve model efficacy."
+        Description:"Automated processing of big, fuzzy data for analytics and machine learning. Research-guided data-cleaning to improve predictive model efficacy.",
+        imageURL:require('../images/zp_logo.jpg'),
+        logos:[{Id:"Python",imageURL:require("../images/python_logo.png")},{Id:"PostgreSQL",imageURL:require("../images/psql_logo.png")},{Id:"Spyder",imageURL:require("../images/spyd_logo.png")},{Id:"MS Office",imageURL:require("../images/ms_logo.jpg")}]
       },
       {
         Id:"J.P. Morgan",
-        Role:"Software Engineer",
+        Role:"Software Engineer Intern",
         Date:"Jun 2023 - Aug 2023",
-        Description:"Yet to be written"
+        Description:"Upcoming",
+        imageURL: require('../images/jpm_logo.png'),
+        logos:[]
       }
     ]
+
+    const schoolExperience=[
+      {
+        Id:"Temasek Polytechnic",
+        Role:"Accounting and Finance Diploma Student",
+        Date:"Apr 2015 - Apr 2018",
+        Description:"Instills deep understanding of financial systems. Graduated with Diploma plus with merit and a CGPA of 3.93/4.00.",
+        imageURL:require('../images/tp_logo.png'),
+        logos:[{Id:"MS Office",imageURL:require("../images/ms_logo.jpg")}]
+      },
+      {
+        Id:"Nanyang Technological University",
+        Role:"Business and Computing Double Degree Undergraduate",
+        Date:"Aug 2020 - Present (Expected Graduation: May 2024)",
+        Description:"Complementing disciplines that help pave the way for my fintech passions.",
+        imageURL: require('../images/ntu_logo.jpg'),
+        logos:[{Id:"Python",imageURL:require("../images/python_logo.png")},{Id:"Java",imageURL:require("../images/java_logo.png")},{Id:"C++",imageURL:require("../images/cpp_logo.png")},{Id:"React",imageURL:require("../images/react_logo.png")},{Id:"R",imageURL:require("../images/r_logo.png")},{Id:"MySQL",imageURL:require("../images/mysql_logo.png")},{Id:"mongoDB",imageURL:require("../images/mongo_logo.png")}]
+      }
+    ]
+
+    const notableAchievements=[
+      {
+        Id:"Deloitte BA Hackathon",
+        Role:"Red-pill group leader",
+        Date:"Feb 2022",
+        Description:"Analyzed faux bank financial statements for fraud and impressed by implementing machine learning models in multi-faceded solution.",
+        imageURL:require('../images/pill_logo.png'),
+        logos:[{Id:"Python",imageURL:require("../images/python_logo.png")},{Id:"Anaconda",imageURL:require("../images/anaconda_logo.png")},{Id:"MS Office",imageURL:require("../images/ms_logo.jpg")}]
+      },
+      {
+        Id:"J.P. Morgan Code For Good",
+        Role:"Front-end developer",
+        Date:"Oct 2022",
+        Description:"Developed and demonstrated comprehensive methods and supporting systems to address client's bottleneck in query processing.",
+        imageURL: require('../images/cfg_team_logo.jpg'),
+        logos:[{Id:"React",imageURL:require("../images/react_logo.png")},{Id:"Node JS",imageURL:require("../images/njs_logo.png")},{Id:"Heroku",imageURL:require("../images/Heroku_logo.png")}]
+      }
+    ]
+
+    const [loadThis,setLoadThis]=useState(workExperience)
 
     
     let isDown = false;
     let startX;
     let scrollLeft;
-    let toRight;
     let snapTo=0;
-    let startVelocity=0;
-    let dragged=false;
   
     const dragMouseDownHandler=(e)=>{
       setUseTouch(false)
@@ -50,15 +105,13 @@ const Experience = ({setExperienceRef}) => {
       slider.classList.add('active');
       startX = e.pageX - slider.offsetLeft;
       scrollLeft = slider.scrollLeft;
-      startVelocity=0;
-      dragged=false;
       cancelMomentumTracking();
     }
 
     const dragMouseLeaveHandler=()=>{
       if (isDown){
       isDown = false;
-      // slider.classList.remove('active');
+      slider.classList.remove('active');
       beginMomentumTracking();
       }
     }
@@ -66,7 +119,7 @@ const Experience = ({setExperienceRef}) => {
     const dragMouseUpHandler=()=>{
       if (isDown){
       isDown = false;
-      // slider.classList.remove('active');
+      slider.classList.remove('active');
       beginMomentumTracking();
       }
     }
@@ -79,10 +132,10 @@ const Experience = ({setExperienceRef}) => {
       var prevScrollLeft = slider.scrollLeft;
       slider.scrollLeft = scrollLeft - walk;
       velX = slider.scrollLeft - prevScrollLeft;
-      startVelocity=Math.abs(velX);
-      dragged=true;
-      if (velX>0) toRight=true;
-      else toRight=false;
+      clearTimeout(e.target.dragTimeout);
+      e.target.dragTimeout=setTimeout(()=>{
+        dragMouseUpHandler();
+      },150)
     }
 
     
@@ -90,70 +143,26 @@ const Experience = ({setExperienceRef}) => {
     const slider = document.querySelector('.items');
     var velX = 0;
     var momentumID;
+    const [activeNode,setActiveNode]=useState(null);
     
     function beginMomentumTracking(){
       cancelMomentumTracking();
-      momentumID = requestAnimationFrame(momentumLoop);
+      momentumID = requestAnimationFrame(snapMomentum);
     }
     function cancelMomentumTracking(){
       cancelAnimationFrame(momentumID);
     }
-    function momentumLoop(){
-      //Need:
-      //velX , dragged, toRight, startVelocity, 
-      if (dragged==true) {
-      slider.scrollLeft += velX;
-      velX *= 0.95; 
-      }
-      if (dragged==true && Math.abs(velX) > 1){
-        momentumID = requestAnimationFrame(momentumLoop);
-      }
-      else if ((toRight && startVelocity>5) || (!toRight && startVelocity<=5)){
-        for (const mark in scrollMarks){
-          if (scrollMarks[mark]>slider.scrollLeft-elementDiff/4){
-            snapTo=scrollMarks[mark];
-            break;
-          }
-          else if (scrollMarks[mark]>slider.scrollLeft){
-            snapTo=scrollMarks[mark];
-            break;
-          }
-          else snapTo=scrollMarks[mark];
-        }
-        toRight=true;
-        velX=(snapTo-slider.scrollLeft)/20;
-        momentumID = requestAnimationFrame(snapMomentum);
-      }
-      else if ((!toRight && startVelocity>5) || (toRight && startVelocity<=5)){
-        snapTo=scrollMarks[0];
-        for (const mark in scrollMarks){
-          if (scrollMarks[mark]<slider.scrollLeft+elementDiff/4){
-            snapTo=scrollMarks[mark];
-          }
-          else if (scrollMarks[mark]>slider.scrollLeft){
-            break;
-          }
-          else snapTo=scrollMarks[mark];
-        }
-        toRight=false;
-        velX=(snapTo-slider.scrollLeft)/20;
-        momentumID = requestAnimationFrame(snapMomentum);
-      }
-    }
 
     function snapMomentum(){
-      console.log(snapTo,scrollMarks,velX,slider.scrollLeft)
-      if (toRight) {
-        velX = Math.max(velX*0.98,10); 
-        slider.scrollLeft = Math.min(slider.scrollLeft+velX,snapTo);
+      snapTo=scrollMarks[0];
+      for (const mark in scrollMarks){
+        if (Math.abs(scrollMarks[mark]-slider.scrollLeft)<elementDiff/2){
+          snapTo=scrollMarks[mark];
+          break;
+        }
+        else snapTo=scrollMarks[mark];
       }
-      else {
-        velX = Math.min(velX*0.98,-10); 
-        slider.scrollLeft = Math.max(slider.scrollLeft+velX,snapTo);
-      }
-      if (Math.abs(snapTo-slider.scrollLeft)>0){
-        momentumID = requestAnimationFrame(snapMomentum);
-      }
+      slider.scrollTo({left: snapTo, behavior: 'smooth'})
     }
 
     // legacy support for intersection observer not being available
@@ -181,10 +190,9 @@ const Experience = ({setExperienceRef}) => {
 
     useEffect(()=>{
       dragLineSizer();
-    },[scrollRefs])
+    },[scrollRefs,loadThis])
 
     const dragLineSizer=()=>{
-      console.log(window.innerWidth,window.innerHeight)
       const scrollMarks=[]
       for (var i=0;i<scrollRefs.current.length;++i){
         scrollMarks[i]=scrollRefs.current[i]?.offsetLeft+scrollRefs.current[i]?.clientWidth/2-window.innerWidth/2
@@ -193,6 +201,7 @@ const Experience = ({setExperienceRef}) => {
         setElementDiff(scrollRefs.current[1]?.offsetLeft-scrollRefs.current[0]?.offsetLeft);
       }
       setScrollMarks(scrollMarks)
+      
     }
 
     const [useTouch,setUseTouch]=useState(false);
@@ -211,11 +220,13 @@ const Experience = ({setExperienceRef}) => {
           entries.forEach(entry=>{
             if (entry.isIntersecting){
               entry.target.classList.add('active')
+              // setActiveNode(entry.target.getAttribute("id"))
             }
             else{
               entry.target.classList.remove('active')
             }
           })
+          
           observer.disconnect()
         },options)
         headerObserver.observe(target)
@@ -227,41 +238,108 @@ const Experience = ({setExperienceRef}) => {
   
     useEffect(()=>{
       handleIntersectionObserver();
-    },[])
+    },[loadThis])
+
+    const scrollReset=()=>{
+      if (scrollMarks.length==scrollRefs.current.length){
+      slider?.scrollTo({left:scrollRefs.current[scrollRefs.current.length-1]?.offsetLeft+scrollRefs.current[scrollRefs.current.length-1]?.clientWidth/2-window.innerWidth/2,behavior:'smooth'});
+      setActiveNode(scrollMarks.length-1);
+      }
+    }
+
+    useEffect(()=>{
+      scrollReset();
+    },[scrollMarks,loadThis])
 
     window.addEventListener("resize", (e)=>{
-      console.log("HELLO")
       clearTimeout(e.target.resizeTimeout);
       e.target.resizeTimeout=setTimeout(()=>{
         console.log("resize")
         dragLineSizer()
       },500);
     });
-  return (
+
+    const handleWheel=(e)=>{
+      clearTimeout(e.target.wheelTimeout)
+      e.target.wheelTimeout=setTimeout(()=>{
+        momentumID = requestAnimationFrame(snapMomentum);
+      },100)
+    }
+
+    const [disableChange,setDisableChange]=useState(false);
+
+    var loadTimeout=null;
+
+
+    const loadAnim=()=>{
+      if (slider)
+      {slider.classList.add('animate');
+      setDisableChange(true);
+      clearTimeout(loadTimeout)
+      loadTimeout=setTimeout(()=>{
+        slider.classList.remove('animate');
+        setDisableChange(false);
+      },1000)
+      // If updating timeout time, update css
+    }
+    }
+
+    useEffect(()=>{
+      scrollRefs.current=[];
+      loadAnim();
+    },[loadThis,slider])
+    return (
     <>
-    <div ref={experienceRef} className='flex flex-col h-80 '>
+    <div ref={experienceRef} className='experience-main flex flex-col '>
 
     {/* First line */}
-    <TGP toGenerate={"Experience"} className={"text-white text-6xl"}/>
-
+    <p className='title-comp flex-none px-8 pt-4 text-left'>
+    <span className='text-green-300 text-4xl'>2.</span>
+    <MultilineTGS toGenerateMap={["Experience"," (Traverse by dragging/click drag)"]} classNameMap={["number-text","flair-text"]}/>
+    </p>
+    <div className='button-group'>
+    <button className={'button-child h-8 px-4 rounded-xl ' + ((activeGroup=="school")?" bg-green-300":(disableChange)?" bg-gray-500":" bg-teal-100") + ((disableChange)?" no-click":"")} onClick={()=>{setActiveGroup("school");setActiveNode(0);setLoadThis(schoolExperience);}}>School</button>
+    <button className={'button-child h-8 px-4 rounded-xl ' + ((activeGroup=="work")?" bg-green-300":(disableChange)?" bg-gray-500":" bg-teal-100") + ((disableChange)?" no-click":"")} onClick={()=>{setActiveGroup("work");setActiveNode(0);setLoadThis(workExperience);}}>Work</button>
+    <button className={'button-child h-8 px-4 rounded-xl ' + ((activeGroup=="notables")?" bg-green-300":(disableChange)?" bg-gray-500":" bg-teal-100") + ((disableChange)?" no-click":"")} onClick={()=>{setActiveGroup("notables");setActiveNode(0);setLoadThis(notableAchievements);}}>Notables</button>
+    </div>
     <div id='drag-hold' className={"items bg-slate-950 "+((useTouch)? " snap-mandatory snap-x ":"")} 
       onMouseDown={(e)=>{setUseTouch(false);dragMouseDownHandler(e);}}
       onMouseLeave={()=>{dragMouseLeaveHandler()}}
       onMouseUp={(e)=>{dragMouseUpHandler()}}
-      onWheel={()=>{cancelMomentumTracking();setUseTouch(true)}}
+      onWheel={(e)=>{handleWheel(e)}}
       onMouseMove={(e)=>{dragMouseMoveHandler(e)}}
       onTouchStart={()=>{setUseTouch(true)}}
       onScroll={(e)=>{handleIntersectionObserver()}}
       >
         <div className='drag-line  bg-green-200'
         style={{width:`${scrollRefs.current[scrollRefs.current.length-1]?.offsetLeft-scrollRefs.current[0]?.offsetLeft}px`}}></div>
-      {workExperience.map((exp,i)=>
+      {loadThis.map((exp,i)=>
       <>
-        <div key={i}  id={exp.Id} ref={ref => (scrollRefs.current[i] = ref)} className=' drag-item rounded-full bg-green-200 snap-center '
+        <div key={i}  id={exp.Id} ref={ref => (scrollRefs.current[i] = ref)} className=' drag-item snap-center '
+        onLoadCapture={()=>{setLoadThis(loadThis);dragLineSizer()}}
+        onAnimationEnd={()=>{dragLineSizer();scrollReset()}}
         >
-          <div className='absolute bg-white h-12 w-12 top-12'>
-          <p className='absolute top-screen text-white'>{i}</p>
+          <p className='drag-title'>{exp.Id}</p>
+          <p className='drag-date'>{exp.Date}</p>
+          <img className='circle absolute bg-white z-50' src={exp.imageURL} />
+          <div className='square'>
+          <p className='drag-text-body'><span className='underline text-teal-100'>{exp.Role}</span><br/>{exp.Description}</p>
+
+          {/* pill */}
+          <div className='drag-pill-group'>
+            {exp.logos.map((logo,logo_index)=>
+            <div key={logo.Id} className='drag-pill z-50'>
+            <img className='pill-image' src={logo.imageURL}/>
+            <p className='pill-text'>{logo.Id}</p>
           </div>
+            )}
+          </div>
+
+
+
+          </div>
+
+          
           </div>
         </>
       )}

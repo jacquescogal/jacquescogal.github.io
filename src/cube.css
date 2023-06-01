@@ -35,7 +35,7 @@
    translate: -150px -100px;
    transform: scale(0.5);
    scale:0.5;
-  animation: appear 1s ease-in-out 0s 1;
+  /* animation: appear 1s ease-in-out 0s 1; */
  }
 
  .container-second {
@@ -48,7 +48,7 @@
    translate: -150px -100px;
    transform: scale(0.5);
    scale:0.5;
-  animation: disappear 1.5s ease-in-out 0s 1;
+  /* animation: disappear 1.5s ease-in-out 0s 1; */
   opacity: 0;
  }
 
@@ -99,7 +99,7 @@
    width: 200px;
    height: 200px;
    transform-style: preserve-3d;
-   animation: turn 1.5s ease-in 0s 1;
+   animation: turn 100s ease-in 0s 1;
    transform: scaleX(1) scaleY(1) scaleZ(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateX(0px) translateY(0px) translateZ(0px) skewX(0deg) skewY(0deg);
  }
  

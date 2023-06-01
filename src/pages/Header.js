@@ -3,6 +3,10 @@ import menuStyle from '../menu.module.css'
 import TGP from '../components/TGP';
 import TGS from '../components/TGS';
 import Logo from '../components/Logo';
+import Profile_logo from '../svg/Profile_logo';
+import Exp_logo from '../svg/Exp_logo';
+import Proj_logo from '../svg/Proj_logo';
+import Contact_logo from '../svg/Contact_logo';
 const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeaderLoaded}) => {
   const [menuClosed,setMenuClosed]=useState(true);
   const [itemLoad,setitemLoad]=useState(0);
@@ -10,12 +14,15 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
   const [isOpen,setIsOpen]=useState(true);
   const [forceNav,setForceNav]=useState(false);
   const [forceNavMin,setForceNavMin]=useState(0);
+  const [closable,setClosable]=useState(true);
   const navBarRef=useRef(null);
+  const smallBarRef=useRef(null);
+  const stickerRef=useRef(null);
 
 
   const menu=[
     
-    {id:1,name:'Profile',ref:aboutRef},
+    {id:1,name:'Profile',ref:introRef},
     {id:2,name:'Experiences',ref:experienceRef},
     {id:3,name:'Projects',ref:projectRef},
     {id:4,name:'Contact',ref:contactRef}
@@ -27,7 +34,7 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
         if (forceNav && window.scrollY>=forceNavMin){
             setForceNav(false);
         }
-        else if (window.scrollY < lastScrollY-1 || window.scrollY<=navBarRef.current.clientHeight*2 || forceNav) {
+        else if (window.scrollY < lastScrollY-1 || window.scrollY<=Math.max(smallBarRef.current?.clientHeight,navBarRef.current?.clientHeight)*2 || forceNav) {
             setIsOpen(true);
           }
       else if (window.scrollY > lastScrollY+1) {
@@ -57,7 +64,7 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
 
   // for scrolling on click
   const handleRefClick = (ref) => {
-    const y=ref.current.offsetTop-navBarRef.current.clientHeight;
+    const y=ref.current.offsetTop-Math.max(navBarRef.current?.clientHeight,smallBarRef.current?.clientHeight)-((!closable)?stickerRef.current?.clientHeight:0);
     setForceNav(true);
     setForceNavMin(y);
     window.scrollTo({top: y, behavior: 'smooth'});
@@ -74,7 +81,7 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
   return (
     <>
     {/* For desktop */}
-    <div ref={navBarRef} className={'sticky top-0 transition ease-in-out duration-500 block bg-slate-950 backdrop-blur z-40 '+((isOpen)?'translate-y-0':'-translate-y-full')}>
+    <div ref={navBarRef} className={'sticky top-0 transition ease-in-out duration-500 block bg-slate-950 backdrop-blur z-40 hidden xl:block '+((isOpen)?'translate-y-0':'-translate-y-full')}>
     <div className='left-32 top-0 fixed pt-4'>
             <Logo />
         </div>
@@ -94,6 +101,42 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
             )}
         </div>
         </div>
+    </div>
+
+    <div ref={smallBarRef} className={'sticky top-0 transition ease-in-out duration-500 block bg-slate-950 backdrop-blur z-40 block xl:hidden '+((isOpen || !closable)?'translate-y-0':'-translate-y-full')}>
+    <div className='left-32 top-0 fixed pt-4'>
+            <Logo />
+        </div>
+        
+        <div className='grid grid-cols-8'>
+
+        {/* Holds size */}
+        <div className='col-span-1 text-white pt-4 invisible'>Placeholder</div>
+
+        {/* Navigate */}
+
+        <div class="menu-btn btn-center" onClick={(e)=>{e.currentTarget.classList.toggle('close');stickerRef.current?.classList.toggle('sticker-open');setClosable(!closable);}}>
+          <span/>
+          <span/>
+          <span/>
+          </div>
+
+        </div>
+    </div>
+    <div ref={stickerRef} className={'sticker-holder top-0 transition ease-in-out duration-500 block backdrop-blur z-30 block xl:hidden '}>
+    
+
+        {/* Holds size */}
+        {/* <div className='col-span-1 text-white pt-4 invisible'>Placeholder</div> */}
+        <div className='flex flex-row justify-center mx-0'>
+          <Profile_logo className={"sticker w-12 h-12 fill-white"} onClick={()=>handleRefClick(introRef)}/>
+          <Exp_logo className={"sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(experienceRef)}/>
+          <Proj_logo className={"sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(projectRef)}/>
+          <Contact_logo className={"sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(contactRef)}/>
+        </div>
+
+        {/* Navigate */}
+
     </div>
 
     </>
