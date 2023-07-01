@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.d0dca3be.css",
-    "main.js": "/static/js/main.0be672ec.js",
+    "main.css": "/static/css/main.fac89803.css",
+    "main.js": "/static/js/main.260a7e69.js",
     "static/js/787.9817ca73.chunk.js": "/static/js/787.9817ca73.chunk.js",
     "static/media/Jacques_bg.png": "/static/media/Jacques_bg.6fe990bff82c7ca7da1c.png",
     "static/media/Jacques_only_alt.png": "/static/media/Jacques_only_alt.8a6ee2781eaddda7a7f1.png",
@@ -18,12 +18,12 @@
     "static/media/ntu_logo.jpg": "/static/media/ntu_logo.4d1775d1794670906988.jpg",
     "static/media/logo.svg": "/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/index.html",
-    "main.d0dca3be.css.map": "/static/css/main.d0dca3be.css.map",
-    "main.0be672ec.js.map": "/static/js/main.0be672ec.js.map",
+    "main.fac89803.css.map": "/static/css/main.fac89803.css.map",
+    "main.260a7e69.js.map": "/static/js/main.260a7e69.js.map",
     "787.9817ca73.chunk.js.map": "/static/js/787.9817ca73.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.d0dca3be.css",
-    "static/js/main.0be672ec.js"
+    "static/css/main.fac89803.css",
+    "static/js/main.260a7e69.js"
   ]
 }
