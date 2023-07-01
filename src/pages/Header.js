@@ -18,14 +18,22 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
   const navBarRef=useRef(null);
   const smallBarRef=useRef(null);
   const stickerRef=useRef(null);
+  const [isActiveRegion,setIsActiveRegion]=useState(
+    {
+      profile:true,
+      experiences:false,
+      projects:false,
+      contact:false
+    }
+  )
 
 
   const menu=[
     
-    {id:1,name:'Profile',ref:introRef,setReveal:function(){},setFade:function(bool){setProfileFade(bool)}},
-    {id:2,name:'Experiences',ref:experienceRef,setReveal:function(){setExperienceReveal(true)},setFade:function(bool){setExperienceFade(bool)}},
-    {id:3,name:'Projects',ref:projectRef,setReveal:function(){setProjectReveal(true)},setFade:function(bool){setProjectFade(bool)}},
-    {id:4,name:'Contact',ref:contactRef,setReveal:function(){setContactReveal(true)},setFade:function(bool){setContactFade(bool)}}
+    {id:1,name:'profile',ref:introRef,setReveal:function(){},setFade:function(bool){setProfileFade(bool);setIsActiveRegion(isActiveRegion=>({...isActiveRegion,profile:!bool}));}},
+    {id:2,name:'experiences',ref:experienceRef,setReveal:function(){setExperienceReveal(true)},setFade:function(bool){setExperienceFade(bool);setIsActiveRegion(isActiveRegion=>({...isActiveRegion,experiences:!bool}));}},
+    {id:3,name:'projects',ref:projectRef,setReveal:function(){setProjectReveal(true)},setFade:function(bool){setProjectFade(bool);setIsActiveRegion(isActiveRegion=>({...isActiveRegion,projects:!bool}));}},
+    {id:4,name:'contact',ref:contactRef,setReveal:function(){setContactReveal(true)},setFade:function(bool){setContactFade(bool);setIsActiveRegion(isActiveRegion=>({...isActiveRegion,contact:!bool}));}}
   ]
 
 //   For navbar appearing if scroll
@@ -44,11 +52,6 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
       menu.forEach((i)=>{
         if (i.ref.current?.offsetTop-(3*window.innerHeight/5)<window.scrollY) {
           i.setReveal();
-          // menu.forEach((j)=>{
-          //   if (i!=j){
-          //     j.setFade(true)
-          //   }
-          // })
         }
         if (i.ref.current?.offsetTop+i.ref.current?.clientHeight-(window.innerHeight/2)>window.scrollY
         && i.ref.current?.offsetTop-(window.innerHeight/2)<window.scrollY){
@@ -146,10 +149,10 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
         {/* Holds size */}
         {/* <div className='col-span-1 text-white pt-4 invisible'>Placeholder</div> */}
         <div className='flex flex-row justify-center mx-0'>
-          <Profile_logo className={"sticker w-12 h-12 fill-white"} onClick={()=>handleRefClick(introRef)}/>
-          <Exp_logo className={"sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(experienceRef)}/>
-          <Proj_logo className={"sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(projectRef)}/>
-          <Contact_logo className={"sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(contactRef)}/>
+          <Profile_logo className={isActiveRegion["profile"]?" sticker w-12 h-12 fill-white":" sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(introRef)}/>
+          <Exp_logo className={isActiveRegion["experiences"]?" sticker w-12 h-12 fill-white":" sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(experienceRef)}/>
+          <Proj_logo className={isActiveRegion["projects"]?" sticker w-12 h-12 fill-white":" sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(projectRef)}/>
+          <Contact_logo className={isActiveRegion["contact"]?" sticker w-12 h-12 fill-white":" sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(contactRef)}/>
         </div>
 
         {/* Navigate */}

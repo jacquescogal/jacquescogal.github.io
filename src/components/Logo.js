@@ -10,7 +10,7 @@ style = { {
   transform: `translate(${5}px, ${-20 }px)` 
 }}
       quickLeave={false} speed={5} preoccupy={false}/>
-      <TGP  initialText={"__acques Cogal"} className={"text-green-200  w-max align-center self-center absolute tracking-widest"}
+      <TGP  initialText={"__acques Cogal"}  toGenerate={"__acques Cogal (WIP)"} className={"text-green-200  w-max align-center self-center absolute tracking-widest"}
 style = { {
   transform: `translate(${5}px, ${-20 }px)` 
 }}
