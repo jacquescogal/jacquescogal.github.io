@@ -1,12 +1,12 @@
 import React, { useState,useEffect,useCallback,useRef } from 'react'
-import menuStyle from '../menu.module.css'
-import TGP from '../components/TGP';
+
 import TGS from '../components/TGS';
 import Logo from '../components/Logo';
 import Profile_logo from '../svg/Profile_logo';
 import Exp_logo from '../svg/Exp_logo';
 import Proj_logo from '../svg/Proj_logo';
 import Contact_logo from '../svg/Contact_logo';
+import '../header.css'
 const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeaderLoaded,setExperienceReveal,setContactReveal,setProjectReveal,setExperienceFade,setProfileFade,setProjectFade,setContactFade}) => {
   const [menuClosed,setMenuClosed]=useState(true);
   const [itemLoad,setitemLoad]=useState(0);
@@ -46,7 +46,7 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
             setIsOpen(true);
           }
       else if (window.scrollY > lastScrollY+1) {
-        setIsOpen(false);
+        setIsOpen(true);
       }
       setLastScrollY(window.scrollY);
       menu.forEach((i)=>{
@@ -114,9 +114,11 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
         {/* Navigate */}
         <div className={' right-0 col-start-5 col-span-4 grid grid-cols-4 pr-20'}>
             {menu.map((mi)=>
-                <p className='flex-none px-8 pt-4 text-left'>
-                    <span className='flex-none text-green-300 cursor-default'>{mi.id+"."}</span>
-                    <TGS className='flex-none text-white hover:text-green-300 cursor-pointer text-left' onClick={()=>handleRefClick(mi.ref)} toGenerate={mi.name}/>
+                <p className={isActiveRegion[mi.name]?'mx-8 mt-4 text-left header-holder active':'mx-8 mt-4 text-left header-holder'} onClick={()=>handleRefClick(mi.ref)}>
+                    <span className='text-green-300'>{mi.id+"."}</span>
+                    <TGS className='header-text text-white text-left'  toGenerate={mi.name}/>
+                    <div className='header-underline'></div>
+                    <div className='header-underline-back'></div>
                 </p>
             )}
         </div>
