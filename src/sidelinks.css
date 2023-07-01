@@ -1,0 +1,23 @@
+.sl-main{
+    
+}
+
+.sl-static{
+    
+    position: static;
+    height: 100vh;
+    /* background-color: blue; */
+    width: 100vw;
+}
+.sl-line{
+    /* background-color: wheat; */
+    position: fixed;
+    /* top: 10vh; */
+    bottom: 0px;
+    left: 90vw;
+    width: 5px;
+    height: 35vh;
+    background-color: rgb(187 247 208);
+    border-radius: 10px;
+    z-index: 1000;
+}

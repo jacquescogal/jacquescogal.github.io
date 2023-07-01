@@ -19,6 +19,8 @@ const LogoLoad = ({setLogoLoaded}) => {
       return ()=>clearTimeout(timeout);
     },[])
 
+    
+
 
     
   return (

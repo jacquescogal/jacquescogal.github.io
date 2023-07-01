@@ -35,7 +35,7 @@
    translate: -150px -100px;
    transform: scale(0.5);
    scale:0.5;
-  /* animation: appear 1s ease-in-out 0s 1; */
+  animation: appear 1s ease-in-out 0s 1;
  }
 
  .container-second {
@@ -48,46 +48,9 @@
    translate: -150px -100px;
    transform: scale(0.5);
    scale:0.5;
-  /* animation: disappear 1.5s ease-in-out 0s 1; */
+  animation: disappear 1.5s ease-in-out 0s 1;
   opacity: 0;
  }
-
- 
- @media (min-width: 0px) and (max-width: 640px) {
-  .container {
-    scale: 0.2;
-  }
-  .container-second {
-    scale: 0.2;
-  }
-}
-
-@media (min-width: 641px) and (max-width: 768px) {
-  .container {
-    scale: 0.3;
-  }
-  .container-second {
-    scale: 0.3;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  .container {
-    scale: 0.4;
-  }
-  .container-second {
-    scale: 0.4;
-  }
-}
-
-@media (min-width: 1025px) and  (max-width: 1280px) {
-  .container {
-    scale: 0.5;
-  }
-  .container-second {
-    scale: 0.5;
-  }
-}
 
  .container-small {
   position: fixed;
@@ -99,7 +62,7 @@
    width: 200px;
    height: 200px;
    transform-style: preserve-3d;
-   animation: turn 100s ease-in 0s 1;
+   animation: turn 1.5s ease-in 0s 1;
    transform: scaleX(1) scaleY(1) scaleZ(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateX(0px) translateY(0px) translateZ(0px) skewX(0deg) skewY(0deg);
  }
  
@@ -144,6 +107,45 @@
  .bottom {
    transform: translateY(100px) rotateX(-90deg);
  }
+
+ 
+ @media screen and (min-width: 0px) and (max-width: 640px) {
+  .container {
+    scale: 0.2;
+  }
+  .container-second {
+    scale: 0.2;
+  }
+}
+
+@media screen and (min-width: 641px) and (max-width: 768px) {
+  .container {
+    scale: 0.3;
+  }
+  .container-second {
+    scale: 0.3;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    scale: 0.4;
+  }
+  .container-second {
+    scale: 0.4;
+  }
+}
+
+@media screen and (min-width: 1025px) and  (max-width: 1280px) {
+  .container {
+    scale: 0.5;
+  }
+  .container-second {
+    scale: 0.5;
+  }
+}
+
+
  
  @media (prefers-reduced-motion: reduce) {
    .cube {

@@ -7,7 +7,7 @@ import Profile_logo from '../svg/Profile_logo';
 import Exp_logo from '../svg/Exp_logo';
 import Proj_logo from '../svg/Proj_logo';
 import Contact_logo from '../svg/Contact_logo';
-const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeaderLoaded}) => {
+const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeaderLoaded,setExperienceReveal,setContactReveal,setProjectReveal,setExperienceFade,setProfileFade,setProjectFade,setContactFade}) => {
   const [menuClosed,setMenuClosed]=useState(true);
   const [itemLoad,setitemLoad]=useState(0);
   const [lastScrollY,setLastScrollY]=useState(0);
@@ -22,10 +22,10 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
 
   const menu=[
     
-    {id:1,name:'Profile',ref:introRef},
-    {id:2,name:'Experiences',ref:experienceRef},
-    {id:3,name:'Projects',ref:projectRef},
-    {id:4,name:'Contact',ref:contactRef}
+    {id:1,name:'Profile',ref:introRef,setReveal:function(){},setFade:function(bool){setProfileFade(bool)}},
+    {id:2,name:'Experiences',ref:experienceRef,setReveal:function(){setExperienceReveal(true)},setFade:function(bool){setExperienceFade(bool)}},
+    {id:3,name:'Projects',ref:projectRef,setReveal:function(){setProjectReveal(true)},setFade:function(bool){setProjectFade(bool)}},
+    {id:4,name:'Contact',ref:contactRef,setReveal:function(){setContactReveal(true)},setFade:function(bool){setContactFade(bool)}}
   ]
 
 //   For navbar appearing if scroll
@@ -41,6 +41,23 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
         setIsOpen(false);
       }
       setLastScrollY(window.scrollY);
+      menu.forEach((i)=>{
+        if (i.ref.current?.offsetTop-(3*window.innerHeight/5)<window.scrollY) {
+          i.setReveal();
+          // menu.forEach((j)=>{
+          //   if (i!=j){
+          //     j.setFade(true)
+          //   }
+          // })
+        }
+        if (i.ref.current?.offsetTop+i.ref.current?.clientHeight-(window.innerHeight/2)>window.scrollY
+        && i.ref.current?.offsetTop-(window.innerHeight/2)<window.scrollY){
+          i.setFade(false);
+        }
+        else{
+          i.setFade(true)
+        }
+      })
     }
   }, [lastScrollY]);
   

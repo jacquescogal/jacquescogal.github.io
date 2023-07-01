@@ -29,6 +29,7 @@
       scrollbar-width: none;
       animation: experience-load 1s 0s 1 ease-in-out;
       margin: 0%;
+      background-color: transparent;
     }
 
     .number-text{
@@ -36,7 +37,7 @@
     }
 
     .flair-text{
-        color: rgb(134 239 172);;
+        color: rgb(134 239 172);
     }
 
 
@@ -53,6 +54,14 @@
 
     .button-child:not(:first-child){
         margin-left: 0.5rem;
+    }
+
+    .button-child:hover:not(.button-active){
+        background-color: rgb(153 246 228);
+    }
+
+    .button-active{
+        box-shadow: 0 10px 15px -3px rgb(20 184 166/ 0.5), 0 4px 6px -4px rgb(20 184 166/ 0.5);
     }
 
     .items::-webkit-scrollbar{
@@ -148,6 +157,7 @@
 
 
     .drag-line{
+        background-color: rgb(187 247 208);
         position: absolute; 
         height: 0.125rem;
         border-radius: 9999px;
@@ -311,10 +321,18 @@ white-space: nowrap;
         font-size: 1rem;
     }
       
+    .drag-item.active .circle:hover{
+        scale: 2;
+        /* top:50%; */
+        /* left: 50vw; */
+        /* right: 50%; */
+        transition: all 1s ease;
+        transform: translateY(0%) translateX(-60%);
+      }
 
     
 
-    @media ((min-width: 0px) and (max-width: 640px)) {
+    @media screen and (min-width: 0px) and (max-width: 640px) {
         .items{
             height: 50vh;
         }
@@ -351,7 +369,7 @@ white-space: nowrap;
         }
       }
       
-      @media (min-width: 641px) and (max-width: 768px) {
+      @media screen and  (min-width: 641px) and (max-width: 768px) {
         .items{
             height: 50vh;
         }
@@ -378,7 +396,7 @@ white-space: nowrap;
         }
       }
       
-      @media (min-width: 769px) and (max-width: 1024px) {
+      @media screen and  (min-width: 769px) and (max-width: 1024px) {
         .items{
             height: 50vh;
         }
@@ -405,7 +423,7 @@ white-space: nowrap;
         }
       }
       
-      @media ((min-height: 0px) and (max-height: 500px)) {
+      @media screen and  ((min-height: 0px) and (max-height: 500px)) {
         .items{
             height: 90vh;
         }
@@ -432,7 +450,7 @@ white-space: nowrap;
         }
       }
 
-      @media ((min-height: 501px) and (max-height: 640px)) {
+      @media screen and  ((min-height: 501px) and (max-height: 640px)) {
         .items{
             height: 60vh;
         }
@@ -463,11 +481,3 @@ white-space: nowrap;
 
 
 
-      .drag-item.active .circle:hover{
-        scale: 2;
-        /* top:50%; */
-        /* left: 50vw; */
-        /* right: 50%; */
-        transition: all 1s ease;
-        transform: translateY(0%) translateX(-60%);
-      }

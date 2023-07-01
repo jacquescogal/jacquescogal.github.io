@@ -1,19 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react'
-import myImage from '../Jacques_bg.png'
-import cropImage from '../Jacques_only_alt.png'
-import outlineImage from '../Jacques_outline.png'
+// import myImage from 
 import TGP from '../components/TGP';
-import TGS from '../components/TGS';
 import introStyle from '../intro.module.css'
-import bookImage from '../book.png'
-import playImage from '../board-game.png'
-import goalImage from '../mountain.png'
 import MouseSVG from '../svg/Mouse'
 import ScrollMouse from '../svg/ScrollMouse';
 import resumePDF from '../resume_Jacques.pdf'
 import MultilineTGS from '../components/MultilineTGS';
 
-const Intro = ({setIntroRef}) => {
+const Intro = ({setIntroRef,contactRef,profileFade}) => {
+  const playImage=require('../board-game.png')
+  const myImage=require('../Jacques_bg.png')
+  const cropImage=require('../Jacques_only_alt.png')
+  const bookImage=require('../book.png')
+  const goalImage=require('../mountain.png')
   const [helloFade,setHelloFade]=useState(true);
   const [helloText,setHelloText]=useState("");
   const [helloSentinal,setHelloSentinal]=useState(0);
@@ -61,8 +60,8 @@ const Intro = ({setIntroRef}) => {
   // Dialogue timing
   const imageClickHandler=(e)=>{
     setGreetingsSentinal(greetingsSentinal+1);
-    setGreetings(greetings.concat({key:greetingsSentinal,x:e.clientX-imageRef.current.offsetLeft-50,
-      y:e.clientY-imageRef.current.offsetTop-20,
+    setGreetings(greetings.concat({key:greetingsSentinal,x:e.clientX-imageRef.current?.getBoundingClientRect().left-50,
+      y:e.clientY-imageRef.current?.getBoundingClientRect().top,
       text:"Hello!"}))
     setToDelete(toDelete.concat(greetingsSentinal))
   }
@@ -139,7 +138,7 @@ const Intro = ({setIntroRef}) => {
     };
   }, [isTouchScreen]);
 
-  const onButtonClick = () => {
+  const getResume = () => {
     // using Java Script method to get PDF file
     fetch(resumePDF).then(response => {
         response.blob().then(blob => {
@@ -153,20 +152,33 @@ const Intro = ({setIntroRef}) => {
         })
     })
 }
-  
+const blockSelect = document.querySelector('.section-block.profile-block');
+
+useEffect(() => {
+  console.log(profileFade)
+  if (profileFade) {
+    blockSelect?.classList.add('fade')
+  }
+  else{
+    blockSelect?.classList.remove('fade')
+  }
+}, [profileFade])
 
   return (
-    <>
+    <div ref={introRef} className='section-block profile-block'>
+    
     <p className='flex-none px-8 pt-4 text-left title-comp intro-load'>
     <span className='text-green-300 text-4xl'>1.</span>
     <MultilineTGS toGenerateMap={["Profile"," (Hello there!)"]} classNameMap={["number-text","flair-text"]}/>
     </p>
     <div className='flex justify-center sectionLoad' onAnimationEnd={()=>{setLoaded(true)}} onTouchStart={()=>{console.log("touched"),setIsTouchScreen(true)}}>
-      
+    {/* <div className='ping-holder'>
+    <div className='ping'></div>
+    </div> */}
     <div>    
-      <p ref={introRef} className='hidden'>Intro</p>
+      <p  className='hidden'>Intro</p>
       
-    <div className='image-text-holder bg-slate-950 px-10 py-12'>
+    <div className='image-text-holder bg-slate-950 px-10'>
       
       
       {/* Image */}
@@ -174,11 +186,11 @@ const Intro = ({setIntroRef}) => {
     <div className='flex flex-col imageLoad' onTouchStart={()=>{setTouchOpen(true)}}>
       <div className='image-size flex static' onMouseMove={()=>{if(loaded)setInImage(true);}} onMouseLeave={()=>{handleExitImage();imageRef.current.style.transform = `perspective(1000px) rotateX(${0}deg) rotateY(${0}deg)`}}>
     <div ref={imageRef} className="image-size static cursor-pointer blur-none overflow-hidden group rounded-lg"   >
-    <img  className={" absolute transition duration-500 ease-in-out transform -z-20 scale-100 group-hover:scale-110 "  +((transitChange)?'':introStyle['img-hover'])} src={cropImage} alt="image description"
+    <img  className={"image-size absolute transition duration-500 ease-in-out transform -z-20 scale-100 group-hover:scale-110 "  +((transitChange)?'':introStyle['img-hover'])} src={cropImage} alt="image description"
     style={(inImage && !isTouchScreen)?{top: `${Math.floor(((imageRef.current?.offsetTop+Math.floor(imageRef.current?.clientHeight/2))-mousePos.y)/16)}px`, 
     left: `${Math.floor(((imageRef.current?.offsetLeft+Math.floor(imageRef.current?.clientWidth/2))-mousePos.x)/16)}px`}:{top:'0px',left:'0px'}} 
     onMouseDown={(e)=>{imageClickHandler(e)}}/>
-    <img  className={" absolute transition transform duration-500 ease-in-out  -z-50 scale-110 group-hover:blur-sm "  +((transitChange)?'':introStyle['img-hover'])}
+    <img  className={"image-size absolute transition transform duration-500 ease-in-out  -z-50 scale-110 group-hover:blur-sm "  +((transitChange)?'':introStyle['img-hover'])}
     src={myImage} alt="image description" 
     style={(inImage && !isTouchScreen)?{top: `${Math.floor(((imageRef.current?.offsetTop+Math.floor(imageRef.current?.clientHeight/2))-mousePos.y)/8)}px`, 
     left: `${Math.floor(((imageRef.current?.offsetLeft+Math.floor(imageRef.current?.clientWidth/2))-mousePos.x)/8)}px`}:{top:'0px',left:'0px'}} 
@@ -257,21 +269,25 @@ const Intro = ({setIntroRef}) => {
           <div className={'group flex flex-row content-center items-center cursor-default '} onMouseEnter={()=>{setNavHover(1)}} onMouseLeave={()=>{setNavHover(0)}} >
           <MouseSVG className={'h-20 w-20 self-end '+((navHover===1)?" fill-green-300 "+introStyle['mouse-side']:" fill-white")}/>
           </div>
-        <TGP toGenerate={"|"} className={"text-left text-green-200 text-8xl"} onClick={()=>{onButtonClick()}}/>
+        <TGP toGenerate={"|"} className={"text-left text-green-200 text-8xl"} />
         <div className='flex flex-row content-center items-center cursor-default' onMouseEnter={()=>{setNavHover(2)}} onMouseLeave={()=>{setNavHover(0)}}>
           <ScrollMouse className={'h-20 w-20 self-end '+((navHover===2)?introStyle['mouse-scroll']+" fill-green-300 ":" fill-white "+introStyle['mouse-scroll-regular'])}/>
         </div>
+        <button className='skip-button' onClick={()=>{getResume()}}>Resume</button>
+        <button className='skip-button' onClick={()=>window.scrollTo({top: contactRef.current.offsetTop, behavior: 'smooth'})}>Contact Me</button>
         </div>
 
       </div>
 
+      
+
 
 
     </div>
     </div>
 
     </div>
-    </>
+    </div>
   )
 }
 

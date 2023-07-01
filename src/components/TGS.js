@@ -1,6 +1,6 @@
 import React, { useEffect, useState,onClick} from 'react'
 
-const TGS = ({speed=10,toGenerate,className,onClick,setIsAnimating=(()=>{})}) => {
+const TGS = ({speed=10,toGenerate,className,onClick,setIsAnimating=(()=>{}),observable=true}) => {
     const [text,setText]=useState("");
     const [countDown,setCountdown]=useState(5);
 
@@ -14,6 +14,7 @@ const TGS = ({speed=10,toGenerate,className,onClick,setIsAnimating=(()=>{})}) =>
 
     
     useEffect(()=>{
+        if (!observable) return;
         const timeout=setTimeout(()=>{
             if (text!==toGenerate && text.length<=toGenerate.length) {
                 if (text.length>0 && text.slice(0,-1)!==toGenerate.slice(0,text.length-1)) {
@@ -35,7 +36,7 @@ const TGS = ({speed=10,toGenerate,className,onClick,setIsAnimating=(()=>{})}) =>
             }
         },speed);
         return ()=>clearTimeout(timeout);
-    },[countDown])
+    },[countDown,observable])
 
 
     const generateRandomChar=()=>{

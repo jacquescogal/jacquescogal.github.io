@@ -3,7 +3,7 @@ import TGS from '../components/TGS';
 import '../contact.css'
 import MultilineTGS from '../components/MultilineTGS';
 
-const Contact = ({setContactRef}) => {
+const Contact = ({setContactRef,contactReveal,contactFade}) => {
   const [name,setName]=useState("");
   const [subject,setSubject]=useState("");
   const [message,setMessage]=useState("");
@@ -12,15 +12,33 @@ const Contact = ({setContactRef}) => {
     useEffect(()=>{
         setContactRef(contactRef);
     },[contactRef])
+
+    const blockSelect = document.querySelector('.section-block.contact-block');
+
+    useEffect(()=>{
+      if (contactReveal){
+        blockSelect?.classList.remove('hide')
+        blockSelect?.classList.add('show')
+      }
+    },[contactReveal])
+
+    useEffect(() => {
+      if (contactFade) {
+        blockSelect?.classList.add('fade')
+      }
+      else{
+        blockSelect?.classList.remove('fade')
+      }
+    }, [contactFade])
   return (
     <>
-    <div ref={contactRef} className='flex flex-col '>
+    <div ref={contactRef} className='flex flex-col section-block contact-block hide'>
     <p className='title-comp flex-none px-8 pt-4 text-left'>
     <span className='text-green-300 text-4xl'>4.</span>
     <MultilineTGS toGenerateMap={["Contact Me"," (I'll appreciate it!)"]} classNameMap={["number-text","flair-text"]}/>
     </p>
     <div className='form'>
-    <form action="https://formsubmit.co/d113927c60de9cd1e5181c26ffee57eb" method="POST">
+    <form action="https://formsubmit.co/a1e93437966df7514f8b43e5b06685c5" method="POST">
     {/* <form onSubmit={(e)=>{console.log(e.currentTarget)}}> */}
     <label htmlFor="email">E-mail:</label>
      <input onChange={(e)=>{setName(e.currentTarget.value)}} type="email" name="email" placeholder='yourEmail@.mail.com' required/>

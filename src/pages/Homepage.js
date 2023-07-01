@@ -7,6 +7,7 @@ import Experience from './Experience';
 import Project from './Project';
 import Contact from './Contact';
 import Test from './Test';
+import SideLinks from './SideLinks';
 
 const Homepage = () => {
   const [isOpen,setIsOpen]=useState(false);
@@ -19,19 +20,31 @@ const Homepage = () => {
   const [setHeaderHighlight]=useState(null);
   const [logoLoaded,setLogoLoaded]=useState(false);
   const [headerLoaded,setHeaderLoaded]=useState(false);
+  const [experienceReveal,setExperienceReveal]=useState(false);
+  const [projectReveal,setProjectReveal]=useState(false);
+  const [contactReveal,setContactReveal]=useState(false);
 
+  const [profileFade,setProfileFade]=useState(false);
+  const [experienceFade,setExperienceFade]=useState(false);
+  const [projectFade,setProjectFade]=useState(false);
+  const [contactFade,setContactFade]=useState(false);
   return (
     <>
     
     <div className='fixed w-full h-full bg-slate-950 -z-50'/>
     {(logoLoaded)?
     <>
-    <Header introRef={introRef} aboutRef={aboutRef} experienceRef={experienceRef} projectRef={projectRef} contactRef={contactRef} setHeaderLoaded={setHeaderLoaded} />
+    <Header introRef={introRef} aboutRef={aboutRef} experienceRef={experienceRef} projectRef={projectRef} 
+    contactRef={contactRef} setHeaderLoaded={setHeaderLoaded} setExperienceReveal={setExperienceReveal} 
+    setProjectReveal={setProjectReveal} setContactReveal={setContactReveal} 
+    setExperienceFade={setExperienceFade} setProfileFade={setProfileFade} setContactFade={setContactFade} setProjectFade={setProjectFade}/>
     {(headerLoaded)?
-    <><Intro setIntroRef={setIntroRef} setAboutRef={setAboutRef}/>
-    <Experience setExperienceRef={setExperienceRef}/>
-    <Project setProjectRef={setProjectRef}/>
-    <Contact setContactRef={setContactRef}/></>:<></>}
+    <>
+    <SideLinks/>
+    <Intro contactRef={contactRef} setIntroRef={setIntroRef} setAboutRef={setAboutRef} profileFade={profileFade}/>
+    <Experience setExperienceRef={setExperienceRef} experienceReveal={experienceReveal} experienceFade={experienceFade}/>
+    <Project setProjectRef={setProjectRef} projectReveal={projectReveal} projectFade={projectFade}/>
+    <Contact setContactRef={setContactRef} contactReveal={contactReveal} contactFade={contactFade}/></>:<></>}
     </>
     :
     <LogoLoad setLogoLoaded={setLogoLoaded}/>}

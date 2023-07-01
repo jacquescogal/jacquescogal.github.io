@@ -39,3 +39,34 @@ body {
   cursor: grab;
   overflow: auto;
 }
+
+@keyframes reveal {
+  0%{
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  100%{
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+.section-block{
+  transition: opacity 0.5s ease-in-out;
+}
+
+.section-block.show{
+  visibility: visible;
+  opacity: 1;
+  animation: reveal 1s ease-out 0s 1;
+}
+
+.section-block.hide{
+  opacity: 0;
+  visibility: hidden;
+}
+
+.section-block.fade{
+  
+  opacity: 0.5;
+}
