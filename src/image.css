@@ -52,19 +52,20 @@
 
 /* Animation */
 .close span {
-	transition: .4s top, .4s bottom, .4s .4s transform;
+    opacity: 1;
 }
 .close span:nth-of-type(1) {
 	top: 40%;
-	transform: rotate(45deg);
+	transform: rotate(405deg) translate(5px, 5px);
 }
 .close span:nth-of-type(2) {
-	opacity: 0;
-	transition: opacity .1s .4s;
+    opacity: 0;
+	transform:  rotate(-360deg)
+	/* transition: opacity .1s .4s; */
 }
 .close span:nth-of-type(3) {
 	bottom: 40%;
-	transform: rotate(-45deg);
+	transform: rotate(315deg) translate(7px, -6px);
 }
 
 .sticker-holder{

@@ -98,16 +98,19 @@
 	width: 100%;
 	height: 20%;
     left: 0px;
-	transition: .4s .4s top, .4s .4s bottom, .3s transform;
+	transition: .4s .4s top, .4s .4s bottom, .2s transform;
 	border-radius: 100px;
+}
+
+.light .menu-btn span{
+    background: black;
 }
 .menu-btn span:nth-of-type(1) {
 	top: 0;
 }
 .menu-btn span:nth-of-type(2) {
 	top: 40%;
-	opacity: 1;
-	transition: opacity .1s .4s;
+	/* transition: opacity .1s .4s; */
 }
 .menu-btn span:nth-of-type(3) {
 	bottom: 0;
@@ -129,4 +132,44 @@
     justify-self: end;
     margin-top: auto;
     margin-bottom: auto;
+}
+
+.sun-small{
+    position: absolute;
+    top: -4px;
+    right: 15vw;
+    fill: white;
+    cursor: pointer;
+    width: 2rem;
+    justify-self: end;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.moon-small{
+    position: absolute;
+    top: 8px;
+    right: 15vw;
+    fill: black;
+    cursor: pointer;
+    width: 1.5rem;
+    justify-self: end;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.menu-logo-active{
+    fill: white;
+}
+
+.menu-logo{
+    fill: rgb(187 247 208);
+}
+
+.light .menu-logo-active{
+    fill: black;
+}
+
+.light .menu-logo{
+    fill: rgb(0, 119, 79);
 }

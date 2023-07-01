@@ -1,5 +1,5 @@
 import React, { useState,useEffect,useCallback,useRef } from 'react'
-
+// import menuStyle from '../menu.module.css'
 import TGS from '../components/TGS';
 import Logo from '../components/Logo';
 import Profile_logo from '../svg/Profile_logo';
@@ -143,7 +143,10 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
         <div className='col-span-1 text-white pt-4 invisible'>Placeholder</div>
 
         {/* Navigate */}
-        <button className='bg-white  lighter'>a</button>
+        {(light)?<Moon_logo className={"moon-small"} onClick={handleLight}/>:
+            <Sun_logo className={"sun-small"} onClick={handleLight}/>
+            
+}
 
         <div class="menu-btn btn-center" onClick={(e)=>{e.currentTarget.classList.toggle('close');stickerRef.current?.classList.toggle('sticker-open');setClosable(!closable);}}>
           <span/>
@@ -159,10 +162,10 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
         {/* Holds size */}
         {/* <div className='col-span-1 text-white pt-4 invisible'>Placeholder</div> */}
         <div className='flex flex-row justify-center mx-0'>
-          <Profile_logo className={isActiveRegion["profile"]?" sticker w-12 h-12 fill-white":" sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(introRef)}/>
-          <Exp_logo className={isActiveRegion["experiences"]?" sticker w-12 h-12 fill-white":" sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(experienceRef)}/>
-          <Proj_logo className={isActiveRegion["projects"]?" sticker w-12 h-12 fill-white":" sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(projectRef)}/>
-          <Contact_logo className={isActiveRegion["contact"]?" sticker w-12 h-12 fill-white":" sticker w-12 h-12 fill-green-200"} onClick={()=>handleRefClick(contactRef)}/>
+          <Profile_logo className={isActiveRegion["profile"]?" sticker w-12 h-12 menu-logo-active":" sticker w-12 h-12 menu-logo"} onClick={()=>handleRefClick(introRef)}/>
+          <Exp_logo className={isActiveRegion["experiences"]?" sticker w-12 h-12 menu-logo-active":" sticker w-12 h-12 menu-logo"} onClick={()=>handleRefClick(experienceRef)}/>
+          <Proj_logo className={isActiveRegion["projects"]?" sticker w-12 h-12 menu-logo-active":" sticker w-12 h-12 menu-logo"} onClick={()=>handleRefClick(projectRef)}/>
+          <Contact_logo className={isActiveRegion["contact"]?" sticker w-12 h-12 menu-logo-active":" sticker w-12 h-12 menu-logo"} onClick={()=>handleRefClick(contactRef)}/>
         </div>
 
         {/* Navigate */}

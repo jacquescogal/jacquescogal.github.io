@@ -133,7 +133,7 @@
 
 /* Styling the three lines
     to make it an X */
-/* .menu-btn-close .btn-line:nth-child(1){
+.menu-btn-close .btn-line:nth-child(1){
     transform: rotate(45deg) translate(5px, 5px);
 }
 
@@ -156,4 +156,4 @@
 
 .hover .image-button{
     transform: scale(1);
-} */
+}
