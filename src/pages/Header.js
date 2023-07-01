@@ -99,14 +99,14 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
     <>
     {/* For desktop */}
     <div ref={navBarRef} className={'sticky top-0 transition ease-in-out duration-500 block bg-slate-950 backdrop-blur z-40 hidden xl:block '+((isOpen)?'translate-y-0':'-translate-y-full')}>
-    <div className='left-32 top-0 fixed pt-4'>
+    <div className='logo-holder'>
             <Logo />
         </div>
         
         <div className='grid grid-cols-8'>
 
         {/* Holds size */}
-        <div className='col-span-1 text-white pt-4 invisible'>Placeholder</div>
+        <div className='col-span-1 text-white py-4 invisible'>Placeholder</div>
 
         {/* Navigate */}
         <div className={' right-0 col-start-5 col-span-4 grid grid-cols-4 pr-20'}>
@@ -121,7 +121,7 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
     </div>
 
     <div ref={smallBarRef} className={'sticky top-0 transition ease-in-out duration-500 block bg-slate-950 backdrop-blur z-40 block xl:hidden '+((isOpen || !closable)?'translate-y-0':'-translate-y-full')}>
-    <div className='left-32 top-0 fixed pt-4'>
+    <div className='logo-holder'>
             <Logo />
         </div>
         

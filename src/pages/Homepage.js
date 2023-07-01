@@ -40,7 +40,7 @@ const Homepage = () => {
     setExperienceFade={setExperienceFade} setProfileFade={setProfileFade} setContactFade={setContactFade} setProjectFade={setProjectFade}/>
     {(headerLoaded)?
     <>
-    <SideLinks/>
+    {/* <SideLinks/> */}
     <Intro contactRef={contactRef} setIntroRef={setIntroRef} setAboutRef={setAboutRef} profileFade={profileFade}/>
     <Experience setExperienceRef={setExperienceRef} experienceReveal={experienceReveal} experienceFade={experienceFade}/>
     <Project setProjectRef={setProjectRef} projectReveal={projectReveal} projectFade={projectFade}/>

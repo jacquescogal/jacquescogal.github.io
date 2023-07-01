@@ -1,7 +1,7 @@
 import React, { useEffect, useState,onClick} from 'react'
 
-const TGP = ({speed=10,preoccupy=true,quickLeave=true,toGenerate,className,onClick,style,onAnimationEnd,randomChoice=5}) => {
-    const [text,setText]=useState("");
+const TGP = ({speed=10,preoccupy=true,quickLeave=true,initialText="",toGenerate,className,onClick,style,onAnimationEnd,randomChoice=5}) => {
+    const [text,setText]=useState(initialText);
     const [countDown,setCountdown]=useState(randomChoice);
     const [deleteLock,setDeleteLock]=useState(false);
 
