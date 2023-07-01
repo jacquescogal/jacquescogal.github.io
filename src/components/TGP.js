@@ -1,13 +1,13 @@
 import React, { useEffect, useState,onClick} from 'react'
 
-const TGP = ({speed=10,preoccupy=true,quickLeave=true,initialText="",toGenerate,className,onClick,style,onAnimationEnd,randomChoice=5}) => {
+const TGP = ({speed=10,preoccupy=true,quickLeave=true,initialText="",toGenerate,className,onClick,style,onAnimationEnd,randomChoice=5,loop=false}) => {
     const [text,setText]=useState(initialText);
     const [countDown,setCountdown]=useState(randomChoice);
     const [deleteLock,setDeleteLock]=useState(false);
 
     useEffect(()=>{
         if (quickLeave){
-            setText("");
+            setText(initialText);
             if (countDown==0) setCountdown(randomChoice);
             else if (countDown>0) setCountdown(0);
         }
@@ -56,10 +56,13 @@ const TGP = ({speed=10,preoccupy=true,quickLeave=true,initialText="",toGenerate,
                     setCountdown(randomChoice);
                 }
             }
+            if (loop==true && text===toGenerate){
+                setText(initialText)
+                setCountdown(randomChoice-1)
+            }
         },speed);
         return ()=>clearTimeout(timeout);
     },[countDown,deleteLock])
-
 
     const generateRandomChar=()=>{
         // 33 to 126 ascii

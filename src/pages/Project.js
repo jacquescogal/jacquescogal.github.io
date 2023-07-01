@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import MultilineTGS from '../components/MultilineTGS';
 import Proj_logo from '../svg/Proj_logo';
 import TGS from '../components/TGS';
+import TGP from '../components/TGP';
 
 const Project = ({setProjectRef,projectReveal,projectFade}) => {
     const projectRef=useRef(null);
@@ -34,8 +35,8 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
     <span className='text-green-300 text-4xl' >3.</span>
     <MultilineTGS toGenerateMap={["Projects"," (Under construction. Will be done soon!)"]} classNameMap={["number-text","flair-text"]}/>
     </p>
-    <Proj_logo className={" h-80   fill-green-200 "}/>
-    <TGS toGenerate={"Constructing..."} className={"text-white "} speed={10}/>
+    <Proj_logo className={" h-40  md:h-80 fill-green-200 "}/>
+    <TGP toGenerate={"Constructing...."} className={"text-white text-left mx-auto pt-4 w-80 "} speed={1} randomChoice={20} initialText='Constructing.' loop={true} />
     </div>
     </>
   )
