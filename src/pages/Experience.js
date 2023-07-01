@@ -313,6 +313,23 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
     }
   }, [experienceFade])
 
+  const [popupImage,setPopupImage]=useState(workExperience[1]["imageURL"]);
+  const ipPop=document.querySelector(".image-popup")
+  const experienceImageHandler=({imageURL=null,show=null})=>{
+    if (imageURL!=null){
+      setPopupImage(imageURL);
+    }
+    if (show==null){
+      ipPop.classList.toggle('show')
+    }
+    else if (show==true){
+      ipPop.classList.add('show')
+    }
+    else if (show==false){
+      ipPop.classList.remove('show')
+    }
+    
+  }
   return (
     <>
       <div ref={experienceRef} className="section-block experience-main hide">
@@ -324,9 +341,13 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
           <MultilineTGS toGenerateMap={["Experience", " (Traverse by dragging/click drag)"]} classNameMap={["number-text", "flair-text"]} observable={experienceReveal} />
         </p>
         <div className='button-group'>
-          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "school") ? " bg-green-300 button-active no-click  " : (disableChange) ? " bg-gray-500" : " bg-teal-100") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("school"); setActiveNode(0); setLoadThis(schoolExperience); }}>School</button>
-          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "work") ? " bg-green-300 button-active no-click  " : (disableChange) ? " bg-gray-500" : " bg-teal-100") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("work"); setActiveNode(0); setLoadThis(workExperience); }}>Work</button>
-          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "notables") ? " bg-green-300 button-active no-click " : (disableChange) ? " bg-gray-500" : " bg-teal-100") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("notables"); setActiveNode(0); setLoadThis(notableAchievements); }}>Notables</button>
+          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "school") ? " bg-green-300 button-active no-click  " : (disableChange) ? " bg-gray-500" : " bg-teal-100") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("school");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(schoolExperience); }}>School</button>
+          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "work") ? " bg-green-300 button-active no-click  " : (disableChange) ? " bg-gray-500" : " bg-teal-100") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("work");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(workExperience); }}>Work</button>
+          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "notables") ? " bg-green-300 button-active no-click " : (disableChange) ? " bg-gray-500" : " bg-teal-100") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("notables");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(notableAchievements); }}>Notables</button>
+        </div>
+        <div className='image-popup' onClick={()=>{experienceImageHandler({})}}>
+          <div className='ip-dark'/>
+          <img src={popupImage} className='ip-image'/>
         </div>
         <div id='drag-hold' className={"items bg-slate-950 " + ((useTouch) ? " snap-mandatory snap-x " : "")}
           onMouseDown={(e) => { setUseTouch(false); dragMouseDownHandler(e); }}
@@ -347,7 +368,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
               >
                 <p className='drag-title'>{exp.Id}</p>
                 <p className='drag-date'>{exp.Date}</p>
-                <img className='circle absolute bg-white z-50' src={exp.imageURL} />
+                <img className='circle absolute bg-white z-50' src={exp.imageURL} onClick={()=>{experienceImageHandler({imageURL:exp.imageURL})}} />
                 <div className='square'>
                   <p className='drag-text-body'><span className='underline text-teal-100'>{exp.Role}</span><br />{exp.Description}</p>
 
