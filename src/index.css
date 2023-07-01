@@ -66,8 +66,17 @@ body {
   visibility: hidden;
 }
 
+
 .section-block.fade{
   
   opacity: 0.5;
 }
 
+.background-parent{
+  transition: all 0.2s ease-in-out;
+  background-color: rgb(2 6 23);
+}
+
+.light .background-parent{
+  background-color: rgb(208 234 248);
+}

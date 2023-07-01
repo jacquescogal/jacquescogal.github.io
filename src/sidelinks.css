@@ -3,40 +3,12 @@
     position: fixed;
     /* top: 10vh; */
     bottom: 0px;
-    left: 5vw;
-    width: 5px;
-    height: 10vh;
+    left: 90vw;
+    width: 10vw;
+    height: 10vw;
     background-color: rgb(187 247 208);
-    border-radius: 10px;
+    border-top-left-radius: 10px;
     z-index: 1000;
     transition: opacity 0.5s ease-in-out;
     opacity: 0.5;
-}
-
-.sl-line:hover{
-    opacity: 1;
-}
-
-.sl-logo-hold{
-    position: absolute;
-    /* background-color: black; */
-    display: flex;
-    flex-direction: column-reverse;
-    transform-origin: top;
-    rotate: 180deg;
-    transform: translateY(10px);
-}
-
-.sl-logo-hold .logo{
-    rotate: 180deg;
-    width: 2rem;
-    height: 2rem;
-    transform: translateX(-1rem);
-    margin-bottom: 10px;
-    fill: rgb(134 239 172);
-    opacity: 0.5;
-}
-
-.sl-logo-hold .logo:hover{
-    opacity: 1;
 }

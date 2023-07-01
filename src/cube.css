@@ -113,7 +113,36 @@
    opacity: 1;
    font-size: 10rem;
    transition: transform 500ms;
+   
  }
+
+ .face.front{
+  background-color: rgb(187 247 208);
+   border-color:  rgb(187 247 208);
+ }
+
+ .light .face.front{
+  background-color: rgb(2 6 23);
+  border-color:  rgb(2 6 23);
+ }
+
+ .face-text{
+  color: rgb(2 6 23);
+ }
+
+ .light .face-text{
+  color: rgb(187 247 208);
+ }
+
+ .face-overflow{
+  color: rgb(187 247 208);
+ }
+
+ .light .face-overflow{
+  color: rgb(2 6 23);
+ }
+
+ 
 
  .face-small {
   width: 20px;

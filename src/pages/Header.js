@@ -7,7 +7,9 @@ import Exp_logo from '../svg/Exp_logo';
 import Proj_logo from '../svg/Proj_logo';
 import Contact_logo from '../svg/Contact_logo';
 import '../header.css'
-const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeaderLoaded,setExperienceReveal,setContactReveal,setProjectReveal,setExperienceFade,setProfileFade,setProjectFade,setContactFade}) => {
+import Sun_logo from '../svg/sun_logo';
+import Moon_logo from '../svg/Moon_logo';
+const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeaderLoaded,setExperienceReveal,setContactReveal,setProjectReveal,setExperienceFade,setProfileFade,setProjectFade,setContactFade,light,handleLight}) => {
   const [menuClosed,setMenuClosed]=useState(true);
   const [itemLoad,setitemLoad]=useState(0);
   const [lastScrollY,setLastScrollY]=useState(0);
@@ -101,9 +103,9 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
   return (
     <>
     {/* For desktop */}
-    <div ref={navBarRef} className={'sticky top-0 transition ease-in-out duration-500 block bg-slate-950 backdrop-blur z-40 hidden xl:block '+((isOpen)?'translate-y-0':'-translate-y-full')}>
+    <div ref={navBarRef} className={'sticky top-0 transition ease-in-out duration-500 block header-background backdrop-blur z-40 hidden xl:block '+((isOpen)?'translate-y-0':'-translate-y-full')}>
     <div className='logo-holder'>
-            <Logo />
+            <Logo onClick={()=>{handleRefClick(menu[0].ref)}}/>
         </div>
         
         <div className='grid grid-cols-8'>
@@ -112,22 +114,27 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
         <div className='col-span-1 text-white py-4 invisible'>Placeholder</div>
 
         {/* Navigate */}
-        <div className={' right-0 col-start-5 col-span-4 grid grid-cols-4 pr-20'}>
+        <div className={' right-0 col-start-5 col-span-4 grid grid-cols-11 pr-20 ' }>
+        
             {menu.map((mi)=>
-                <p className={isActiveRegion[mi.name]?'mx-8 mt-4 text-left header-holder active':'mx-8 mt-4 text-left header-holder'} onClick={()=>handleRefClick(mi.ref)}>
-                    <span className='text-green-300'>{mi.id+"."}</span>
-                    <TGS className='header-text text-white text-left'  toGenerate={mi.name}/>
+                <p className={isActiveRegion[mi.name]?' col-span-2 mx-8 mt-4 text-left header-holder active':'col-span-2 mx-8 mt-4 text-left header-holder'} onClick={()=>handleRefClick(mi.ref)}>
+                    <span className='header-id-color'>{mi.id+"."}</span>
+                    <TGS className='header-text text-left'  toGenerate={mi.name}/>
                     <div className='header-underline'></div>
                     <div className='header-underline-back'></div>
                 </p>
             )}
+            {(light)?<Moon_logo className={"moon"} onClick={handleLight}/>:
+            <Sun_logo className={"sun"} onClick={handleLight}/>
+            
+}
         </div>
         </div>
     </div>
 
-    <div ref={smallBarRef} className={'sticky top-0 transition ease-in-out duration-500 block bg-slate-950 backdrop-blur z-40 block xl:hidden '+((isOpen || !closable)?'translate-y-0':'-translate-y-full')}>
+    <div ref={smallBarRef} className={'sticky top-0 transition ease-in-out duration-500 block header-background backdrop-blur z-40 block xl:hidden '+((isOpen || !closable)?'translate-y-0':'-translate-y-full')}>
     <div className='logo-holder'>
-            <Logo />
+            <Logo onClick={()=>{handleRefClick(menu[0].ref)}} />
         </div>
         
         <div className='grid grid-cols-8'>
@@ -136,6 +143,7 @@ const Header = ({introRef,aboutRef,experienceRef,projectRef,contactRef,setHeader
         <div className='col-span-1 text-white pt-4 invisible'>Placeholder</div>
 
         {/* Navigate */}
+        <button className='bg-white  lighter'>a</button>
 
         <div class="menu-btn btn-center" onClick={(e)=>{e.currentTarget.classList.toggle('close');stickerRef.current?.classList.toggle('sticker-open');setClosable(!closable);}}>
           <span/>

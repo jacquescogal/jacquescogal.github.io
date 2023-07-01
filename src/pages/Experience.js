@@ -47,7 +47,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Id: "J.P. Morgan",
       Role: "Software Engineer Intern",
       Date: "Jun 2023 - Aug 2023",
-      Description: "Upcoming",
+      Description: "Present employment",
       imageURL: require('../images/jpm_logo.png'),
       logos: []
     }
@@ -66,7 +66,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Id: "Nanyang Technological University",
       Role: "Business and Computing Double Degree Undergraduate",
       Date: "Aug 2020 - Present (Expected Graduation: May 2024)",
-      Description: "Complementing disciplines that help pave the way for my fintech passions.",
+      Description: "Complementing disciplines towards fintech excellence.",
       imageURL: require('../images/ntu_logo.jpg'),
       logos: [{ Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "Java", imageURL: require("../images/java_logo.png") }, { Id: "C++", imageURL: require("../images/cpp_logo.png") }, { Id: "React", imageURL: require("../images/react_logo.png") }, { Id: "R", imageURL: require("../images/r_logo.png") }, { Id: "MySQL", imageURL: require("../images/mysql_logo.png") }, { Id: "mongoDB", imageURL: require("../images/mongo_logo.png") }]
     }
@@ -88,6 +88,14 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Description: "Developed and demonstrated comprehensive methods and supporting systems to address client's bottleneck in query processing.",
       imageURL: require('../images/cfg_team_logo.jpg'),
       logos: [{ Id: "React", imageURL: require("../images/react_logo.png") }, { Id: "Node JS", imageURL: require("../images/njs_logo.png") }, { Id: "Heroku", imageURL: require("../images/Heroku_logo.png") }]
+    },
+    {
+      Id: "J.P. Morgan Global Hackathon - Singapore 2023 - Champions",
+      Role: "Team lead",
+      Date: "Jun 2023",
+      Description: "Developed innovative POC for internal users.",
+      imageURL: require('../images/gh_logo.jpg'),
+      logos: [{ Id: "React", imageURL: require("../images/react_logo.png") }, { Id: "Node JS", imageURL: require("../images/njs_logo.png") }, { Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "AWS", imageURL: require("../images/aws_logo.png") }]
     }
   ]
 
@@ -337,13 +345,13 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
 
         {/* First line */}
         <p className='title-comp flex-none px-8 pt-4 text-left section-block'>
-          <span className='text-green-300 text-4xl  '>2.</span>
+          <span className='section-text text-4xl  '>2.</span>
           <MultilineTGS toGenerateMap={["Experience", " (Traverse by dragging/click drag)"]} classNameMap={["number-text", "flair-text"]} observable={experienceReveal} />
         </p>
         <div className='button-group'>
-          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "school") ? " bg-green-300 button-active no-click  " : (disableChange) ? " bg-gray-500" : " bg-teal-100") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("school");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(schoolExperience); }}>School</button>
-          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "work") ? " bg-green-300 button-active no-click  " : (disableChange) ? " bg-gray-500" : " bg-teal-100") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("work");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(workExperience); }}>Work</button>
-          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "notables") ? " bg-green-300 button-active no-click " : (disableChange) ? " bg-gray-500" : " bg-teal-100") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("notables");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(notableAchievements); }}>Notables</button>
+          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "school") ? " button-active no-click  " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("school");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(schoolExperience); }}>School</button>
+          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "work") ? "  button-active no-click  " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("work");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(workExperience); }}>Work</button>
+          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "notables") ? " button-active no-click " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("notables");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(notableAchievements); }}>Notables</button>
         </div>
         <div className='image-popup' onClick={()=>{experienceImageHandler({})}}>
           <div className='ip-dark'/>
@@ -370,7 +378,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
                 <p className='drag-date'>{exp.Date}</p>
                 <img className='circle absolute bg-white z-50' src={exp.imageURL} onClick={()=>{experienceImageHandler({imageURL:exp.imageURL})}} />
                 <div className='square'>
-                  <p className='drag-text-body'><span className='underline text-teal-100'>{exp.Role}</span><br />{exp.Description}</p>
+                  <p className='drag-text-body'><span className='underline drag-text-title'>{exp.Role}</span><br />{exp.Description}</p>
 
                   {/* pill */}
                   <div className='drag-pill-group'>

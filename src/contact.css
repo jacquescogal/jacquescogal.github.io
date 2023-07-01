@@ -10,6 +10,11 @@
     border-radius: 8px;
   }
 
+  .light .form{
+    background: rgba(131, 167, 239, 0.5);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  }
+
   input[type="text"],
   input[type="email"],
   textarea,
@@ -27,6 +32,12 @@
     box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
     margin-bottom: 30px;
   }
+
+  .light .textbox-color,
+  .light textarea,
+  .light select{
+    /* background-color: rgb(16 185 129); */
+  }
   
   
   label {
@@ -34,6 +45,9 @@
     margin-bottom: 8px;
     text-align: left;
     color: rgb(134 239 172);
+  }
+  .light label{
+    color: black;
   }
   
   label.light {

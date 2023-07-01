@@ -28,16 +28,26 @@ const Homepage = () => {
   const [experienceFade,setExperienceFade]=useState(false);
   const [projectFade,setProjectFade]=useState(false);
   const [contactFade,setContactFade]=useState(false);
+  const lightMode=document.querySelector(".light-mode");
+  const [light,setLight]=useState(false);
+
+  const handleLight=()=>{
+    lightMode.classList.toggle('light')
+    setLight(!light)
+  }
   return (
-    <>
+    <div className="light-mode">
     
-    <div className='fixed w-full h-full bg-slate-950 -z-50'/>
+    {/* <button onClick={()=>{handleLight()}} className='fixed h-40 w-40 top-0 bg-white z-50'>HELLO</button> */}
     {(logoLoaded)?
     <>
+    <div className='fixed w-full h-full background-parent -z-50'/>
     <Header introRef={introRef} aboutRef={aboutRef} experienceRef={experienceRef} projectRef={projectRef} 
     contactRef={contactRef} setHeaderLoaded={setHeaderLoaded} setExperienceReveal={setExperienceReveal} 
     setProjectReveal={setProjectReveal} setContactReveal={setContactReveal} 
-    setExperienceFade={setExperienceFade} setProfileFade={setProfileFade} setContactFade={setContactFade} setProjectFade={setProjectFade}/>
+    setExperienceFade={setExperienceFade} setProfileFade={setProfileFade} setContactFade={setContactFade} setProjectFade={setProjectFade}
+    light={light} handleLight={handleLight}
+    />
     {(headerLoaded)?
     <>
     {/* <SideLinks/> */}
@@ -48,7 +58,7 @@ const Homepage = () => {
     </>
     :
     <LogoLoad setLogoLoaded={setLogoLoaded}/>}
-</>
+</div>
   )
 }
 

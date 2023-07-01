@@ -1,0 +1,132 @@
+.header-underline{
+    position: absolute;
+    /* background-color: rgb(134 239 172); */
+    height: 1.5px;
+    width: 0%;
+    background-color: rgb(187 247 208);
+    transition: all 0.5s ease-in-out;
+}
+
+.header-underline-back{
+    position: absolute;
+    /* background-color: rgb(134 239 172); */
+    height: 1.5px;
+    width: 0%;
+    background-color: white;
+    z-index: -10;
+    transition: all 0.5s ease-in-out;
+}
+
+.header-holder{
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    width: fit-content;
+}
+
+
+.header-holder:hover .header-underline-back{
+    width: 100%;
+}
+
+/* .header-holder:hover .header-text{
+    color: rgb(187 247 208);
+} */
+
+.header-holder.active .header-underline-back{
+    width: 100%;
+}
+
+.header-holder.active .header-underline{
+    width: 100%;
+    background-color: rgb(134 239 172);
+}
+
+.header-holder .header-text{
+    color:white
+}
+
+.header-holder.active .header-text{
+    color: rgb(134 239 172);
+}
+
+.header-background{
+    background-color: rgb(2 6 23/0.9);
+}
+
+.light .header-background{
+    background-color: rgb(208 234 248/0.9);
+}
+
+.header-id-color{
+    color: rgb(134 239 172);
+}
+
+.light .header-id-color{
+    color: rgb(8, 165, 66);
+}
+
+
+.light .header-holder .header-text{
+    color:black
+}
+
+.light .header-holder.active .header-text{
+    color: rgb(8, 165, 66);
+}
+
+.light .header-underline-back{
+    background-color: black;
+}
+
+.menu-btn {
+    position: absolute;
+    background: rgba(131, 167, 239, 0.12);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    right: 10vw;
+    top: 12px;
+	width: 25px;
+	height: 20px;
+    border-radius: 10px;
+	cursor: pointer; /* Comment this when use on Tablets/Smartphones */
+}
+.menu-btn span {
+	position: absolute;
+	background: white;
+	width: 100%;
+	height: 20%;
+    left: 0px;
+	transition: .4s .4s top, .4s .4s bottom, .3s transform;
+	border-radius: 100px;
+}
+.menu-btn span:nth-of-type(1) {
+	top: 0;
+}
+.menu-btn span:nth-of-type(2) {
+	top: 40%;
+	opacity: 1;
+	transition: opacity .1s .4s;
+}
+.menu-btn span:nth-of-type(3) {
+	bottom: 0;
+}
+
+.sun{
+    fill: white;
+    cursor: pointer;
+    width: 2rem;
+    justify-self: end;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.moon{
+    fill: black;
+    cursor: pointer;
+    width: 1.5rem;
+    justify-self: end;
+    margin-top: auto;
+    margin-bottom: auto;
+}

@@ -168,7 +168,7 @@ useEffect(() => {
     <div ref={introRef} className='section-block profile-block'>
     
     <p className='flex-none px-8 pt-4 text-left title-comp intro-load'>
-    <span className='text-green-300 text-4xl'>1.</span>
+    <span className='section-text text-4xl'>1.</span>
     <MultilineTGS toGenerateMap={["Profile"," (Hello there!)"]} classNameMap={["number-text","flair-text"]}/>
     </p>
     <div className='flex justify-center sectionLoad' onAnimationEnd={()=>{setLoaded(true)}} onTouchStart={()=>{console.log("touched"),setIsTouchScreen(true)}}>
@@ -178,7 +178,7 @@ useEffect(() => {
     <div>    
       <p  className='hidden'>Intro</p>
       
-    <div className='image-text-holder bg-slate-950 px-10'>
+    <div className='image-text-holder px-10'>
       
       
       {/* Image */}
@@ -247,7 +247,7 @@ useEffect(() => {
     </div>
     </div>
     <div className='flex flex-row'>
-    <TGP toGenerate={"//"+imageCaption} className='text-left text-green-200 opacity-100' speed={1} randomChoice={1} quickLeave={false}/> <span className={"transition ease-out duration-200 relative flex h-3 w-3 mx-1 "+((navHover===1)?"opacity-100":"opacity-0")} >
+    <TGP toGenerate={"//"+imageCaption} className='text-left intro-text-green-dark-200 opacity-100' speed={1} randomChoice={1} quickLeave={false}/> <span className={"transition ease-out duration-200 relative flex h-3 w-3 mx-1 "+((navHover===1)?"opacity-100":"opacity-0")} >
   <span className="animate-ping absolute inline-flex inset-y-1/2 h-full w-full rounded-full bg-green-300 opacity-75"></span>
   <span className="relative inline-flex inset-y-1/2 rounded-full h-3 w-3 bg-green-400"></span>
 </span>
@@ -259,20 +259,12 @@ useEffect(() => {
       
       {/* Text */}
       <div  className="px-10 py-10 w-100 flex-none">
-        <TGP toGenerate="Hello there, my name is" className={"text-left text-green-200 text-xl "} speed={1}/>
-        <TGP toGenerate={"Jacques Cogal"} className={"text-left text-white text-8xl"}/>
-        <TGP toGenerate={"|Aspiring Full-stack Developer|"} className={"text-left text-green-100 text-4xl"} speed={1}/>
-        <TGP toGenerate={"I enjoy building things from ones and zeros. Thanks for stopping by!"} className={"text-left text-green-200 text-xl mt-5"} speed={1}/>
+        <TGP toGenerate="Hello there, my name is" className={"text-left intro-text-green-dark-200 text-xl "} speed={1}/>
+        <TGP toGenerate={"Jacques Cogal"} className={"text-left intro-text-white-dark text-8xl"}/>
+        <TGP toGenerate={"|Aspiring Full-stack Developer|"} className={"text-left intro-text-green-dark-100 text-4xl"} speed={1}/>
+        <TGP toGenerate={"I enjoy building things from ones and zeros. Thanks for stopping by!"} className={"text-left intro-text-green-dark-200 text-xl mt-5"} speed={1}/>
         
-        <TGP toGenerate={"Navigate: "+((navHover===1)?"Hover image for my About Me":((navHover===2)?"Scroll or use nav bar for my Experience, Projects and Etc.":""))} className={"text-left text-green-200 text-xl"} quickLeave={false} speed={1} randomChoice={1}/>
         <div className='flex flex-row content-center items-center'>
-          <div className={'group flex flex-row content-center items-center cursor-default '} onMouseEnter={()=>{setNavHover(1)}} onMouseLeave={()=>{setNavHover(0)}} >
-          <MouseSVG className={'h-20 w-20 self-end '+((navHover===1)?" fill-green-300 "+introStyle['mouse-side']:" fill-white")}/>
-          </div>
-        <TGP toGenerate={"|"} className={"text-left text-green-200 text-8xl"} />
-        <div className='flex flex-row content-center items-center cursor-default' onMouseEnter={()=>{setNavHover(2)}} onMouseLeave={()=>{setNavHover(0)}}>
-          <ScrollMouse className={'h-20 w-20 self-end '+((navHover===2)?introStyle['mouse-scroll']+" fill-green-300 ":" fill-white "+introStyle['mouse-scroll-regular'])}/>
-        </div>
         <button className='skip-button' onClick={()=>{getResume()}}>Resume</button>
         <button className='skip-button' onClick={()=>window.scrollTo({top: contactRef.current.offsetTop, behavior: 'smooth'})}>Contact Me</button>
         </div>

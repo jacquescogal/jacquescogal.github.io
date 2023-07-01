@@ -48,39 +48,7 @@
 } */
 
 /* Menu Icon */
-.menu-btn {
-    position: absolute;
-    background: rgba(131, 167, 239, 0.12);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
-    right: 10vw;
-    top: 12px;
-	width: 25px;
-	height: 20px;
-    border-radius: 10px;
-	cursor: pointer; /* Comment this when use on Tablets/Smartphones */
-}
-.menu-btn span {
-	position: absolute;
-	background: white;
-	width: 100%;
-	height: 20%;
-    left: 0px;
-	transition: .4s .4s top, .4s .4s bottom, .3s transform;
-	border-radius: 100px;
-}
-.menu-btn span:nth-of-type(1) {
-	top: 0;
-}
-.menu-btn span:nth-of-type(2) {
-	top: 40%;
-	opacity: 1;
-	transition: opacity .1s .4s;
-}
-.menu-btn span:nth-of-type(3) {
-	bottom: 0;
-}
+
 
 /* Animation */
 .close span {
@@ -205,3 +173,27 @@
     }
   }
 
+
+  .intro-text-green-dark-200{
+    color: rgb(187 247 208);
+  }
+
+  .light .intro-text-green-dark-200{
+    color: black;
+  }
+
+  .intro-text-green-dark-100{
+    color: rgb(220 252 231);
+  }
+
+  .light .intro-text-green-dark-100{
+    color: black;
+  }
+
+  .intro-text-white-dark{
+    color: white;
+  }
+
+  .light .intro-text-white-dark{
+    color: black;
+  }
