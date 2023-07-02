@@ -37,7 +37,7 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
     <MultilineTGS toGenerateMap={["Projects"," (Under construction. Will be done soon!)"]} classNameMap={["number-text","flair-text"]}/>
     </p>
     <Proj_logo className={" h-40  md:h-80 proj-logo-color "}/>
-    <TGP toGenerate={"Constructing...."} className={"proj-logo-color text-left mx-auto pt-4 w-80 "} speed={1} randomChoice={20} initialText='Constructing.' loop={true} />
+    <TGP toGenerate={"Constructing...."} className={"proj-logo-color text-left mx-auto pt-4 w-80 "}/>
     </div>
     </>
   )
