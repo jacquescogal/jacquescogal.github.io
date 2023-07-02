@@ -171,7 +171,7 @@ useEffect(() => {
     <span className='section-text text-4xl'>1.</span>
     <MultilineTGS toGenerateMap={["Profile"," (Hello there!)"]} classNameMap={["number-text","flair-text"]}/>
     </p>
-    <div className='flex justify-center sectionLoad' onAnimationEnd={()=>{setLoaded(true)}} onTouchStart={()=>{console.log("touched"),setIsTouchScreen(true)}}>
+    <div className='flex justify-center sectionLoad' onAnimationEnd={()=>{setLoaded(true)}} onTouchStart={()=>{console.log("touched");setIsTouchScreen(true);imageRef.current.style.transform = `perspective(1000px) rotateX(${0}deg) rotateY(${0}deg)`}}>
     {/* <div className='ping-holder'>
     <div className='ping'></div>
     </div> */}
@@ -263,7 +263,6 @@ useEffect(() => {
         <TGP toGenerate={"Jacques Cogal"} className={"text-left intro-text-white-dark text-8xl"}/>
         <TGP toGenerate={"|Aspiring Full-stack Developer|"} className={"text-left intro-text-green-dark-100 text-4xl"} speed={1}/>
         <TGP toGenerate={"I enjoy building things from ones and zeros. Thanks for stopping by!"} className={"text-left intro-text-green-dark-200 text-xl mt-5"} speed={1}/>
-        
         <div className='flex flex-row content-center items-center'>
         <button className='skip-button' onClick={()=>{getResume()}}>Resume</button>
         <button className='skip-button' onClick={()=>window.scrollTo({top: contactRef.current.offsetTop, behavior: 'smooth'})}>Contact Me</button>
