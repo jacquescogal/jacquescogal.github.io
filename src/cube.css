@@ -10,7 +10,7 @@
     transform: scale(0);
   }
   100%{
-    transform: scale(0.5);
+    transform: scale(0.25);
   }
  }
  @keyframes disappear {
@@ -18,27 +18,21 @@
     opacity:1;
     top: 50%;
     left: 50%;
-    transform: scale(0.5);
-    scale:0.5;
+    transform: scale(0.25);
     translate: -100px -50px;
   }
   50%{
     opacity: 1;
     top: 50%;
     left: 50%;
-    transform: scale(0.5);
-    scale:0.5;
+    transform: scale(0.25);
     translate: -100px -50px;
-  }
-  75%{
-    scale: 0.5;
   }
   100%{
     opacity: 1;
     top: 1rem;
     left: 10vw;
     transform: scale(0.1);
-    scale:1;
     translate: 0px 0px;
   }
  }
@@ -52,8 +46,8 @@
    perspective: 500px;
    translate: -100px -50px;
    transform-origin: top left;
-   transform: scale(0.5);
-   scale:0.5;
+   transform: scale(0.25);
+   /* scale:0.5; */
   animation: appear 1s ease-in-out 0s 1;
  }
 
@@ -66,7 +60,6 @@
    perspective: 500px;
    translate: 0px 0px;
    transform: scale(0.1);
-   scale:1;
    transform-origin: top left;
   animation: disappear 1.5s ease-in-out 0s 1;
   opacity: 1;
@@ -179,114 +172,129 @@
 
  
  @media screen and (min-width: 0px) and (max-width: 640px) {
-  @keyframes disappear {
+  @keyframes appear {
+    0%{
+      transform: scale(0);
+    }
+    100%{
+      transform: scale(0.1);
+    }
+   }
+   @keyframes disappear {
     0%{
       opacity:1;
       top: 50%;
       left: 50%;
-      transform: scale(0.5);
-      scale:0.2;
+      transform: scale(0.1);
       translate: -100px -50px;
     }
     50%{
       opacity: 1;
       top: 50%;
       left: 50%;
-      transform: scale(0.5);
-      scale:0.2;
+      transform: scale(0.1);
       translate: -100px -50px;
-    }
-    75%{
-      scale: 0.2;
     }
     100%{
       opacity: 1;
       top: 1rem;
       left: 10vw;
       transform: scale(0.1);
-      scale:1;
       translate: 0px 0px;
     }
    }
-  .container {
-    scale: 0.2;
-  }
+  
+   .container {
+     transform: scale(0.1);
+   }
+  
+   .container-second {
+     transform: scale(0.1);
+   }
 }
 
 @media screen and (min-width: 641px) and (max-width: 768px) {
-  @keyframes disappear {
+  @keyframes appear {
+    0%{
+      transform: scale(0);
+    }
+    100%{
+      transform: scale(0.15);
+    }
+   }
+   @keyframes disappear {
     0%{
       opacity:1;
       top: 50%;
       left: 50%;
-      transform: scale(0.5);
-      scale:0.3;
+      transform: scale(0.15);
       translate: -100px -50px;
     }
     50%{
       opacity: 1;
       top: 50%;
       left: 50%;
-      transform: scale(0.5);
-      scale:0.3;
+      transform: scale(0.15);
       translate: -100px -50px;
-    }
-    75%{
-      scale: 0.3;
     }
     100%{
       opacity: 1;
       top: 1rem;
       left: 10vw;
       transform: scale(0.1);
-      scale:1;
       translate: 0px 0px;
     }
    }
-  .container {
-    scale: 0.3;
-  }
+  
+   .container {
+     transform: scale(0.15);
+   }
+  
+   .container-second {
+     transform: scale(0.1);
+   }
 }
 
 @media screen and (min-width: 769px) and (max-width: 1024px) {
-  @keyframes disappear {
+  @keyframes appear {
+    0%{
+      transform: scale(0);
+    }
+    100%{
+      transform: scale(0.2);
+    }
+   }
+   @keyframes disappear {
     0%{
       opacity:1;
       top: 50%;
       left: 50%;
-      transform: scale(0.5);
-      scale:0.4;
+      transform: scale(0.2);
       translate: -100px -50px;
     }
     50%{
       opacity: 1;
       top: 50%;
       left: 50%;
-      transform: scale(0.5);
-      scale:0.4;
+      transform: scale(0.2);
       translate: -100px -50px;
-    }
-    75%{
-      scale: 0.4;
     }
     100%{
       opacity: 1;
       top: 1rem;
       left: 10vw;
       transform: scale(0.1);
-      scale:1;
       translate: 0px 0px;
     }
    }
-  .container {
-    scale: 0.4;
-  }
-}
-
-@media screen and (min-width: 1025px) and  (max-width: 1280px) {
-  .container {
-    scale: 0.5;
-  }
+  
+   .container {
+     transform: scale(0.2);
+   }
+  
+   .container-second {
+     transform: scale(0.1);
+   }
 }
 
 
