@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.css": "/static/css/main.9e36ec06.css",
-    "main.js": "/static/js/main.c40d1417.js",
+    "main.css": "/static/css/main.24940c48.css",
+    "main.js": "/static/js/main.6b153696.js",
     "static/js/787.9817ca73.chunk.js": "/static/js/787.9817ca73.chunk.js",
     "static/media/Jacques_bg.png": "/static/media/Jacques_bg.6fe990bff82c7ca7da1c.png",
     "static/media/Jacques_only_alt.png": "/static/media/Jacques_only_alt.8a6ee2781eaddda7a7f1.png",
     "static/media/pill_logo.png": "/static/media/pill_logo.f8ff8ce073d792dc44cb.png",
-    "static/media/resume_Jacques.pdf": "/static/media/resume_Jacques.6e03a9223503c76b8421.pdf",
+    "static/media/resume_Jacques.pdf": "/static/media/resume_Jacques.1a6b56294d06ef81030d.pdf",
     "static/media/cfg_team_logo.jpg": "/static/media/cfg_team_logo.3f8aa1f1b77a4899ac90.jpg",
     "static/media/gh_logo.jpg": "/static/media/gh_logo.8acd76dad2460dbb6f1a.jpg",
     "static/media/python_logo.png": "/static/media/python_logo.dea924d737bb84eb9ce3.png",
@@ -19,12 +19,12 @@
     "static/media/ntu_logo.jpg": "/static/media/ntu_logo.4d1775d1794670906988.jpg",
     "static/media/logo.svg": "/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/index.html",
-    "main.9e36ec06.css.map": "/static/css/main.9e36ec06.css.map",
-    "main.c40d1417.js.map": "/static/js/main.c40d1417.js.map",
+    "main.24940c48.css.map": "/static/css/main.24940c48.css.map",
+    "main.6b153696.js.map": "/static/js/main.6b153696.js.map",
     "787.9817ca73.chunk.js.map": "/static/js/787.9817ca73.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.9e36ec06.css",
-    "static/js/main.c40d1417.js"
+    "static/css/main.24940c48.css",
+    "static/js/main.6b153696.js"
   ]
 }
