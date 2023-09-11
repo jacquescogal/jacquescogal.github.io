@@ -1,6 +1,6 @@
 import React, { useEffect, useRef,useState } from 'react'
 import TGS from '../components/TGS';
-import '../contact.css'
+import '../contact.scss';
 import MultilineTGS from '../components/MultilineTGS';
 
 const Contact = ({setContactRef,contactReveal,contactFade}) => {

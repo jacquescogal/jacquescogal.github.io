@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, createRef } from 'react'
 import TGP from '../components/TGP';
 import useScrollSnap from "react-use-scroll-snap";
 
-import '../drag.css';
+import '../drag.scss';
 import TGS from '../components/TGS';
 import MultilineTGS from '../components/MultilineTGS';
 

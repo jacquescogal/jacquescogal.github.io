@@ -75,7 +75,7 @@
 }
 
 .dialogue{
-    color: rgb(0 0 0);
+    color: RGB(0 0 0);
     font-size: 2rem; /* 36px */
     line-height: 2rem; /* 40px */
     font-weight: bold;
