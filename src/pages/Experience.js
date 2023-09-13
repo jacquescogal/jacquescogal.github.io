@@ -11,7 +11,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
   const [, updateState] = React.useState();
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
-  const [activeGroup, setActiveGroup] = useState("school")
+  const [activeGroup, setActiveGroup] = useState("notables")
 
   const experienceRef = useRef(null);
   useEffect(() => {
@@ -47,7 +47,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Id: "J.P. Morgan",
       Role: "Software Engineer Intern",
       Date: "Jun 2023 - Aug 2023",
-      Description: "Present employment",
+      Description: "Financial Crimes Team",
       imageURL: require('../images/jpm_logo.png'),
       logos: []
     }
@@ -96,7 +96,16 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Description: "Developed innovative POC for internal users.",
       imageURL: require('../images/gh_logo.jpg'),
       logos: [{ Id: "React", imageURL: require("../images/react_logo.png") }, { Id: "Node JS", imageURL: require("../images/njs_logo.png") }, { Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "AWS", imageURL: require("../images/aws_logo.png") }]
+    },
+    {
+      Id: "GIC Code To impact - Champions",
+      Role: "Devops, Full-stack and AI engineer",
+      Date: "Sep 2023",
+      Description: "Built analytics application with generative AI capabilities.",
+      imageURL: require('../images/gic_logo.png'),
+      logos: [{ Id: "React", imageURL: require("../images/react_logo.png") }, { Id: "Node JS", imageURL: require("../images/njs_logo.png") }, { Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "AWS", imageURL: require("../images/aws_logo.png") }]
     }
+    
   ]
 
   const [loadThis, setLoadThis] = useState(workExperience)
@@ -299,7 +308,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
 
   useEffect(() => {
     if (experienceReveal) {
-      setActiveGroup("school"); setActiveNode(0); setLoadThis(schoolExperience);
+      setActiveGroup("notables"); setActiveNode(0); setLoadThis(notableAchievements);
     }
   }, [experienceReveal])
 

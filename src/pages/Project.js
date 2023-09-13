@@ -5,13 +5,14 @@ import TGS from '../components/TGS';
 import TGP from '../components/TGP';
 import '../project.scss'
 import styles from './Project.module.scss';
+import {BiLinkExternal} from 'react-icons/bi';
 
 const Project = ({setProjectRef,projectReveal,projectFade}) => {
     const projectRef=useRef(null);
     const [projectCards,setProjectCards]=useState([
       {title:"FlashcardAi",
     link:"https://www.flashcardai.app",
-    description:"A flashcard app that uses AI to help you learn better.",
+    description:"POC flashcard app that uses AI to grade and provide feedback to user. Leveraged AWS ecosystem.",
   tech:["React","Python","Flask","AWS"]},
   {title:"Likewise",
     link:"https://www.github.com/jacquescogal/likewise-app-react-firebase",
@@ -55,7 +56,8 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
       {projectCards.map((card)=>(
         <div className={styles.Card}>
           <a href={card.link} target="_blank" rel="noreferrer">
-          <span className={styles.CardTitle}>{card.title}</span>
+
+          <span className={styles.CardTitle}>{card.title}   <BiLinkExternal size={15}/></span>
           </a>
           <span className={styles.CardDescription}>{card.description}</span>
         </div>

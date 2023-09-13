@@ -124,10 +124,10 @@ const Header = ({ introRef, aboutRef, experienceRef, projectRef, contactRef, set
                 <div className='header-underline-back'></div>
               </p>
             )}
-            {(light) ? <Moon_logo className={"moon"} onClick={handleLight} /> :
+            {/* {(light) ? <Moon_logo className={"moon"} onClick={handleLight} /> :
               <Sun_logo className={"sun"} onClick={handleLight} />
 
-            }
+            } */}
           </div>
         </div>
       </div>
@@ -143,10 +143,10 @@ const Header = ({ introRef, aboutRef, experienceRef, projectRef, contactRef, set
           <div className='col-span-1 text-white pt-4 invisible'>Placeholder</div>
 
           {/* Navigate */}
-          {(light) ? <Moon_logo className={"moon-small"} onClick={handleLight} /> :
+          {/* {(light) ? <Moon_logo className={"moon-small"} onClick={handleLight} /> :
             <Sun_logo className={"sun-small"} onClick={handleLight} />
 
-          }
+          } */}
 
           <div class="menu-btn btn-center" onClick={(e) => { e.currentTarget.classList.toggle('close'); stickerRef.current?.classList.toggle('sticker-open'); setClosable(!closable); }}>
             <span />

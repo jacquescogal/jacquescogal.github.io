@@ -27,10 +27,12 @@ const Intro = ({setIntroRef,contactRef,profileFade}) => {
   const [inImage,setInImage]=useState(false);
   const [loaded,setLoaded]=useState(false);
   const [transitChange,setTransitChange]=useState(false);
-  const [imageCaption,setImageCaption]=useState("Try hovering over me")
+  const [imageCaption,setImageCaption]=useState("Hi, I'm Jacques!")
   const [navHover,setNavHover]=useState(0);
   const [isTouchScreen,setIsTouchScreen]=useState(false);
   const [touchOpen,setTouchOpen]=useState(false);
+
+  const [textType,settextType]=useState(0);
 
   useEffect(()=>{
     setIntroRef(introRef);
@@ -200,7 +202,7 @@ useEffect(() => {
     {/* Click icons */}
 
     {/* Journey button */}
-    <div  className={'image-buttons-sizer transition ease-in-out duration-500 absolute rounded-full bg-green-300 '+((!isTouchScreen || !touchOpen)?' scale-0 group-hover:scale-100  ':"")+((transitChange)?' -z-10':introStyle['img-hover']+' -z-30 ')}
+    {/* <div  className={'image-buttons-sizer transition ease-in-out duration-500 absolute rounded-full bg-green-300 '+((!isTouchScreen || !touchOpen)?' scale-0 group-hover:scale-100  ':"")+((transitChange)?' -z-10':introStyle['img-hover']+' -z-30 ')}
     style={
       (inImage || (isTouchScreen && touchOpen))?{top:`${0*Math.floor(imageRef.current?.clientHeight/20)+((isTouchScreen)?0:Math.floor(((imageRef.current?.offsetTop+Math.floor(imageRef.current?.clientHeight/2))-mousePos.y)/8))}px`, 
     left:`${9*Math.floor(imageRef.current?.clientWidth/20)+((isTouchScreen)?0:Math.floor(((imageRef.current?.offsetLeft+Math.floor(imageRef.current?.clientWidth/2))-mousePos.x)/8))}px`}:
@@ -211,11 +213,11 @@ useEffect(() => {
     >
     <img  className={"object-contain "}  src={bookImage} onMouseEnter={()=>setImageCaption("Journey so far")}
     onMouseLeave={()=>setImageCaption("Try hovering over me")} onTouchStart={()=>setImageCaption("Journey so far")}/>
-    </div>
+    </div> */}
 
 
     {/* Goal button */}
-    <div  className={'image-buttons-sizer transition ease-in-out duration-500 absolute rounded-full bg-blue-300 '+((!isTouchScreen || !touchOpen)?' scale-0 group-hover:scale-100  ':"")+((transitChange)?' -z-10':introStyle['img-hover']+' -z-30 ')}
+    {/* <div  className={'image-buttons-sizer transition ease-in-out duration-500 absolute rounded-full bg-blue-300 '+((!isTouchScreen || !touchOpen)?' scale-0 group-hover:scale-100  ':"")+((transitChange)?' -z-10':introStyle['img-hover']+' -z-30 ')}
     style={
       (inImage || (isTouchScreen && touchOpen))?{top:`${2*Math.floor(imageRef.current?.clientHeight/20)+((isTouchScreen)?0:Math.floor(((imageRef.current?.offsetTop+Math.floor(imageRef.current?.clientHeight/2)))-mousePos.y)/8)}px`, 
     left:`${14*Math.floor(imageRef.current?.clientWidth/20)+((isTouchScreen)?0:Math.floor(((imageRef.current?.offsetLeft+Math.floor(imageRef.current?.clientWidth/2))-mousePos.x)/8))}px`}:
@@ -223,17 +225,17 @@ useEffect(() => {
     >
     <img  className={"object-contain"}src={goalImage} onMouseEnter={()=>setImageCaption("Ambitions")}
     onMouseLeave={()=>setImageCaption("Try hovering over me")} onTouchStart={()=>setImageCaption("Ambitions")}/>
-    </div>
+    </div> */}
     
     {/* Hobby button */}
-    <div  className={'image-buttons-sizer transition ease-in-out duration-500 absolute rounded-full bg-yellow-300 '+((!isTouchScreen || !touchOpen)?' scale-0 group-hover:scale-100  ':"")+((transitChange)?' -z-10':introStyle['img-hover']+' -z-30 ')}
+    {/* <div  className={'image-buttons-sizer transition ease-in-out duration-500 absolute rounded-full bg-yellow-300 '+((!isTouchScreen || !touchOpen)?' scale-0 group-hover:scale-100  ':"")+((transitChange)?' -z-10':introStyle['img-hover']+' -z-30 ')}
     style={(inImage || (isTouchScreen && touchOpen))?{top:`${7*Math.floor(imageRef.current?.clientHeight/20)+((isTouchScreen)?0:Math.floor(((imageRef.current?.offsetTop+Math.floor(imageRef.current?.clientHeight/2))-mousePos.y)/8))}px`, 
     left:`${15*Math.floor(imageRef.current?.clientWidth/20)+((isTouchScreen)?0:Math.floor(((imageRef.current?.offsetLeft+Math.floor(imageRef.current?.clientWidth/2))-mousePos.x)/8))}px`}:
     {top:`${2*Math.floor(imageRef.current?.clientHeight/5)}px`,left:`${2*Math.floor(imageRef.current?.clientWidth/5)}px`}}
     >
     <img  className={"object-contain"}src={playImage} onMouseEnter={()=>setImageCaption("What I enjoy outside of code")}
     onMouseLeave={()=>setImageCaption("Try hovering over me")} onTouchStart={()=>setImageCaption("What I enjoy outside of code")}/>
-    </div>
+    </div> */}
     {/* Spawn greetings */}
   {
       greetings.map((mi)=>
@@ -259,6 +261,10 @@ useEffect(() => {
       
       {/* Text */}
       <div  className="px-10 py-10 w-100 flex-none">
+        <div className={introStyle.IntroHolder}>
+        
+        {textType===0 && 
+        <>
         <TGP toGenerate="Hello there, my name is" className={"text-left intro-text-green-dark-200 text-xl "} speed={1}/>
         <TGP toGenerate={"Jacques Cogal"} className={"text-left intro-text-white-dark text-8xl"}/>
         <TGP toGenerate={"|Aspiring Full-stack Developer|"} className={"text-left intro-text-green-dark-100 text-4xl"} speed={1}/>
@@ -267,12 +273,10 @@ useEffect(() => {
         <button className='skip-button' onClick={()=>{getResume()}}>Resume</button>
         <button className='skip-button' onClick={()=>window.scrollTo({top: contactRef.current.offsetTop, behavior: 'smooth'})}>Contact Me</button>
         </div>
+        </>}
+        </div>
 
       </div>
-
-      
-
-
 
     </div>
     </div>

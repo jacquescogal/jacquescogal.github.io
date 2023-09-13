@@ -41,15 +41,14 @@ const Contact = ({setContactRef,contactReveal,contactFade}) => {
     <form action="https://formsubmit.co/a1e93437966df7514f8b43e5b06685c5" method="POST">
     {/* <form onSubmit={(e)=>{console.log(e.currentTarget)}}> */}
     <label htmlFor="email">E-mail:</label>
-     <input className='textbox-color' onChange={(e)=>{setName(e.currentTarget.value)}} type="email" name="email" placeholder='yourEmail@.mail.com' required/>
+     <input className='textbox-color' onChange={(e)=>{setName(e.currentTarget.value)}} type="email" name="email" placeholder='yourEmail@mail.com' required/>
     <label htmlFor="name">Name:</label>
      <input className='textbox-color' onChange={(e)=>{setName(e.currentTarget.value)}} type="text" name="name" placeholder='Sam' required/>
      <label  htmlFor="text">Subject:</label>
-     <input className='textbox-color' onChange={(e)=>{setSubject(e.currentTarget.value)}} type="text" name="subject" placeholder='Extended warranty' required/>
+     <input className='textbox-color' onChange={(e)=>{setSubject(e.currentTarget.value)}} type="text" name="subject" placeholder='Work Opportunity' required/>
      <label htmlFor="message">Message:</label>
-     <textarea onChange={(e)=>{setMessage(e.currentTarget.value)}} id="message" name="message" rows="4" cols="50" placeholder="Hello, I'd like to talk to you about your car's extended warranty...">
+     <textarea onChange={(e)=>{setMessage(e.currentTarget.value)}} id="message" name="message" rows="4" cols="50" placeholder="Hello...">
 </textarea>
-<button type="submit" className='contact-submit-button'>Send Through API</button>
      </form>
      <button type="submit" className='contact-submit-button' onClick={()=>{window.open('mailto:jacques002@e.ntu.edu.sg?subject='+encodeURIComponent(subject)+'&body=Hi%20Jacques%2C%0A%0A'+encodeURIComponent(message)+'%0A%0ARegards%2C%0A'+encodeURIComponent(name))}}>Send Direct E-mail</button>
      </div>
