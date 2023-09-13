@@ -1,0 +1,77 @@
+  .form {
+    
+    max-width: 300px;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background: RGB(131, 167, 239, 0.12);
+    box-shadow: 0 4px 30px RGB(0, 0, 0, 0.1);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    border-radius: 8px;
+  }
+
+  .light .form{
+    background: RGB(131, 167, 239, 0.5);
+    box-shadow: 0 4px 30px RGB(0, 0, 0, 0.2);
+  }
+
+  input[type="text"],
+  input[type="email"],
+  textarea,
+  select {
+    background: RGB(255,255,255,0.1);
+    border: none;
+    font-size: 1rem;
+    height: auto;
+    margin: 0;
+    outline: 0;
+    padding: 15px;
+    width: 100%;
+    background-color: #e8eeef;
+    color: black;
+    box-shadow: 0 1px 0 RGB(0,0,0,0.03) inset;
+    margin-bottom: 30px;
+  }
+
+  .light .textbox-color,
+  .light textarea,
+  .light select{
+    /* background-color: RGB(16 185 129); */
+  }
+  
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    text-align: left;
+    color: RGB(134 239 172);
+  }
+  .light label{
+    color: black;
+  }
+  
+  label.light {
+    font-weight: 300;
+    display: inline;
+  }
+
+  .contact-submit-button{
+    width: 100%;
+    font-size: 1rem;
+    padding: 1rem;
+    background-color: RGB(204 251 241);
+    border-radius: 20px;
+    margin-bottom: 5px;
+  }
+
+  .contact-submit-button:hover{
+    background-color: RGB(134 239 172);
+  }
+  
+  @media screen and (min-width: 480px) {
+  
+    .form {
+        min-width: 50vw;
+    }
+  
+  }
