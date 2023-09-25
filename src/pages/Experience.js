@@ -58,7 +58,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Id: "Temasek Polytechnic",
       Role: "Accounting and Finance Diploma Student",
       Date: "Apr 2015 - Apr 2018",
-      Description: "Instills deep understanding of financial systems. Graduated with Diploma plus with merit and a CGPA of 3.93/4.00.",
+      Description: "Diploma plus with merit and a CGPA of 3.93/4.00.",
       imageURL: require('../images/tp_logo.png'),
       logos: [{ Id: "MS Office", imageURL: require("../images/ms_logo.jpg") }]
     },
@@ -66,7 +66,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Id: "Nanyang Technological University",
       Role: "Business and Computing Double Degree Undergraduate",
       Date: "Aug 2020 - Present (Expected Graduation: May 2024)",
-      Description: "Complementing disciplines towards fintech excellence.",
+      Description: "Dean’s List (BUS) AY2022/2023",
       imageURL: require('../images/ntu_logo.jpg'),
       logos: [{ Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "Java", imageURL: require("../images/java_logo.png") }, { Id: "C++", imageURL: require("../images/cpp_logo.png") }, { Id: "React", imageURL: require("../images/react_logo.png") }, { Id: "R", imageURL: require("../images/r_logo.png") }, { Id: "MySQL", imageURL: require("../images/mysql_logo.png") }, { Id: "mongoDB", imageURL: require("../images/mongo_logo.png") }]
     }
@@ -355,12 +355,12 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
         {/* First line */}
         <p className='title-comp flex-none px-8 pt-4 text-left section-block'>
           <span className='section-text text-4xl  '>2.</span>
-          <MultilineTGS toGenerateMap={["Experience", " (Traverse by dragging/click drag)"]} classNameMap={["number-text", "flair-text"]} observable={experienceReveal} />
+          <MultilineTGS toGenerateMap={["Experience", " (Custom carousel: Traverse by dragging/click drag)"]} classNameMap={["number-text", "flair-text"]} observable={experienceReveal} />
         </p>
         <div className='button-group'>
-          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "school") ? " button-active no-click  " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("school");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(schoolExperience); }}>School</button>
+          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "school") ? " button-active no-click  " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("school");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(schoolExperience); }}>Education</button>
           <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "work") ? "  button-active no-click  " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("work");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(workExperience); }}>Work</button>
-          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "notables") ? " button-active no-click " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("notables");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(notableAchievements); }}>Notables</button>
+          <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "notables") ? " button-active no-click " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("notables");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(notableAchievements); }}>Hackathons</button>
         </div>
         <div className='image-popup' onClick={()=>{experienceImageHandler({})}}>
           <div className='ip-dark'/>
