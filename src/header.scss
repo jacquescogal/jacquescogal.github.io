@@ -1,3 +1,4 @@
+@import './styleConstants';
 .header-underline{
     position: absolute;
     /* background-color: RGB(134 239 172); */
@@ -81,16 +82,16 @@
 
 .menu-btn {
     position: absolute;
-    background: rgba(131, 167, 239, 0.12);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
+    // background: rgba(131, 167, 239, 0);
+    // box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    // backdrop-filter: blur(0px);
+    // -webkit-backdrop-filter: blur(0px);
     right: 10vw;
     top: 12px;
 	width: 25px;
 	height: 20px;
     border-radius: 10px;
-	cursor: pointer; /* Comment this when use on Tablets/Smartphones */
+	cursor: pointer;
 }
 .menu-btn span {
 	position: absolute;

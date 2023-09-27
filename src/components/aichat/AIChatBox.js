@@ -41,6 +41,7 @@ const AIChatBox= (props) => {
         chatBoxRef.current?.classList.add(style.ChatBoxFlyDown);
         chatBoxRef.current?.classList.remove(style.ChatBoxFlyUp);
         setTimeout(() => {
+            props.setWriteLast(false);
             props.setChatBoxActive(false);
         }, 500);
     }
@@ -53,8 +54,12 @@ const AIChatBox= (props) => {
     },[props.isActive])
 
     useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "auto" })
+    }, [props.isActive])
+
+    useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-    }, [props.messageLength,props.isActive])
+    },[props.messageLength,props.writeLast])
 
     useEffect(()=>{
         if (props.isThinking===true){
@@ -93,8 +98,11 @@ const AIChatBox= (props) => {
                     </div>
                 </div>
                 <div className={style.ChatHistory}>
-                    {props.chatHistory.map((bubble) => (
-                        <DialogueBubble type={bubble.type} message={bubble.message} links={bubble.links} handleRefStrClick={props.handleRefStrClick} />
+                    {props.chatHistory.map((bubble,index) => (
+                        <>
+                        {(bubble.type==="ai" && index===props.chatHistory.length-1 && props.writeLast===true)?<DialogueBubble setWriteLast={props.setWriteLast} type={"last_ai"} message={bubble.message} links={bubble.links} handleRefStrClick={props.handleRefStrClick} />:
+                        <DialogueBubble type={bubble.type} message={bubble.message} links={bubble.links} handleRefStrClick={props.handleRefStrClick} />}
+                        </>
                     ))}
                     {props.isThinking===true && <DialogueBubble type={"think"} />}
                     <div ref={bottomRef} />

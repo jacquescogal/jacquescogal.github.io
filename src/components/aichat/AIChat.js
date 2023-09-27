@@ -90,7 +90,7 @@ const AIChat = (props) => {
         <AiLogo prepareText={props.prepareText} className={style.AiGoneLogo} onAnimationEnd={()=>{setDialogue("");setShowSendButton(true)}} backgroundColor={"secondary"}/>
         </div>
       </div>}
-      <AIChatBox handleRefStrClick={props.handleRefStrClick} isThinking={props.isThinking} prepareText={props.prepareText} chatContext={props.chatContext} setChatContext={props.setChatContext} setChatBoxActive={props.setChatBoxActive} isActive={props.chatBoxActive} chatHistory={props.chatHistory} chatInputText={props.chatInputText} setChatInputText={props.setChatInputText} handleSubmit={props.handleSubmit} messageLength={props.chatHistory.length}/>
+      <AIChatBox writeLast={props.writeLast} setWriteLast={props.setWriteLast} handleRefStrClick={props.handleRefStrClick} isThinking={props.isThinking} prepareText={props.prepareText} chatContext={props.chatContext} setChatContext={props.setChatContext} setChatBoxActive={props.setChatBoxActive} isActive={props.chatBoxActive} chatHistory={props.chatHistory} chatInputText={props.chatInputText} setChatInputText={props.setChatInputText} handleSubmit={props.handleSubmit} messageLength={props.chatHistory.length}/>
       </form>
     </div>
   )

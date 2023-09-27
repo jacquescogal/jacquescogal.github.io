@@ -106,7 +106,7 @@ const Homepage = (props) => {
     {(headerLoaded)?
     <>
     {/* <SideLinks/> */}
-    <Chat handleRefStrClick={handleRefStrClick} isThinking={props.isThinking} handleSubmit={props.handleSubmit} prepareText={props.prepareText} chatHistory={props.chatHistory} setChatHistory={props.setChatHistory} chatContext={props.chatContext} setChatContext={props.setChatContext} chatBoxActive={props.chatBoxActive} setChatBoxActive={props.setChatBoxActive} chatInputText={props.chatInputText} setChatInputText={props.setChatInputText}/>
+    <Chat writeLast={props.writeLast} setWriteLast={props.setWriteLast} handleRefStrClick={handleRefStrClick} isThinking={props.isThinking} handleSubmit={props.handleSubmit} prepareText={props.prepareText} chatHistory={props.chatHistory} setChatHistory={props.setChatHistory} chatContext={props.chatContext} setChatContext={props.setChatContext} chatBoxActive={props.chatBoxActive} setChatBoxActive={props.setChatBoxActive} chatInputText={props.chatInputText} setChatInputText={props.setChatInputText}/>
     <Intro setChatBoxActive={props.setChatBoxActive} contactRef={contactRef} setIntroRef={setIntroRef} setAboutRef={setAboutRef} profileFade={profileFade}/>
     <Experience setExperienceRef={setExperienceRef} experienceReveal={experienceReveal} experienceFade={experienceFade}/>
     <Project setProjectRef={setProjectRef} projectReveal={projectReveal} projectFade={projectFade}/>

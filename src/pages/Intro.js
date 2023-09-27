@@ -180,7 +180,7 @@ useEffect(() => {
     <div>    
       <p  className='hidden'>Intro</p>
       
-    <div className='image-text-holder px-10'>
+    <div className='image-text-holder sm:px-10'>
       
       
       {/* Image */}
@@ -260,7 +260,7 @@ useEffect(() => {
       
       
       {/* Text */}
-      <div  className="px-10 py-10 w-100 flex-none">
+      <div  className="sm:px-10 py-10 w-100 flex-none">
         <div className={introStyle.IntroHolder}>
         
         {textType===0 && 
