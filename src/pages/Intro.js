@@ -39,6 +39,12 @@ const Intro = ({setChatBoxActive,setIntroRef,contactRef,profileFade}) => {
   },[introRef])
 
   useEffect(()=>{
+    if (imageRef.current!==null){
+      imageRef.current.style.transform = `perspective(1000px) rotateX(${0}deg) rotateY(${0}deg)`;
+    }
+  },[imageRef])
+
+  useEffect(()=>{
     const timeout=setTimeout(()=>{setHelloFade(true)},500);
     return ()=>clearTimeout(timeout);
   })

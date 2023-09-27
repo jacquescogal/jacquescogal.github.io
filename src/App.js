@@ -63,7 +63,7 @@ function App() {
   const [chatHistory, setChatHistory] = useState([
     {
       type: "ai",
-      message: "Hello, I am Jacques! Nice to meet you!",
+      message: "Hello, I'm Jacques! Nice to meet you!",
       links:[]
     }
   ]);
