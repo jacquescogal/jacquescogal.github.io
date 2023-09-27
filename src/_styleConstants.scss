@@ -1,1 +1,11 @@
 $primary-color:#BBF7D0;
+$secondary-color: #0032a1;
+$tertiary-color:#8a5d24;
+$off-white:#f2f2f2;
+$light-gray:RGB(red($off-white)-10,green($off-white)-10,blue($off-white)-10);
+$dark-gray:RGB(red($off-white)-50,green($off-white)-50,blue($off-white)-50);
+$off-black: #343231;
+$backdrop: $primary-color;
+$grey-700: #8C9EAA;
+$grey-800: #3E5463;
+$alt-color: #071d49;

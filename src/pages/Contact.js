@@ -32,7 +32,7 @@ const Contact = ({setContactRef,contactReveal,contactFade}) => {
     }, [contactFade])
   return (
     <>
-    <div ref={contactRef} className='flex flex-col section-block contact-block hide'>
+    <div ref={contactRef} className='flex flex-col section-block contact-block hide pb-8'>
     <p className='title-comp flex-none px-8 pt-4 text-left'>
     <span className='section-text text-4xl'>4.</span>
     <MultilineTGS toGenerateMap={["Contact Me"," (I'll appreciate it!)"]} classNameMap={["number-text","flair-text"]}/>
@@ -50,7 +50,7 @@ const Contact = ({setContactRef,contactReveal,contactFade}) => {
      <textarea onChange={(e)=>{setMessage(e.currentTarget.value)}} id="message" name="message" rows="4" cols="50" placeholder="Hello...">
 </textarea>
      </form>
-     <button type="submit" className='contact-submit-button' onClick={()=>{window.open('mailto:jacques002@e.ntu.edu.sg?subject='+encodeURIComponent(subject)+'&body=Hi%20Jacques%2C%0A%0A'+encodeURIComponent(message)+'%0A%0ARegards%2C%0A'+encodeURIComponent(name))}}>Send E-mail</button>
+     <button type="submit" className='contact-submit-button' onClick={()=>{window.open('mailto:jacques.tracy@gmail.com?subject='+encodeURIComponent(subject)+'&body=Hi%20Jacques%2C%0A%0A'+encodeURIComponent(message)+'%0A%0ARegards%2C%0A'+encodeURIComponent(name))}}>Send E-mail</button>
      </div>
      </div>
     </>

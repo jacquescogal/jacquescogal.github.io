@@ -7,7 +7,7 @@ import ScrollMouse from '../svg/ScrollMouse';
 import resumePDF from '../resume_Jacques.pdf'
 import MultilineTGS from '../components/MultilineTGS';
 
-const Intro = ({setIntroRef,contactRef,profileFade}) => {
+const Intro = ({setChatBoxActive,setIntroRef,contactRef,profileFade}) => {
   const playImage=require('../board-game.png')
   const myImage=require('../Jacques_bg.png')
   const cropImage=require('../Jacques_only_alt.png')
@@ -272,6 +272,7 @@ useEffect(() => {
         <div className='flex flex-row content-center items-center'>
         <button className='skip-button' onClick={()=>{getResume()}}>Resume</button>
         <button className='skip-button' onClick={()=>window.scrollTo({top: contactRef.current.offsetTop, behavior: 'smooth'})}>Contact Me</button>
+        <button className='skip-button' onClick={()=>{setChatBoxActive(true)}}>Chat Bot</button>
         </div>
         </>}
         </div>

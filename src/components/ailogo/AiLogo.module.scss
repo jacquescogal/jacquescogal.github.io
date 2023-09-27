@@ -1,0 +1,41 @@
+@import '../../styleConstants';
+
+
+.AiLogo{
+    border-radius: 999px;
+    fill: $light-gray;
+    height: 100%;
+}
+
+.logoDragBackground{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background-color: $primary-color;
+    border-radius: 999px;
+}
+
+.AiDraggable{
+    position: relative;
+}
+
+.HiderPrimary{
+    background-color: $primary-color;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 999px;
+}
+
+.HiderSecondary{
+    background-color: $secondary-color;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 999px;
+}
+

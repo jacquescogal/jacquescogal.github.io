@@ -9,17 +9,13 @@ import Contact_logo from '../svg/Contact_logo';
 import '../header.scss'
 import Sun_logo from '../svg/sun_logo';
 import Moon_logo from '../svg/Moon_logo';
-const Header = ({ introRef, aboutRef, experienceRef, projectRef, contactRef, setHeaderLoaded, setExperienceReveal, setContactReveal, setProjectReveal, setExperienceFade, setProfileFade, setProjectFade, setContactFade, light, handleLight }) => {
+const Header = ({forceNav, setForceNav,forceNavMin, setForceNavMin,closable,setClosable,handleRefClick, navBarRef,smallBarRef,stickerRef,introRef, aboutRef, experienceRef, projectRef, contactRef, setHeaderLoaded, setExperienceReveal, setContactReveal, setProjectReveal, setExperienceFade, setProfileFade, setProjectFade, setContactFade, light, handleLight }) => {
   const [menuClosed, setMenuClosed] = useState(true);
   const [itemLoad, setitemLoad] = useState(0);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isOpen, setIsOpen] = useState(true);
-  const [forceNav, setForceNav] = useState(false);
-  const [forceNavMin, setForceNavMin] = useState(0);
-  const [closable, setClosable] = useState(true);
-  const navBarRef = useRef(null);
-  const smallBarRef = useRef(null);
-  const stickerRef = useRef(null);
+  
+  
   const [isActiveRegion, setIsActiveRegion] = useState(
     {
       profile: true,
@@ -38,10 +34,18 @@ const Header = ({ introRef, aboutRef, experienceRef, projectRef, contactRef, set
     { id: 4, name: 'contact', ref: contactRef, setReveal: function () { setContactReveal(true) }, setFade: function (bool) { setContactFade(bool); setIsActiveRegion(isActiveRegion => ({ ...isActiveRegion, contact: !bool })); } }
   ]
 
+  useEffect(()=>{
+    if (forceNav===true){
+    setTimeout(()=>{
+      setForceNav(false);
+    },1000)
+  }
+  },[forceNav])
+
   //   For navbar appearing if scroll
   const controlNavbar = useCallback(() => {
     if (typeof window !== 'undefined') {
-      if (forceNav && window.scrollY >= forceNavMin) {
+      if (forceNav && (window.scrollY >= forceNavMin )) {
         setForceNav(false);
       }
       else if (window.scrollY < lastScrollY - 1 || window.scrollY <= Math.max(smallBarRef.current?.clientHeight, navBarRef.current?.clientHeight) * 2 || forceNav) {
@@ -84,13 +88,7 @@ const Header = ({ introRef, aboutRef, experienceRef, projectRef, contactRef, set
     return () => clearTimeout(timeout);
   }, [menuClosed, itemLoad])
 
-  // for scrolling on click
-  const handleRefClick = (ref) => {
-    const y = ref.current.offsetTop - Math.max(navBarRef.current?.clientHeight, smallBarRef.current?.clientHeight) - ((!closable) ? stickerRef.current?.clientHeight : 0);
-    setForceNav(true);
-    setForceNavMin(y);
-    window.scrollTo({ top: y, behavior: 'smooth' });
-  };
+  
 
   //Check header loaded to prevent jumping
   useEffect(() => {
