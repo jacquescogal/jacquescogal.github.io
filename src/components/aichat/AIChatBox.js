@@ -16,7 +16,11 @@ const AIChatBox= (props) => {
     const bottomRef = React.useRef(null);
     const inputRef = React.useRef(null);
     const [chatExpand,setChatExpand]=useState(false);
+    const [consent,setConsent]=useState(false);
     const handleInputTextChange = (e) => {
+        if (consent===false){
+            return;
+        }
         props.setChatInputText(e.target.value);
     }
     const handleKeyDown = (event) => {
@@ -51,7 +55,7 @@ const AIChatBox= (props) => {
             inputRef.current?.focus();
             handleShrink();
         }
-    },[props.isActive])
+    },[props.isActive,consent])
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "auto" })
@@ -74,11 +78,13 @@ const AIChatBox= (props) => {
 
     return (
         <>
+            
             {props.isActive === true && <div ref={chatBoxRef} className={`${style.ChatBox} ${style.ChatBoxFlyUp}`}>
                 <div className={style.ChatHeader}>
+
                     <div className={style.HeaderText}>
                         <AiLogo prepareText={props.prepareText}className={style.AiLogo} backgroundColor={"primary"} />
-                        <h2>Jacques AI</h2>
+                        <h2>Jacques (AI)</h2>
                     </div>
                     {(chatExpand===true) && <div className={style.CloseButton} onClick={() => { handleShrink() }}>
                         <IconContext.Provider value={{ className: style.ShrinkIcon }}>
@@ -110,7 +116,20 @@ const AIChatBox= (props) => {
                 </div>
                 <div className={style.ChatContext}>{""}
                 </div>
-                <textarea ref={inputRef} onKeyDown={handleKeyDown} className={`${style.ChatInput} `} onChange={handleInputTextChange} value={props.chatInputText}></textarea>
+                {consent===false && <div className={style.DataBackdrop}>
+                    <div className={style.Notice}>
+                        <h1 className={style.NoticeHeader}>Chatbot terms</h1>
+                        <p className={style.NoticeText}>
+                            Anonimized chat history is collected for the purpose of improving the chatbot. 
+                            Please do not provide personal data. You agree to be responsible for the content of your messages.
+                        </p>
+                        <button className={style.NoticeButton} onClick={()=>{setConsent(true)}} >Consent & Agree</button>
+                    </div>
+                </div>}
+
+                <textarea ref={inputRef} onKeyDown={handleKeyDown} className={`${style.ChatInput} `} onChange={handleInputTextChange} value={props.chatInputText}>
+                
+                </textarea>
             </div>}
         </>
     )

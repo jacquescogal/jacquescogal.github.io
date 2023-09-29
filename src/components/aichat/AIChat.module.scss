@@ -39,6 +39,7 @@ $chat-box-width-expand: 80vw;
         background-color: $alt-color;
         height: 50px;
         position: relative;
+        z-index: 100;
         .HeaderText{
             display: flex;
             flex-direction: row;
@@ -631,6 +632,52 @@ $chat-box-width-expand: 80vw;
     }
 }
 
+.DataBackdrop{
+    position:absolute;
+    height: 100%;
+    width: 100%;
+    background-color: RGB(red(black),green(black),blue(black),0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .Notice{
+        position: absolute;
+        height: fit-content;
+        width: fit-content;
+        padding: 1rem;
+        background-color: $secondary-color;
+        border-radius: 20px;
+        opacity: 1;
+        color:$alt-white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .NoticeHeader{
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .NoticeText{
+            font-size: 0.8rem;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .NoticeButton{
+            margin-top: 10px;
+            height: 4rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            color: $off-black;
+            background-color: RGB(134 239 172);
+            transition: all 0.5s ease;
+            &:hover{
+                background-color: RGB(134+10,239+10,172+10);
+                scale: 1.1;
+            }
+        }
+    }
+}
 
 
 @media (max-width: 640px) {
@@ -673,6 +720,7 @@ $chat-box-width-expand: 85vw;
         background-color: $alt-color;
         height: 50px;
         position: relative;
+        z-index: 100;
         .HeaderText{
             display: flex;
             flex-direction: row;

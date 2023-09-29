@@ -5,6 +5,7 @@ import { Route,Routes } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import {React,useEffect,useState,useRef} from 'react';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 const extractLinks=(texts)=>{
   let links=[]
@@ -41,6 +42,7 @@ const linkTextParser=(text)=>{
   const texts = matches ? matches.map(match => match.slice(2, -2)) : [];
   const modifiedPassage = text.replace(pattern, '');
 
+
   return {
     links:extractLinks(texts),
     message:modifiedPassage
@@ -48,6 +50,7 @@ const linkTextParser=(text)=>{
 }
 
 function App() {
+  const [uuid,setUuid]=useState(null);
   const [isThinking,setIsThinking] = useState(false);
   const [chatBoxActive, setChatBoxActive] = useState(false);
   const [chatInputText, setChatInputText] = useState("");
@@ -67,6 +70,13 @@ function App() {
       links:[]
     }
   ]);
+
+  useEffect(()=>{
+    if (uuid===null){
+      setUuid(uuidv4())
+    }
+  },[])
+
   const handleSubmit=()=>{
     if (isThinking===true) return;
     if (chatInputText==="") return;
@@ -92,13 +102,15 @@ function App() {
   const deliver=async(text)=>{
     setIsThinking(true);
     const temp_history=[]
-    for (let i=chatHistory.length-1;i>=Math.max(0,chatHistory.length-4);i--){
-      if (chatHistory[i].type==="system") break;
+    for (let i=chatHistory.length-1;i>=0;i--){
+      if (chatHistory[i].type==="system") continue;
       else temp_history.push({entity:chatHistory[i].type,message:chatHistory[i].message});
+      if (temp_history.length>=4) break;
     }
     setChatHistory([...chatHistory,{type:"user",message:chatInputText}]);
     temp_history.reverse();
     const data={
+      uuid:uuid,
       user_message:text,
       chat_history:temp_history
     }
@@ -113,7 +125,13 @@ function App() {
       setChatHistory(chatHistory=>[...chatHistory,ai_chat_bubble])
     } catch (error) {
         console.error('Error posting data:', error);
-        setChatHistory(chatHistory=>[...chatHistory,{type:"system",message:`error: ${error}`,links:[]}])
+        
+        if (error.response?.status===429){
+          setChatHistory(chatHistory=>[...chatHistory,{type:"system",message:`error: ${"Too many requests (5 per minute max), please wait a few seconds before trying again."}`,links:[]}])
+        }
+        else{
+          setChatHistory(chatHistory=>[...chatHistory,{type:"system",message:`error: ${error}`,links:[]}])
+        }
     }
     finally{
       setIsThinking(false);
