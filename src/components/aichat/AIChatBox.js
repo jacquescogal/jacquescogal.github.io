@@ -84,7 +84,7 @@ const AIChatBox= (props) => {
 
                     <div className={style.HeaderText}>
                         <AiLogo prepareText={props.prepareText}className={style.AiLogo} backgroundColor={"primary"} />
-                        <h2>Jacques (AI)</h2>
+                        <h2>Jacques Bot</h2>
                     </div>
                     {(chatExpand===true) && <div className={style.CloseButton} onClick={() => { handleShrink() }}>
                         <IconContext.Provider value={{ className: style.ShrinkIcon }}>

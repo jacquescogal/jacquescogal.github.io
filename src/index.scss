@@ -52,7 +52,7 @@ body {
 }
 
 .section-block{
-  transition: opacity 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
 }
 
 .section-block.show{
@@ -68,13 +68,15 @@ body {
 
 
 .section-block.fade{
-  
   opacity: 0.5;
+  filter: blur(1px);
+  -webkit-filter: blur(1px);
+  transform: scale(0.98);
 }
 
 .background-parent{
   transition: all 0.2s ease-in-out;
-  background-color: RGB(2 6 23);
+  background-color: RGB(10 6 30);
 }
 
 .light .background-parent{

@@ -6,22 +6,13 @@ import TGP from '../components/TGP';
 import '../project.scss'
 import styles from './Project.module.scss';
 import {BiLinkExternal} from 'react-icons/bi';
+import axios from 'axios';
 
 const Project = ({setProjectRef,projectReveal,projectFade}) => {
+    const onceRef=useRef(null);
     const projectRef=useRef(null);
+    const [activeProject,setActiveProject]=useState(0);
     const [projectCards,setProjectCards]=useState([
-      {title:"FlashcardAi",
-    link:"https://www.flashcardai.app",
-    description:"POC flashcard app that uses AI to grade and provide feedback to user. Leveraged AWS ecosystem.",
-  tech:["React","Python","Flask","AWS"]},
-  {title:"Likewise",
-    link:"https://www.github.com/jacquescogal/likewise-app-react-firebase",
-    description:"Developed a web-app for tertiary students to get together through common interests.",
-  tech:["React","Firebase","Node.js"]},
-  {title:"Fitrition",
-    link:"https://www.github.com/jacquescogal/CZ2006-Software-Engineering-Fitrition",
-    description:"Developed a fitness and nutrition app with a social aspect to encourage healthy living among Singaporeans.",
-  tech:["Java","Firebase","Android Studio"]},
     ]);
     useEffect(()=>{
         setProjectRef(projectRef);
@@ -45,20 +36,38 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
       }
     }, [projectFade])
 
+    useEffect(() => {
+      if (onceRef.current) return;
+      onceRef.current = true;
+      const fetchData = async () => {
+  
+        const reposResponse = await axios.get(`https://7gm3sz2r5h.execute-api.ap-southeast-1.amazonaws.com/default/get_gh_repos`);
+        const repos = reposResponse.data.slice(0,5);
+  
+        setProjectCards(repos);
+      };
+  
+      fetchData().catch(console.error);
+    }, []);
+
   return (
     < >
     <div className='section-block project-block hide' ref={projectRef}>
     <p className='flex-none px-8 pt-4 text-left title-comp intro-load'>
     <span className='section-text text-4xl' >3.</span>
-    <MultilineTGS toGenerateMap={["Projects"," (Flashcardai is up!)"]} classNameMap={["number-text","flair-text"]}/>
+    <MultilineTGS toGenerateMap={["Projects"," (Latest created projects, fetched from github API)"]} classNameMap={["number-text","flair-text"]}/>
     </p>
+    {projectCards.length===0 && <p className='flex-none px-8 pt-4 text-left title-comp intro-load text-white'>Fetching projects... (May have capped API limit, come again later)</p>}
     <div className={styles.CardDeck}>
-      {projectCards.map((card)=>(
-        <div className={styles.Card}>
-          <a href={card.link} target="_blank" rel="noreferrer">
-
+      {projectCards.map((card,id)=>(
+        <div className={`${styles.Card} ${activeProject===id && styles.Active}`} onMouseEnter={e=>{setActiveProject(id)}}>
+          {/* <div className={styles.TitleJustify}> */}
+          <a href={card.url_link} target="_blank" rel="noreferrer">
           <span className={styles.CardTitle}>{card.title}   <BiLinkExternal size={15}/></span>
           </a>
+
+          <span className={styles.CardDate}>Created on: {new Date(card.created_at).toLocaleDateString()}</span>
+          {/* </div> */}
           <span className={styles.CardDescription}>{card.description}</span>
         </div>
       ))}
