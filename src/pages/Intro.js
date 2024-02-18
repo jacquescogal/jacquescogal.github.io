@@ -9,8 +9,8 @@ import MultilineTGS from '../components/MultilineTGS';
 
 const Intro = ({setChatBoxActive,setIntroRef,contactRef,profileFade}) => {
   const playImage=require('../board-game.png')
-  const myImage=require('../Jacques_bg.png')
-  const cropImage=require('../Jacques_only_alt.png')
+  const myImage=require('../jacques_bg.png')
+  const cropImage=require('../jacques_only.png')
   const bookImage=require('../book.png')
   const goalImage=require('../mountain.png')
   const [helloFade,setHelloFade]=useState(true);

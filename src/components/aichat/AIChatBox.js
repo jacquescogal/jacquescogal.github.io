@@ -118,7 +118,7 @@ const AIChatBox= (props) => {
                 </div>
                 {consent===false && <div className={style.DataBackdrop}>
                     <div className={style.Notice}>
-                        <h1 className={style.NoticeHeader}>Chatbot terms</h1>
+                        <h1 className={style.NoticeHeader}>Chatbot Terms & Conditions</h1>
                         <p className={style.NoticeText}>
                             Anonimized chat history is collected for the purpose of improving the chatbot. 
                             Please do not provide personal data. You agree to be responsible for the content of your messages.

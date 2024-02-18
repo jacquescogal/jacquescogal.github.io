@@ -115,7 +115,7 @@ function App() {
       chat_history:temp_history
     }
     try{
-      const response=await axios.post("https://portfolio.flashcardai.app/chat",data);
+      const response=await axios.post("https://pf.flashcardai.app/chat",data);
       console.log('Successfully posted data:', response.data);
       let ai_chat_bubble={
         ...linkTextParser(response.data.ai_message),

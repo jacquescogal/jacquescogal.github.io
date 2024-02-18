@@ -7,6 +7,7 @@ import Project from './Project';
 import Contact from './Contact';
 import Chat from '../components/aichat/AIChat';
 import resumePDF from '../resume_Jacques.pdf'
+import Modal from '../components/modal/Modal';
 
 const Homepage = (props) => {
   const [isOpen,setIsOpen]=useState(false);
@@ -17,7 +18,7 @@ const Homepage = (props) => {
   const [projectRef,setProjectRef]=useState(null);
   const [contactRef,setContactRef]=useState(null);
   const [setHeaderHighlight]=useState(null);
-  const [logoLoaded,setLogoLoaded]=useState(false);
+  const [logoLoaded,setLogoLoaded]=useState(true);
   const [headerLoaded,setHeaderLoaded]=useState(false);
   const [experienceReveal,setExperienceReveal]=useState(false);
   const [projectReveal,setProjectReveal]=useState(false);
@@ -97,6 +98,7 @@ const Homepage = (props) => {
     {(logoLoaded)?
     <>
     <div className='fixed w-full h-full background-parent -z-50'/>
+    {/* <Modal/> */}
     <Header forceNav={forceNav} forceNavMin={forceNavMin} setForceNav={setForceNav} setForceNavMin={setForceNavMin}closable={closable} setClosable={setClosable} handleRefClick={handleRefClick} navBarRef={navBarRef} smallBarRef={smallBarRef} stickerRef={stickerRef} introRef={introRef} aboutRef={aboutRef} experienceRef={experienceRef} projectRef={projectRef} 
     contactRef={contactRef} setHeaderLoaded={setHeaderLoaded} setExperienceReveal={setExperienceReveal} 
     setProjectReveal={setProjectReveal} setContactReveal={setContactReveal} 

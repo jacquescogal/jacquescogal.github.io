@@ -7,8 +7,6 @@ import Exp_logo from '../svg/Exp_logo';
 import Proj_logo from '../svg/Proj_logo';
 import Contact_logo from '../svg/Contact_logo';
 import '../header.scss'
-import Sun_logo from '../svg/sun_logo';
-import Moon_logo from '../svg/Moon_logo';
 const Header = ({forceNav, setForceNav,forceNavMin, setForceNavMin,closable,setClosable,handleRefClick, navBarRef,smallBarRef,stickerRef,introRef, aboutRef, experienceRef, projectRef, contactRef, setHeaderLoaded, setExperienceReveal, setContactReveal, setProjectReveal, setExperienceFade, setProfileFade, setProjectFade, setContactFade, light, handleLight }) => {
   const [menuClosed, setMenuClosed] = useState(true);
   const [itemLoad, setitemLoad] = useState(0);
