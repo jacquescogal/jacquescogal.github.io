@@ -18,6 +18,9 @@ const extractLinks=(texts)=>{
     case "linkedin":
       links.push({type:"external",text:"LinkedIn",where:"https://www.linkedin.com/in/j-cogal/"})
       break;
+    case "github":
+      links.push({type:"external",text:"GitHub",where:"https://github.com/jacquescogal"})
+      break;
     case "leetcode":
       links.push({type:"external",text:"LeetCode",where:"https://leetcode.com/jacquescogal/"})
       break;

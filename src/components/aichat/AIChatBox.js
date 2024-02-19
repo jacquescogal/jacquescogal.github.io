@@ -16,7 +16,7 @@ const AIChatBox= (props) => {
     const bottomRef = React.useRef(null);
     const inputRef = React.useRef(null);
     const [chatExpand,setChatExpand]=useState(false);
-    const [consent,setConsent]=useState(false);
+    const [consent,setConsent]=useState(true);
     const handleInputTextChange = (e) => {
         if (consent===false){
             return;
