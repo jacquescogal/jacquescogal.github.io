@@ -55,6 +55,7 @@ const linkTextParser=(text)=>{
 function App() {
   const [uuid,setUuid]=useState(null);
   const [isThinking,setIsThinking] = useState(false);
+  const [isBootingUp,setIsBootingUp] = useState(true);
   const [chatBoxActive, setChatBoxActive] = useState(false);
   const [chatInputText, setChatInputText] = useState("");
   const [chatContext, setChatContext] = useState("none");
@@ -80,6 +81,22 @@ function App() {
     }
   },[])
 
+  useEffect(()=>{
+    // ping the backend every 1 second until the backend is up
+    const interval=setInterval(async()=>{
+      try{
+        const response=await axios.get("https://pf-backend-rwf3.onrender.com/");
+        console.log('Successfully pinged backend:', response.data);
+        setIsBootingUp(false);
+        clearInterval(interval);
+      } catch (error) {
+        console.error('Error pinging backend:', error);
+      }
+    },1000)
+    return ()=>clearInterval(interval);
+
+  },[])
+
   const handleSubmit=()=>{
     if (isThinking===true) return;
     if (chatInputText==="") return;
@@ -88,19 +105,8 @@ function App() {
     setChatInputText("");
   }
 
-  // const deliverTest=async(text)=>{
-  //   setIsThinking(true);
-  //   setChatHistory([...chatHistory,{type:"user",message:chatInputText}]);
-  //   setTimeout(()=>{
-  //     let ai_chat_bubble={
-  //       ...linkTextParser("hello therehello therehello therehello therehello therehello therehello therehello therehello therehello therehello therehello therehello therehello therehello therehello therehello therehello therehello therehello there"),
-  //       type:"ai"
-  //     }
-  //     setWriteLast(true)
-  //     setChatHistory(chatHistory=>[...chatHistory,ai_chat_bubble])
-  //     setIsThinking(false)
-  //   },5000)
-  // }
+
+
 
   const deliver=async(text)=>{
     setIsThinking(true);
@@ -118,7 +124,7 @@ function App() {
       chat_history:temp_history
     }
     try{
-      const response=await axios.post("https://pf.flashcardai.app/chat",data);
+      const response=await axios.post("https://pf-backend-rwf3.onrender.com/chat",data);
       console.log('Successfully posted data:', response.data);
       let ai_chat_bubble={
         ...linkTextParser(response.data.ai_message),
@@ -150,7 +156,7 @@ function App() {
     <div className="App">
       <ToastContainer/>
       <Routes>
-            <Route path='/' element={<Homepage setWriteLast={setWriteLast} writeLast={writeLast} setChatBoxActive={setChatBoxActive} isThinking={isThinking} handleSubmit={handleSubmit} prepareText={prepareText} chatHistory={chatHistory} setChatHistory={setChatHistory} chatContext={chatContext} setChatContext={setChatContext} chatBoxActive={chatBoxActive} chatInputText={chatInputText} setChatInputText={setChatInputText}/>}>
+            <Route path='/' element={<Homepage isBootingUp={isBootingUp} setWriteLast={setWriteLast} writeLast={writeLast} setChatBoxActive={setChatBoxActive} isThinking={isThinking} handleSubmit={handleSubmit} prepareText={prepareText} chatHistory={chatHistory} setChatHistory={setChatHistory} chatContext={chatContext} setChatContext={setChatContext} chatBoxActive={chatBoxActive} chatInputText={chatInputText} setChatInputText={setChatInputText}/>}>
             </Route>
             <Route path="*" element={<p>There's nothing here: 404!</p>} />
         </Routes>

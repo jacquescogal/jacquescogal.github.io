@@ -17,8 +17,9 @@ const AIChat = (props) => {
   const defaultDialogue="Hey there, click on me. I'd like to chat with you!";
   const dialogueRef = React.useRef(null);
   const [showDialogue,setShowDialogue] = useState(true);
-  const [dialogue,setDialogue]=useState(defaultDialogue);
+  const [dialogue,setDialogue]=useState('');
   const [showSendButton, setShowSendButton] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   const updateDialogue=(message)=>{
       dialogueRef.current?.classList.add(style.TopBubbleGone);
@@ -30,6 +31,19 @@ const AIChat = (props) => {
   }
 
   useEffect(()=>{
+    if (props.isBootingUp===true){
+      updateDialogue("Waking up Chatbot...")
+    }
+    else if (props.isBootingUp===false){
+      updateDialogue("Chatbot online!")
+      setHasLoaded(true);
+      setTimeout(()=>{
+        updateDialogue(defaultDialogue)
+      },2000)
+    }
+  },[props.isBootingUp])
+
+  useEffect(()=>{
     if (props.isThinking===true){
       updateDialogue("Thinking...")
     }
@@ -38,7 +52,7 @@ const AIChat = (props) => {
         updateDialogue("")
       }
       else{
-      updateDialogue("Done!")
+        updateDialogue("Done!")
       }
     }
   },[props.isThinking])
@@ -47,7 +61,7 @@ const AIChat = (props) => {
     if (props.chatBoxActive===false){
       props.setChatInputText("");
       setShowSendButton(false);
-      if (props.isThinking===false && dialogue!==defaultDialogue){
+      if (hasLoaded===true && props.isThinking===false && dialogue!==defaultDialogue){
         updateDialogue("Talk to you soon!")
         setTimeout(()=>{
           updateDialogue("")
@@ -60,16 +74,16 @@ const AIChat = (props) => {
 
   return (
     <div className={style.ChatHolder}>
-      {dialogue!=="" && <div ref={dialogueRef} className={style.TopBubble} onClick={() => {setDialogue("");props.setChatBoxActive(true)}}>{dialogue}</div>}
+      {dialogue!=="" && <div ref={dialogueRef} className={style.TopBubble} onClick={() => {setDialogue("");props.isBootingUp===false?props.setChatBoxActive(true):props.setChatBoxActive(false)}}>{dialogue}</div>}
       <form onSubmit={(e)=>{e.preventDefault();props.handleSubmit()}}className={style.CardAnsForm}>
-      {props.chatBoxActive === false && <div className={style.ChatButton} onClick={() => {props.setChatBoxActive(true)}}>
+      {props.chatBoxActive === false && <div className={style.ChatButton} onClick={() => {props.isBootingUp===false?props.setChatBoxActive(true):props.setChatBoxActive(false)}}>
         <div className={style.RelativeGroup}>
       <IconContext.Provider value={{ className: style.IoSendSharpClose }}>
           <IoSendSharp size={30} />
         </IconContext.Provider>
       {showSendButton===false && 
       <>
-      {props.isThinking===true && <div className={style.ThinkBubbleContentButton}>
+      {(props.isThinking===true || props.isBootingUp) && <div className={style.ThinkBubbleContentButton}>
         <div className={style.ThinkBubbleDot} />
         <div className={style.ThinkBubbleDot} />
         <div className={style.ThinkBubbleDot} />

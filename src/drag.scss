@@ -247,7 +247,7 @@ white-space: nowrap;
         opacity: 1;
         transform: translateY(2.5rem) translateX(2.75rem);
         width: calc(100% - 2.75rem);
-        height: calc(100 - 2.5rem - 10%);
+        height: calc(100% - 2.5rem - 10%);
         transition: opacity 0.5s 0.5s ease;
         color: RGB(134 239 172);
         /* text-overflow: clip; */
