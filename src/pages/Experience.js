@@ -54,17 +54,25 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
     {
       Id: "CPF Board",
       Role: "Software Engineer Intern",
-      Date: "Dec 2023 - Present",
+      Date: "Dec 2023 - May 2024",
       Description: "Involved in projects relating to large language models and data engineering | Optimised information retrieval of customer-facing internal search engine, improving search relevance by up to 10%|Streamlined search index creation with azure functions",
       imageURL: require('../images/cpf_logo.png'),
       logos: []
+    },
+    {
+      Id: "Shopee",
+      Role: "Software Engineer",
+      Date: "Jun 2024 - Present",
+      Description: "Marketplace core team",
+      imageURL: require('../images/shopee_logo.png'),
+      logos: [{ Id: "Golang", imageURL: require("../images/go_logo.png") }]
     }
   ]
 
   const schoolExperience = [
     {
       Id: "Temasek Polytechnic",
-      Role: "Accounting and Finance Diploma Student",
+      Role: "Accounting and Finance Diploma",
       Date: "Apr 2015 - Apr 2018",
       Description: "Diploma plus with merit and a CGPA of 3.93/4.00.",
       imageURL: require('../images/tp_logo.png'),
@@ -72,9 +80,9 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
     },
     {
       Id: "Nanyang Technological University",
-      Role: "Business and Computing Double Degree Undergraduate",
-      Date: "Aug 2020 - Present (Expected Graduation: May 2024)",
-      Description: "Dean’s List (BUS) AY2022/2023",
+      Role: "Business and Computing Double Degree",
+      Date: "Aug 2020 - May 2024",
+      Description: "Graduated with Honours (Distinction)|Dean’s List (BUS) AY2022/2023",
       imageURL: require('../images/ntu_logo.jpg'),
       logos: [{ Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "Java", imageURL: require("../images/java_logo.png") }, { Id: "C++", imageURL: require("../images/cpp_logo.png") }, { Id: "React", imageURL: require("../images/react_logo.png") }, { Id: "R", imageURL: require("../images/r_logo.png") }, { Id: "MySQL", imageURL: require("../images/mysql_logo.png") }, { Id: "mongoDB", imageURL: require("../images/mongo_logo.png") }]
     }
@@ -363,7 +371,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
         {/* First line */}
         <p className='title-comp flex-none px-8 pt-4 text-left section-block'>
           <span className='section-text text-4xl  '>2.</span>
-          <MultilineTGS toGenerateMap={["Experience", " (Custom carousel: Traverse by dragging/click drag)"]} classNameMap={["number-text", "flair-text"]} observable={experienceReveal} />
+          <MultilineTGS toGenerateMap={["Experience", " Traverse by dragging/click drag"]} classNameMap={["number-text", "flair-text"]} observable={experienceReveal} />
         </p>
         <div className='button-group'>
           <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "work") ? "  button-active no-click  " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("work");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(workExperience); }}>Work</button>
@@ -393,7 +401,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
               >
                 <p className='drag-title'>{exp.Id}</p>
                 <p className='drag-date'>{exp.Date}</p>
-                <img className='circle absolute bg-white z-50' src={exp.imageURL} onClick={()=>{experienceImageHandler({imageURL:exp.imageURL})}} />
+                <img className='circle absolute z-50' src={exp.imageURL} onClick={()=>{experienceImageHandler({imageURL:exp.imageURL})}} />
                 <div className='square'>
                   <p className='drag-text-body'><span className='underline drag-text-title'>{exp.Role}</span>{
                     exp.Description.split("|").map((line, index) => {

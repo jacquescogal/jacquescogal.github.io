@@ -68,12 +68,12 @@ const Homepage = (props) => {
 
   // for scrolling on click
   const handleRefStrClick = (aStr) => {
+    let ref=null;
     if (aStr === "resume") {
       getResume();
-      return;
+      ref = introRef;
     }
-    let ref=null;
-    if (aStr === "profile") {
+    else if (aStr === "profile") {
       ref = introRef;
     }
     else if (aStr === "experiences") {

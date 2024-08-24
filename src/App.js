@@ -97,6 +97,22 @@ function App() {
 
   },[])
 
+  useEffect(()=>{
+    // ping every 30 seconds to keep the backend up
+    if (isBootingUp===true){
+      return;
+    }
+    const interval=setInterval(async()=>{
+      try{
+        const response=await axios.get("https://pf-backend-rwf3.onrender.com/");
+        console.log('Successfully pinged backend:', response.data);
+      } catch (error) {
+        console.error('Error pinging backend:', error);
+      }
+    },30000)
+    return ()=>clearInterval(interval);
+  },[isBootingUp])
+
   const handleSubmit=()=>{
     if (isThinking===true) return;
     if (chatInputText==="") return;

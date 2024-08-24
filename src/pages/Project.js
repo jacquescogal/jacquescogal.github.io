@@ -41,8 +41,8 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
       onceRef.current = true;
       const fetchData = async () => {
   
-        const reposResponse = await axios.get(`https://7gm3sz2r5h.execute-api.ap-southeast-1.amazonaws.com/default/get_gh_repos`);
-        const repos = reposResponse.data.slice(0,5);
+        const reposResponse = await axios.get(`https://pf-backend-rwf3.onrender.com/project`);
+        const repos = JSON.parse(reposResponse.data.body).slice(0,5);
   
         setProjectCards(repos);
       };
