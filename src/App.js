@@ -37,6 +37,25 @@ const extractLinks=(texts)=>{
   return links;
 }
 
+const linksToText=(linkText)=>{
+  switch (linkText){
+    case "Contact me":
+      return "contact"
+    case "LinkedIn":
+      return "linkedin"
+    case "GitHub":
+      return "github"
+    case "LeetCode":
+      return "leetcode"
+    case "Projects":
+      return "project"
+    case "Experience":
+      return "experience"
+    case "Resume":
+      return "resume"
+  }
+}
+
 const linkTextParser=(text)=>{
 
   const pattern = /%%(.*?)%%/g;
@@ -50,6 +69,11 @@ const linkTextParser=(text)=>{
     links:extractLinks(texts),
     message:modifiedPassage
   }
+}
+
+export const linkToText = (link)=>{
+  if (link === undefined || link === null) return "";
+  return ` ${link.map(l => `%%${linksToText(l.text)}%%`).join(' ')}`
 }
 
 function App() {
@@ -129,7 +153,7 @@ function App() {
     const temp_history=[]
     for (let i=chatHistory.length-1;i>=0;i--){
       if (chatHistory[i].type==="system") continue;
-      else temp_history.push({entity:chatHistory[i].type,message:chatHistory[i].message});
+      else temp_history.push({entity:chatHistory[i].type,message:chatHistory[i].message + linkToText(chatHistory[i].links)});
       if (temp_history.length>=4) break;
     }
     setChatHistory([...chatHistory,{type:"user",message:chatInputText}]);
