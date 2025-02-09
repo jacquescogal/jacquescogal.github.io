@@ -40,8 +40,6 @@ const Contact = ({setContactRef,contactReveal,contactFade}) => {
     <div className='form'>
     <form action="https://formsubmit.co/a1e93437966df7514f8b43e5b06685c5" method="POST">
     {/* <form onSubmit={(e)=>{console.log(e.currentTarget)}}> */}
-    <label htmlFor="email">E-mail:</label>
-     <input className='textbox-color' onChange={(e)=>{setName(e.currentTarget.value)}} type="email" name="email" placeholder='yourEmail@mail.com' required/>
     <label htmlFor="name">Name:</label>
      <input className='textbox-color' onChange={(e)=>{setName(e.currentTarget.value)}} type="text" name="name" placeholder='Sam' required/>
      <label  htmlFor="text">Subject:</label>
