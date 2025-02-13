@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import {React,useEffect,useState,useRef} from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import ChatTest from './pages/ChatTest';
 
 const extractLinks=(texts)=>{
   let links=[]
@@ -109,7 +110,7 @@ function App() {
     // ping the backend every 1 second until the backend is up
     const interval=setInterval(async()=>{
       try{
-        const response=await axios.get("https://pf-backend-rwf3.onrender.com/");
+        const response=await axios.get(process.env.REACT_APP_URL);
         console.log('Successfully pinged backend:', response.data);
         setIsBootingUp(false);
         clearInterval(interval);
@@ -128,7 +129,7 @@ function App() {
     }
     const interval=setInterval(async()=>{
       try{
-        const response=await axios.get("https://pf-backend-rwf3.onrender.com/");
+        const response=await axios.get(process.env.REACT_APP_URL);
         console.log('Successfully pinged backend:', response.data);
       } catch (error) {
         console.error('Error pinging backend:', error);
@@ -164,7 +165,7 @@ function App() {
       chat_history:temp_history
     }
     try{
-      const response=await axios.post("https://pf-backend-rwf3.onrender.com/chat",data);
+      const response=await axios.post(process.env.REACT_APP_CHAT_URL,data);
       console.log('Successfully posted data:', response.data);
       let ai_chat_bubble={
         ...linkTextParser(response.data.ai_message),
@@ -198,6 +199,7 @@ function App() {
       <Routes>
             <Route path='/' element={<Homepage isBootingUp={isBootingUp} setWriteLast={setWriteLast} writeLast={writeLast} setChatBoxActive={setChatBoxActive} isThinking={isThinking} handleSubmit={handleSubmit} prepareText={prepareText} chatHistory={chatHistory} setChatHistory={setChatHistory} chatContext={chatContext} setChatContext={setChatContext} chatBoxActive={chatBoxActive} chatInputText={chatInputText} setChatInputText={setChatInputText}/>}>
             </Route>
+            <Route path="/chat-test" element={<ChatTest/>}/>
             <Route path="*" element={<p>There's nothing here: 404!</p>} />
         </Routes>
     </div>

@@ -24,31 +24,31 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Role: "Audit Intern",
       Date: "Dec 2017 - Feb 2018",
       Description: "Conducted financial compliance tests on client's financial records. Performed tasks under audit procedures to ensure reasonable assurance. ",
-      imageURL: require('../images/deloitte_logo.jpg'),
-      logos: [{ Id: "MS Office", imageURL: require("../images/ms_logo.jpg") }]
+      imageURL: '/images/deloitte_logo.jpg',
+      logos: [{ Id: "MS Office", imageURL: "/images/ms_logo.jpg" }]
     },
     {
       Id: "Novelship",
       Role: "Business Analyst Intern",
       Date: "May 2022 - Aug 2022",
       Description: "Developed and implemented a new KPI utilizing Python from Web-scraping and automation. Analyzed figures to guide future efforts.",
-      imageURL: require('../images/novelship_logo.jpg'),
-      logos: [{ Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "Tableau", imageURL: require("../images/tb_logo.jpg") }, { Id: "MS Office", imageURL: require("../images/ms_logo.jpg") }]
+      imageURL: '/images/novelship_logo.jpg',
+      logos: [{ Id: "Python", imageURL: "/images/python_logo.png" }, { Id: "Tableau", imageURL: "/images/tb_logo.jpg" }, { Id: "MS Office", imageURL: "/images/ms_logo.jpg" }]
     },
     {
       Id: "Zuellig Pharma",
       Role: "Data Analyst Part-Timer",
       Date: "Sep 2022 - Dec 2022",
       Description: "Automated processing of big, fuzzy data for analytics and machine learning. Research-guided data-cleaning to improve predictive model efficacy.",
-      imageURL: require('../images/zp_logo.jpg'),
-      logos: [{ Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "PostgreSQL", imageURL: require("../images/psql_logo.png") }, { Id: "Spyder", imageURL: require("../images/spyd_logo.png") }, { Id: "MS Office", imageURL: require("../images/ms_logo.jpg") }]
+      imageURL: '/images/zp_logo.jpg',
+      logos: [{ Id: "Python", imageURL: "/images/python_logo.png" }, { Id: "PostgreSQL", imageURL: "/images/psql_logo.png" }, { Id: "Spyder", imageURL: "/images/spyd_logo.png" }, { Id: "MS Office", imageURL: "/images/ms_logo.jpg" }]
     },
     {
       Id: "J.P. Morgan",
       Role: "Software Engineer Intern",
       Date: "Jun 2023 - Aug 2023",
       Description: "Financial Crimes Team",
-      imageURL: require('../images/jpm_logo.png'),
+      imageURL: '/images/jpm_logo.png',
       logos: []
     },
     {
@@ -56,7 +56,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Role: "Software Engineer Intern",
       Date: "Dec 2023 - May 2024",
       Description: "Involved in projects relating to large language models and data engineering | Optimised information retrieval of customer-facing internal search engine, improving search relevance by up to 10%|Streamlined search index creation with azure functions",
-      imageURL: require('../images/cpf_logo.png'),
+      imageURL: '/images/cpf_logo.png',
       logos: []
     },
     {
@@ -64,8 +64,8 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Role: "Software Engineer",
       Date: "Jun 2024 - Present",
       Description: "Marketplace core team",
-      imageURL: require('../images/shopee_logo.png'),
-      logos: [{ Id: "Golang", imageURL: require("../images/go_logo.png") }]
+      imageURL: '/images/shopee_logo.png',
+      logos: [{ Id: "Golang", imageURL: "/images/go_logo.png" }]
     }
   ]
 
@@ -75,16 +75,16 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Role: "Accounting and Finance Diploma",
       Date: "Apr 2015 - Apr 2018",
       Description: "Diploma plus with merit and a CGPA of 3.93/4.00.",
-      imageURL: require('../images/tp_logo.png'),
-      logos: [{ Id: "MS Office", imageURL: require("../images/ms_logo.jpg") }]
+      imageURL: '/images/tp_logo.png',
+      logos: [{ Id: "MS Office", imageURL: "/images/ms_logo.jpg" }]
     },
     {
       Id: "Nanyang Technological University",
       Role: "Business and Computing Double Degree",
       Date: "Aug 2020 - May 2024",
       Description: "Graduated with Honours (Distinction)|Dean’s List (BUS) AY2022/2023",
-      imageURL: require('../images/ntu_logo.jpg'),
-      logos: [{ Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "Java", imageURL: require("../images/java_logo.png") }, { Id: "C++", imageURL: require("../images/cpp_logo.png") }, { Id: "React", imageURL: require("../images/react_logo.png") }, { Id: "R", imageURL: require("../images/r_logo.png") }, { Id: "MySQL", imageURL: require("../images/mysql_logo.png") }, { Id: "mongoDB", imageURL: require("../images/mongo_logo.png") }]
+      imageURL: '/images/ntu_logo.jpg',
+      logos: [{ Id: "Python", imageURL: "/images/python_logo.png" }, { Id: "Java", imageURL: "/images/java_logo.png" }, { Id: "C++", imageURL: "/images/cpp_logo.png" }, { Id: "React", imageURL: "/images/react_logo.png" }, { Id: "R", imageURL: "/images/r_logo.png" }, { Id: "MySQL", imageURL: "/images/mysql_logo.png" }, { Id: "mongoDB", imageURL: "/images/mongo_logo.png" }]
     }
   ]
 
@@ -94,32 +94,32 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Role: "Red-pill group leader",
       Date: "Feb 2022",
       Description: "Analyzed faux bank financial statements for fraud and impressed by implementing machine learning models in multi-faceted solution.",
-      imageURL: require('../images/pill_logo.png'),
-      logos: [{ Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "Anaconda", imageURL: require("../images/anaconda_logo.png") }, { Id: "MS Office", imageURL: require("../images/ms_logo.jpg") }]
+      imageURL: '/images/pill_logo.png',
+      logos: [{ Id: "Python", imageURL: "/images/python_logo.png" }, { Id: "Anaconda", imageURL: "/images/anaconda_logo.png" }, { Id: "MS Office", imageURL: "/images/ms_logo.jpg" }]
     },
     {
       Id: "J.P. Morgan Code For Good 2022 - Champions",
       Role: "Front-end developer",
       Date: "Oct 2022",
       Description: "Developed and demonstrated comprehensive methods and supporting systems to address client's bottleneck in query processing.",
-      imageURL: require('../images/cfg_team_logo.jpg'),
-      logos: [{ Id: "React", imageURL: require("../images/react_logo.png") }, { Id: "Node JS", imageURL: require("../images/njs_logo.png") }, { Id: "Heroku", imageURL: require("../images/Heroku_logo.png") }]
+      imageURL: '/images/cfg_team_logo.jpg',
+      logos: [{ Id: "React", imageURL: "/images/react_logo.png" }, { Id: "Node JS", imageURL: "/images/njs_logo.png" }, { Id: "Heroku", imageURL: "/images/Heroku_logo.png" }]
     },
     {
       Id: "J.P. Morgan Global Hackathon - Singapore 2023 - Champions",
       Role: "Team lead",
       Date: "Jun 2023",
       Description: "Developed innovative POC for internal users.",
-      imageURL: require('../images/gh_logo.jpg'),
-      logos: [{ Id: "React", imageURL: require("../images/react_logo.png") }, { Id: "Node JS", imageURL: require("../images/njs_logo.png") }, { Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "AWS", imageURL: require("../images/aws_logo.png") }]
+      imageURL: '/images/gh_logo.jpg',
+      logos: [{ Id: "React", imageURL: "/images/react_logo.png" }, { Id: "Node JS", imageURL: "/images/njs_logo.png" }, { Id: "Python", imageURL: "/images/python_logo.png" }, { Id: "AWS", imageURL: "/images/aws_logo.png" }]
     },
     {
       Id: "GIC Code To impact - Champions",
       Role: "Devops, Full-stack and GenAI Team Lead",
       Date: "Sep 2023",
       Description: "Built analytics application with generative AI capabilities.|Leveraged AWS Kendra for novel Retrieval Augmented Generation (RAG) implementation",
-      imageURL: require('../images/gic_logo.png'),
-      logos: [{ Id: "React", imageURL: require("../images/react_logo.png") }, { Id: "Node JS", imageURL: require("../images/njs_logo.png") }, { Id: "Python", imageURL: require("../images/python_logo.png") }, { Id: "AWS", imageURL: require("../images/aws_logo.png") }]
+      imageURL: '/images/gic_logo.png',
+      logos: [{ Id: "React", imageURL: "/images/react_logo.png" }, { Id: "Node JS", imageURL: "/images/njs_logo.png" }, { Id: "Python", imageURL: "/images/python_logo.png" }, { Id: "AWS", imageURL: "/images/aws_logo.png" }]
     }
     
   ]

@@ -4,15 +4,13 @@ import TGP from '../components/TGP';
 import introStyle from '../intro.module.css'
 import MouseSVG from '../svg/Mouse'
 import ScrollMouse from '../svg/ScrollMouse';
-import resumePDF from '../resume_Jacques.pdf'
 import MultilineTGS from '../components/MultilineTGS';
+import { useDispatch, useSelector } from "react-redux";
+import { setThinking, addChatMessage,setDialogue, setTempDialogue, setShowChat } from "../store/chatbotStateSlice";
 
 const Intro = ({setChatBoxActive,setIntroRef,contactRef,profileFade}) => {
-  const playImage=require('../board-game.png')
-  const myImage=require('../jacques_bg.png')
-  const cropImage=require('../jacques_only.png')
-  const bookImage=require('../book.png')
-  const goalImage=require('../mountain.png')
+
+  const dispatch = useDispatch();
   const [helloFade,setHelloFade]=useState(true);
   const [helloText,setHelloText]=useState("");
   const [helloSentinal,setHelloSentinal]=useState(0);
@@ -148,7 +146,7 @@ const Intro = ({setChatBoxActive,setIntroRef,contactRef,profileFade}) => {
 
   const getResume = () => {
     // using Java Script method to get PDF file
-    fetch(resumePDF).then(response => {
+    fetch("/resume_Jacques.pdf").then(response => {
         response.blob().then(blob => {
             // Creating new object of PDF file
             const fileURL = window.URL.createObjectURL(blob);
@@ -194,12 +192,12 @@ useEffect(() => {
     <div className='flex flex-col imageLoad' onTouchStart={()=>{setTouchOpen(true)}}>
       <div className='image-size flex static' onMouseMove={()=>{if(loaded)setInImage(true);}} onMouseLeave={()=>{handleExitImage();imageRef.current.style.transform = `perspective(1000px) rotateX(${0}deg) rotateY(${0}deg)`}}>
     <div ref={imageRef} className="image-size static cursor-pointer blur-none overflow-hidden group rounded-lg"   >
-    <img  className={"image-size absolute transition duration-500 ease-in-out transform -z-20 scale-100 group-hover:scale-110 "  +((transitChange)?'':introStyle['img-hover'])} src={cropImage} alt="image description"
+    <img  className={"image-size absolute transition duration-500 ease-in-out transform -z-20 scale-100 group-hover:scale-110 "  +((transitChange)?'':introStyle['img-hover'])} src="jacques_only.png" alt="image description"
     style={(inImage && !isTouchScreen)?{top: `${Math.floor(((imageRef.current?.offsetTop+Math.floor(imageRef.current?.clientHeight/2))-mousePos.y)/16)}px`, 
     left: `${Math.floor(((imageRef.current?.offsetLeft+Math.floor(imageRef.current?.clientWidth/2))-mousePos.x)/16)}px`}:{top:'0px',left:'0px'}} 
     onMouseDown={(e)=>{imageClickHandler(e)}}/>
     <img  className={"image-size absolute transition transform duration-500 ease-in-out  -z-50 scale-110 group-hover:blur-sm "  +((transitChange)?'':introStyle['img-hover'])}
-    src={myImage} alt="image description" 
+    src="/jacques_bg.png" alt="image description" 
     style={(inImage && !isTouchScreen)?{top: `${Math.floor(((imageRef.current?.offsetTop+Math.floor(imageRef.current?.clientHeight/2))-mousePos.y)/8)}px`, 
     left: `${Math.floor(((imageRef.current?.offsetLeft+Math.floor(imageRef.current?.clientWidth/2))-mousePos.x)/8)}px`}:{top:'0px',left:'0px'}} 
     onMouseDown={(e)=>{imageClickHandler(e)}}/>
@@ -278,7 +276,7 @@ useEffect(() => {
         <div className='flex flex-row content-center items-center'>
         <button className='skip-button' onClick={()=>{getResume()}}>Resume</button>
         <button className='skip-button' onClick={()=>window.scrollTo({top: contactRef.current.offsetTop, behavior: 'smooth'})}>Contact Me</button>
-        <button className='skip-button' onClick={()=>{setChatBoxActive(true)}}>Chat Bot</button>
+        <button className='skip-button' onClick={()=>{dispatch(setShowChat(true))}}>Chat Bot</button>
         </div>
         </>}
         </div>

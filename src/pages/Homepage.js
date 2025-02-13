@@ -5,9 +5,8 @@ import LogoLoad from './LogoLoad';
 import Experience from './Experience';
 import Project from './Project';
 import Contact from './Contact';
-import Chat from '../components/aichat/AIChat';
-import resumePDF from '../resume_Jacques.pdf'
 import Modal from '../components/modal/Modal';
+import ChatIcon from '../components/chat/ChatIcon';
 
 const Homepage = (props) => {
   const [isOpen,setIsOpen]=useState(false);
@@ -38,7 +37,7 @@ const Homepage = (props) => {
 
   const getResume = () => {
     // using Java Script method to get PDF file
-    fetch(resumePDF).then(response => {
+    fetch("/resume_Jacques.pdf").then(response => {
         response.blob().then(blob => {
             // Creating new object of PDF file
             const fileURL = window.URL.createObjectURL(blob);
@@ -108,7 +107,8 @@ const Homepage = (props) => {
     {(headerLoaded)?
     <>
     {/* <SideLinks/> */}
-    <Chat isBootingUp={props.isBootingUp} writeLast={props.writeLast} setWriteLast={props.setWriteLast} handleRefStrClick={handleRefStrClick} isThinking={props.isThinking} handleSubmit={props.handleSubmit} prepareText={props.prepareText} chatHistory={props.chatHistory} setChatHistory={props.setChatHistory} chatContext={props.chatContext} setChatContext={props.setChatContext} chatBoxActive={props.chatBoxActive} setChatBoxActive={props.setChatBoxActive} chatInputText={props.chatInputText} setChatInputText={props.setChatInputText}/>
+    <ChatIcon handleRefStrClick={handleRefStrClick}/>
+    
     <Intro setChatBoxActive={props.setChatBoxActive} contactRef={contactRef} setIntroRef={setIntroRef} setAboutRef={setAboutRef} profileFade={profileFade}/>
     <Experience setExperienceRef={setExperienceRef} experienceReveal={experienceReveal} experienceFade={experienceFade}/>
     <Project setProjectRef={setProjectRef} projectReveal={projectReveal} projectFade={projectFade}/>
