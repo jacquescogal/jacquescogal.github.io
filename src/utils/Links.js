@@ -39,6 +39,8 @@ const extractLinks = (texts)=>{
     const pattern = /%%(.*?)%%/g;
   
     const matches = text.match(pattern);
+
+    console.log("link",text, matches)
     const texts = matches ? matches.map(match => match.slice(2, -2)) : [];
     const modifiedPassage = text.replace(pattern, '');
     const links = extractLinks(texts);
