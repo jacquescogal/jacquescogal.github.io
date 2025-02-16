@@ -4,28 +4,28 @@ import { ChatLink } from "../types/Chatbot.ss"
 const extractLinks = (texts)=>{
     const links=[]
     texts.forEach(text=>{
-    switch(text){
+    switch(text.toLowerCase()){
       case "contact":
-        links.push({type:"internal",text:"Contact me",where:"contact"})
-        break;
+      links.push({type:"internal",text:"Contact me",where:"contact"})
+      break;
       case "linkedin":
-        links.push({type:"external",text:"LinkedIn",where:"https://www.linkedin.com/in/j-cogal/"})
-        break;
+      links.push({type:"external",text:"LinkedIn",where:"https://www.linkedin.com/in/j-cogal/"})
+      break;
       case "github":
-        links.push({type:"external",text:"GitHub",where:"https://github.com/jacquescogal"})
-        break;
+      links.push({type:"external",text:"GitHub",where:"https://github.com/jacquescogal"})
+      break;
       case "leetcode":
-        links.push({type:"external",text:"LeetCode",where:"https://leetcode.com/jacquescogal/"})
-        break;
+      links.push({type:"external",text:"LeetCode",where:"https://leetcode.com/jacquescogal/"})
+      break;
       case "project":
-        links.push({type:"internal",text:"Projects",where:"projects"})
-        break;
+      links.push({type:"internal",text:"Projects",where:"projects"})
+      break;
       case "experience":
-        links.push({type:"internal",text:"Experience",where:"experiences"})
-        break;
+      links.push({type:"internal",text:"Experience",where:"experiences"})
+      break;
       case "resume":
-        links.push({type:"internal",text:"Resume",where:"resume"})
-        break;
+      links.push({type:"internal",text:"Resume",where:"resume"})
+      break;
     }})
     return links;
   }

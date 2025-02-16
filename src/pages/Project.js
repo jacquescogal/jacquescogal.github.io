@@ -55,7 +55,7 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
     <div className='section-block project-block hide' ref={projectRef}>
     <p className='flex-none px-8 pt-4 text-left title-comp intro-load'>
     <span className='section-text text-4xl' >3.</span>
-    <MultilineTGS toGenerateMap={["Projects"," (Latest created projects, fetched from github API)"]} classNameMap={["number-text","flair-text"]}/>
+    <MultilineTGS toGenerateMap={["Projects"," (github API)"]} classNameMap={["number-text","flair-text"]}/>
     </p>
     {projectCards.length===0 && <p className='flex-none px-8 pt-4 text-left title-comp intro-load text-white'>Fetching projects... (May have capped API limit, come again later)</p>}
     <div className={styles.CardDeck}>

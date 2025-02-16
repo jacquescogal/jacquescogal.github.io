@@ -99,7 +99,7 @@ const Header = ({forceNav, setForceNav,forceNavMin, setForceNavMin,closable,setC
   return (
     <>
       {/* For desktop */}
-      <div ref={navBarRef} className={'sticky top-0 transition ease-in-out duration-500 block header-background backdrop-blur z-40 hidden xl:block ' + ((isOpen) ? 'translate-y-0' : '-translate-y-full')}>
+      <div ref={navBarRef} className={'sticky top-0 transition ease-in-out duration-500 block header-background backdrop-blur z-40 hidden xl:block translate-y-0' }>
         <div className='logo-holder'>
           <Logo onClick={() => { handleRefClick(menu[0].ref) }} />
         </div>
@@ -128,7 +128,7 @@ const Header = ({forceNav, setForceNav,forceNavMin, setForceNavMin,closable,setC
         </div>
       </div>
 
-      <div ref={smallBarRef} className={'sticky top-0 transition ease-in-out duration-500 block header-background backdrop-blur z-40 block xl:hidden ' + ((isOpen || !closable) ? 'translate-y-0' : '-translate-y-full')}>
+      <div ref={smallBarRef} className={'sticky top-0 transition ease-in-out duration-500 block header-background backdrop-blur z-40 block xl:hidden translate-y-0'}>
         <div className='logo-holder'>
           <Logo onClick={() => { handleRefClick(menu[0].ref) }} />
         </div>

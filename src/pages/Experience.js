@@ -5,12 +5,12 @@ import useScrollSnap from "react-use-scroll-snap";
 import '../drag.scss';
 import TGS from '../components/TGS';
 import MultilineTGS from '../components/MultilineTGS';
+import DragSelect from '../components/drag/DragSelect';
 
 const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
 
   const [, updateState] = React.useState();
   const forceUpdate = React.useCallback(() => updateState({}), []);
-
   const [activeGroup, setActiveGroup] = useState("work")
 
   const experienceRef = useRef(null);
@@ -132,22 +132,22 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
   let scrollLeft;
   let snapTo = 0;
 
-  const dragMouseDownHandler = (e) => {
-    setUseTouch(false)
-    isDown = true;
-    slider.classList.add('active');
-    startX = e.pageX - slider.offsetLeft;
-    scrollLeft = slider.scrollLeft;
-    cancelMomentumTracking();
-  }
+  // const dragMouseDownHandler = (e) => {
+  //   setUseTouch(false)
+  //   isDown = true;
+  //   slider.classList.add('active');
+  //   startX = e.pageX - slider.offsetLeft;
+  //   scrollLeft = slider.scrollLeft;
+  //   cancelMomentumTracking();
+  // }
 
-  const dragMouseLeaveHandler = () => {
-    if (isDown) {
-      isDown = false;
-      slider.classList.remove('active');
-      beginMomentumTracking();
-    }
-  }
+  // const dragMouseLeaveHandler = () => {
+  //   if (isDown) {
+  //     isDown = false;
+  //     slider.classList.remove('active');
+  //     beginMomentumTracking();
+  //   }
+  // }
 
   const dragMouseUpHandler = () => {
     if (isDown) {
@@ -197,26 +197,6 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
     }
     slider.scrollTo({ left: snapTo, behavior: 'smooth' })
   }
-
-  // legacy support for intersection observer not being available
-  //  const handleScroll = (e) => {
-  //   var atSnappingPoint = e.target.scrollLeft % e.target.offsetWidth === 0;
-  //   var timeOut         = atSnappingPoint ? 0 : 150; //see notes
-  //   currentHighlight?.classList.remove('active');
-  //   if (isDown) return
-
-  //   clearTimeout(e.target.scrollTimeout); //clear previous timeout
-
-  //   e.target.scrollTimeout = setTimeout(function() {
-  //       console.log('Scrolling stopped!');
-  //       let i;
-  //       for (i=0;i<scrollMarks.length;++i){
-  //         if (scrollMarks[i]==e.target.scrollLeft) break;
-  //       }
-  //       scrollRefs.current[i]?.classList.add('active')
-  //       setCurrentHighlight(scrollRefs.current[i]);
-  //   }, timeOut);
-  // }
   const [scrollMarks, setScrollMarks] = useState([]);
   const scrollRefs = useRef([])
   const [elementDiff, setElementDiff] = useState(0);
@@ -277,6 +257,12 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
     if (scrollMarks.length == scrollRefs.current.length) {
       slider?.scrollTo({ left: scrollRefs.current[scrollRefs.current.length - 1]?.offsetLeft + scrollRefs.current[scrollRefs.current.length - 1]?.clientWidth / 2 - window.innerWidth / 2, behavior: 'smooth' });
       setActiveNode(scrollMarks.length - 1);
+    }
+  }
+  const scrollTo = (number) =>{
+    if (scrollMarks.length == scrollRefs.current.length) {
+    slider?.scrollTo({ left: scrollRefs.current[number - 1]?.offsetLeft + scrollRefs.current[number - 1]?.clientWidth / 2 - window.innerWidth / 2, behavior: 'smooth' });
+      setActiveNode(number-1);
     }
   }
 
@@ -371,7 +357,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
         {/* First line */}
         <p className='title-comp flex-none px-8 pt-4 text-left section-block'>
           <span className='section-text text-4xl  '>2.</span>
-          <MultilineTGS toGenerateMap={["Experience", " Traverse by dragging/click drag"]} classNameMap={["number-text", "flair-text"]} observable={experienceReveal} />
+          <MultilineTGS toGenerateMap={["Experience"]} classNameMap={["number-text", "flair-text"]} observable={experienceReveal} />
         </p>
         <div className='button-group'>
           <button className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "work") ? "  button-active no-click  " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("work");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(workExperience); }}>Work</button>
@@ -382,15 +368,18 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
           <div className='ip-dark'/>
           <img src={popupImage} className='ip-image'/>
         </div>
+
+      <DragSelect experience={loadThis} scrollTo={scrollTo}/>
         <div id='drag-hold' className={"items bg-slate-950 " + ((useTouch) ? " snap-mandatory snap-x " : "")}
-          onMouseDown={(e) => { setUseTouch(false); dragMouseDownHandler(e); }}
-          onMouseLeave={() => { dragMouseLeaveHandler() }}
-          onMouseUp={(e) => { dragMouseUpHandler() }}
-          onWheel={(e) => { handleWheel(e) }}
-          onMouseMove={(e) => { dragMouseMoveHandler(e) }}
-          onTouchStart={() => { setUseTouch(true) }}
+          // onMouseDown={(e) => { setUseTouch(false); dragMouseDownHandler(e); }}
+          // onMouseLeave={() => { dragMouseLeaveHandler() }}
+          // onMouseUp={(e) => { dragMouseUpHandler() }}
+          // onWheel={(e) => { handleWheel(e) }}
+          // onMouseMove={(e) => { dragMouseMoveHandler(e) }}
+          // onTouchStart={() => { setUseTouch(true) }}
           onScroll={(e) => { handleIntersectionObserver() }}
         >
+
           <div className='drag-line '
             style={{ width: `${scrollRefs.current[scrollRefs.current.length - 1]?.offsetLeft - scrollRefs.current[0]?.offsetLeft}px` }}></div>
           {loadThis.map((exp, i) =>
@@ -419,12 +408,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
                       </div>
                     )}
                   </div>
-
-
-
                 </div>
-
-
               </div>
             </>
           )}

@@ -9,15 +9,12 @@ import Modal from '../components/modal/Modal';
 import ChatIcon from '../components/chat/ChatIcon';
 
 const Homepage = (props) => {
-  const [isOpen,setIsOpen]=useState(false);
-  const [showMenu,setShowMenu]=useState(false);
   const [introRef,setIntroRef]=useState(null);
   const [aboutRef,setAboutRef]=useState(null);
   const [experienceRef,setExperienceRef]=useState(null);
   const [projectRef,setProjectRef]=useState(null);
   const [contactRef,setContactRef]=useState(null);
-  const [setHeaderHighlight]=useState(null);
-  const [logoLoaded,setLogoLoaded]=useState(false);
+  const [logoLoaded,setLogoLoaded]=useState(true);
   const [headerLoaded,setHeaderLoaded]=useState(false);
   const [experienceReveal,setExperienceReveal]=useState(false);
   const [projectReveal,setProjectReveal]=useState(false);

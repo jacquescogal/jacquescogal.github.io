@@ -8,8 +8,6 @@ import { setShowChat, setDialogue, setTempDialogue } from "../../store/chatbotSt
 const thinkingDialogue = "Thinking...";
 const doneDialogue = "Done!";
 const talkSoonDialogue = "Talk to you soon!";
-const sendDialogue = "It's here!";
-
 
 const ChatIcon = (props) => {
   const dispatch = useDispatch();
@@ -43,13 +41,13 @@ const ChatIcon = (props) => {
   },[isThinking])
   return (
     <>
-      <div ref={constraintsRef} className="fixed right-0 w-1/4 h-3/4 my-10 z-[1000]">
+      <div ref={constraintsRef} className="fixed right-0 w-1/4 h-3/4 my-10 z-[20000] select-none pointer-events-none">
         <motion.div
           drag={!showChat}
           dragControls={controls}
           dragElastic={0.2}
           dragConstraints={showChat ? false : constraintsRef}
-          className="absolute bottom-0 h-20 w-20 bg-gradient-to-br from-blue-500 to-indigo-900 rounded-full flex items-center justify-center z-10 cursor-pointer active:cursor-grabbing"
+          className="absolute bottom-0 h-20 w-20 bg-gradient-to-br from-blue-500 to-indigo-900 rounded-full flex items-center justify-center z-10 cursor-pointer active:cursor-grabbing select-auto  pointer-events-auto"
           whileHover={{ scale: showChat ? 0 : 1.1 }}
           onHoverStart={() => setIsHovering(true)}
           onHoverEnd={() => setIsHovering(false)}
