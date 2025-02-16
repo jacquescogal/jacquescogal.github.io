@@ -15,7 +15,7 @@ const LogoLoad = ({setLogoLoaded}) => {
       const timeout=setTimeout(()=>{
         document.body.style.overflow="auto"
         setLogoLoaded(true);
-      },3100)
+      },1500)
       return ()=>clearTimeout(timeout);
     },[])
 
