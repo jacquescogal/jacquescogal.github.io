@@ -17,7 +17,7 @@ const ChatModal = ({ handleRefStrClick }) => {
   const dispatch = useDispatch();
   const showChat = useSelector((state) => state.chatbotState.showChat);
   return (
-    <div className={"fixed h-full w-full flex items-center justify-center z-[1000] top-0" + (showChat ? "" : " hidden")}>
+    <div className={"fixed h-full w-full flex items-center justify-center z-[1000] top-0 z-[20000] " + (showChat ? "" : " hidden")}>
       <motion.div
         className="relative h-3/4 md:w-1/2 w-3/4 flex flex-col bg-primary rounded-md shadow-lg overflow-hidden"
         animate={{ scale: showChat ? 1 : 0.9 }}
