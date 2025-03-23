@@ -66,7 +66,15 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Description: "Marketplace core team",
       imageURL: '/images/shopee_logo.png',
       logos: [{ Id: "Golang", imageURL: "/images/go_logo.png" }]
-    }
+    },
+    {
+      Id: "UBS",
+      Role: "Software Engineer",
+      Date: "Feb 2025 - Present",
+      Description: "Group Operations and Technology Office (GOTO) Graduate Talent Program (GTP)",
+      imageURL: '/images/ubs_logo.png',
+      logos: []
+    },
   ]
 
   const schoolExperience = [
