@@ -38,7 +38,7 @@ const chatbotStateSlice = createSlice({
         state.chatHistory.push(action.payload);
     },
     setDialogue: (state, action) => {
-      
+    
         state.dialogue = action.payload;
     }
 

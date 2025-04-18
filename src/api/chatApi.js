@@ -15,8 +15,8 @@ export const sendChatMessage = async (chat_history, user_message) => {
     const payload = {
       chat_history: chat_history_payload,
       user_message: user_message,
+      conversation_id: await getConversationid(),
     };
-    console.log(payload);
     const response = await axios.post(CHAT_URL, payload, {
       headers: { "Content-Type": "application/json" },
     });
@@ -26,3 +26,11 @@ export const sendChatMessage = async (chat_history, user_message) => {
     throw error;
   }
 };
+
+const getConversationid = async () => {
+  if (sessionStorage.getItem("conversation_id") === null || sessionStorage.getItem("conversation_id") === undefined) {
+    const response = await axios.get(CHAT_URL + "/id");
+    sessionStorage.setItem("conversation_id", response.data.conversation_id);
+  }
+  return sessionStorage.getItem("conversation_id");
+}

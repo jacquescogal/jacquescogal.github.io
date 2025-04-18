@@ -60,7 +60,7 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
     {projectCards.length===0 && <p className='flex-none px-8 pt-4 text-left title-comp intro-load text-white'>Fetching projects... (May have capped API limit, come again later)</p>}
     <div className={styles.CardDeck}>
       {projectCards.map((card,id)=>(
-        <div className={`${styles.Card} ${activeProject===id && styles.Active}`} onMouseEnter={e=>{setActiveProject(id)}}>
+        <div key={id} className={`${styles.Card} ${activeProject===id && styles.Active}`} onMouseEnter={e=>{setActiveProject(id)}}>
           {/* <div className={styles.TitleJustify}> */}
           <a href={card.url_link} target="_blank" rel="noreferrer">
           <span className={styles.CardTitle}>{card.title}   <BiLinkExternal size={15}/></span>

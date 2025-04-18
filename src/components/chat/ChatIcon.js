@@ -62,13 +62,16 @@ const ChatIcon = (props) => {
           animate={{
             scale: showChat ? 0 : 1,
             background: isHovering
-              ? "linear-gradient(135deg,rgb(49,46,129),rgb(59,130,246))"
-              : "linear-gradient(135deg, rgb(59,130,246),rgb(49,46,129))",
+              ? "linear-gradient(135deg,rgb(183, 177, 248),rgb(177, 177, 248))"
+              : "linear-gradient(135deg, rgb(177, 248, 247),rgb(92, 143, 226))",
           }}
           transition={{ duration: 0.3, ease: "easeIn" }}
         >
-          <div className="pointer-events-none scale-110">
-            <img src="/ai_mascot_only.png" />
+          <div className="h-full w-full rounded-full overflow-hidden">
+          <div className="pointer-events-none scale-110 translate-y-1">
+            {dialogue === thinkingDialogue ? <img src="/ai_mascot_think.png" />: dialogue === doneDialogue ? <img src="/ai_mascot_answer.png" />:<img src="/ai_mascot_only.png" />}
+            
+          </div>
           </div>
          {!isDragging && (
             <motion.div
