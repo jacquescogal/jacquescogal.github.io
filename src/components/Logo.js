@@ -5,12 +5,12 @@ const Logo = ({onClick}) => {
     <div className="container-small noselect cursor-pointer" onClick={onClick}>
     <div className="cube">
     <div className="face front  border-2">
-          <TGP  initialText={">J"} className={"face-text  w-max align-center self-center absolute tracking-widest"}
+          <TGP  initialText={">J"} className={"face-text  w-max align-center self-center absolute top-0 left-0 tracking-widest"}
 style = { {
   transform: `translate(${5}px, ${-20 }px)` 
 }}
       quickLeave={false} speed={5} preoccupy={false}/>
-      <TGP  initialText={"__acques Cogal"}  toGenerate={"__acques Cogal"} className={"face-overflow  w-max align-center self-center absolute tracking-widest"}
+      <TGP  initialText={"__acques Cogal"}  toGenerate={"__acques Cogal"} className={"face-overflow  w-max align-center self-center absolute  top-0 left-0 tracking-widest"}
 style = { {
   transform: `translate(${5}px, ${-20 }px)` 
 }}

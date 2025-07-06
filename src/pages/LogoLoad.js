@@ -45,12 +45,12 @@ const LogoLoad = ({setLogoLoaded}) => {
           <div className="face right"></div>
 
           <div className="face front bg-green-200 border-green-200 border-2">
-          <TGP  toGenerate={">J"} className={"text-slate-950  w-max align-center self-center absolute tracking-widest"}
+          <TGP  toGenerate={">J"} className={"text-slate-950  w-max align-center self-center absolute  top-0 left-0 tracking-widest"}
 style = { {
   transform: `translate(${5}px, ${-20 }px)` 
 }}
       quickLeave={false} speed={5} preoccupy={false}/>
-      <TGP  toGenerate={logoText} className={"text-green-200  w-max align-center self-center absolute tracking-widest"}
+      <TGP  toGenerate={logoText} className={"text-green-200  w-max align-center self-center absolute  top-0 left-0 tracking-widest"}
 style = { {
   transform: `translate(${5}px, ${-20 }px)` 
 }}
