@@ -8,7 +8,7 @@ import {
   setTempDialogue,
   setShowChat,
 } from "../../store/chatbotStateSlice";
-import { sendChatMessage } from "../../api/chatApi";
+import { sendChatMessage, getChatSuggestions } from "../../api/chatApi";
 import { linkTextParser } from "../../utils/Links";
 import { IoClose } from "react-icons/io5";
 import { IoIosSend } from "react-icons/io";
@@ -93,6 +93,8 @@ const ChatModal = ({ handleRefStrClick }) => {
 const ChatBox = ({ handleRefStrClick }) => {
   const [sendIsHovered, setSendIsHovered] = useState(false);
   const [message, setMessage] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const bottomRef = useRef(null);
   const dispatch = useDispatch();
   const chatHistory = useSelector((state) => state.chatbotState.chatHistory);
@@ -115,6 +117,23 @@ const ChatBox = ({ handleRefStrClick }) => {
     }
   };
 
+  const loadSuggestions = async () => {
+    if (chatHistory.length > 0) {
+      try {
+        const newSuggestions = await getChatSuggestions(chatHistory);
+        setSuggestions(newSuggestions);
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Failed to load suggestions:", error);
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
   const DeliverMessage = () => {
     if (message === "") {
       dispatch(
@@ -129,6 +148,7 @@ const ChatBox = ({ handleRefStrClick }) => {
     dispatch(addChatMessage({ message: message, entity: "USER", links: [] }));
     const userMessage = message;
     setMessage("");
+    setShowSuggestions(false);
     dispatch(setThinking(true));
     sendChatMessage(chatHistory, userMessage)
       .then((response) => {
@@ -149,7 +169,39 @@ const ChatBox = ({ handleRefStrClick }) => {
           })
         );
       })
-      .finally(() => dispatch(setThinking(false)));
+      .finally(() => {
+        dispatch(setThinking(false));
+      });
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setMessage(suggestion);
+    setShowSuggestions(false);
+    dispatch(addChatMessage({ message: suggestion, entity: "USER", links: [] }));
+    dispatch(setThinking(true));
+    sendChatMessage(chatHistory, suggestion)
+      .then((response) => {
+        dispatch(
+          addChatMessage({
+            entity: "AI",
+            ...linkTextParser(response.ai_message),
+          })
+        );
+      })
+      .catch((error) => {
+        console.log("error");
+        dispatch(
+          addChatMessage({
+            entity: "SYSTEM",
+            message: `error: ${error}`,
+            links: [],
+          })
+        );
+      })
+      .finally(() => {
+        dispatch(setThinking(false));
+      });
+    setMessage("");
   };
 
   useEffect(() => {
@@ -158,8 +210,16 @@ const ChatBox = ({ handleRefStrClick }) => {
       if (chatContainer) {
         chatContainer.scrollTop = chatContainer.scrollHeight;
       }
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [chatHistory]);
+  }, [chatHistory, showSuggestions, suggestions]);
+
+  useEffect(()=>{
+    if (chatHistory[chatHistory.length - 1]?.entity === "AI"){
+
+    loadSuggestions();
+    }
+  },[chatHistory])
 
   return (
     <div className="w-full h-full flex flex-col relative overflow-hidden bg-white">
@@ -174,7 +234,23 @@ const ChatBox = ({ handleRefStrClick }) => {
           />
         ))}
         {isThinking && <ChatMessage entity="THINK" />}
-        <div ref={bottomRef} />
+        {showSuggestions && suggestions.length > 0 && (
+          <div className="mt-4 p-3 bg-neutral-300 rounded-lg border">
+            <p className="text-sm text-slate-800 mb-2 font-medium">Suggested questions:</p>
+            <div className="flex flex-col gap-2">
+              {suggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="text-left p-2 text-sm bg-white border border-gray-200 rounded hover:bg-blue-50 hover:border-blue-300 transition-colors duration-200"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <div ref={bottomRef}/>
       </div>
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="relative color-content h-32 w-full  rounded-b-md border-t-2 border-slate-600 flex">
