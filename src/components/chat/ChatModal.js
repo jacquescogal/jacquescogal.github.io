@@ -12,6 +12,7 @@ import { sendChatMessage, getChatSuggestions } from "../../api/chatApi";
 import { linkTextParser } from "../../utils/Links";
 import { IoClose } from "react-icons/io5";
 import { IoIosSend } from "react-icons/io";
+import { HiLightBulb } from "react-icons/hi";
 
 import style from "./AIChat.module.scss";
 import { BiLinkExternal } from "react-icons/bi";
@@ -95,6 +96,7 @@ const ChatBox = ({ handleRefStrClick }) => {
   const [message, setMessage] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const bottomRef = useRef(null);
   const dispatch = useDispatch();
   const chatHistory = useSelector((state) => state.chatbotState.chatHistory);
@@ -119,18 +121,29 @@ const ChatBox = ({ handleRefStrClick }) => {
 
   const loadSuggestions = async () => {
     if (chatHistory.length > 0) {
+      setLoadingSuggestions(true);
       try {
         const newSuggestions = await getChatSuggestions(chatHistory);
         setSuggestions(newSuggestions);
-        setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to load suggestions:", error);
         setSuggestions([]);
-        setShowSuggestions(false);
+      } finally {
+        setLoadingSuggestions(false);
       }
     } else {
       setSuggestions([]);
+    }
+  };
+
+  const toggleSuggestions = async () => {
+    if (showSuggestions) {
       setShowSuggestions(false);
+    } else {
+      setShowSuggestions(true);
+      if (suggestions.length === 0) {
+        await loadSuggestions();
+      }
     }
   };
 
@@ -149,6 +162,7 @@ const ChatBox = ({ handleRefStrClick }) => {
     const userMessage = message;
     setMessage("");
     setShowSuggestions(false);
+    setSuggestions([]);
     dispatch(setThinking(true));
     sendChatMessage(chatHistory, userMessage)
       .then((response) => {
@@ -177,6 +191,7 @@ const ChatBox = ({ handleRefStrClick }) => {
   const handleSuggestionClick = (suggestion) => {
     setMessage(suggestion);
     setShowSuggestions(false);
+    setSuggestions([]);
     dispatch(addChatMessage({ message: suggestion, entity: "USER", links: [] }));
     dispatch(setThinking(true));
     sendChatMessage(chatHistory, suggestion)
@@ -214,12 +229,6 @@ const ChatBox = ({ handleRefStrClick }) => {
     }
   }, [chatHistory, showSuggestions, suggestions]);
 
-  useEffect(()=>{
-    if (chatHistory[chatHistory.length - 1]?.entity === "AI"){
-
-    loadSuggestions();
-    }
-  },[chatHistory])
 
   return (
     <div className="w-full h-full flex flex-col relative overflow-hidden bg-white">
@@ -252,6 +261,24 @@ const ChatBox = ({ handleRefStrClick }) => {
         )}
         <div ref={bottomRef}/>
       </div>
+      {chatHistory.length > 0 && !isThinking && (
+        <div className="px-3 py-2 border-t border-gray-200">
+          <button
+            onClick={toggleSuggestions}
+            disabled={loadingSuggestions}
+            className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition-colors duration-200 disabled:opacity-50"
+          >
+            <HiLightBulb className="text-lg" />
+            {loadingSuggestions ? (
+              "Loading suggestions..."
+            ) : showSuggestions ? (
+              "Hide suggestions"
+            ) : (
+              "Get suggestions"
+            )}
+          </button>
+        </div>
+      )}
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="relative color-content h-32 w-full  rounded-b-md border-t-2 border-slate-600 flex">
           <textarea
