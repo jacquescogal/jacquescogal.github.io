@@ -22,11 +22,9 @@ const Homepage = (props) => {
   const [experienceFade,setExperienceFade]=useState(false);
   const [projectFade,setProjectFade]=useState(false);
   const [contactFade,setContactFade]=useState(false);
-  const lightMode=document.querySelector(".light-mode");
-  const [light,setLight]=useState(false);
+  const [light,setLight]=useState(true);
 
   const handleLight=()=>{
-    lightMode.classList.toggle('light')
     setLight(!light)
   }
 
@@ -86,7 +84,7 @@ const Homepage = (props) => {
   };
 
   return (
-    <div className="light-mode">
+    <div className={light ? "light-mode light" : "light-mode"}>
     <>
     <div className='fixed w-full h-full background-parent -z-50'/>
     <Header forceNav={forceNav} forceNavMin={forceNavMin} setForceNav={setForceNav} setForceNavMin={setForceNavMin}closable={closable} setClosable={setClosable} handleRefClick={handleRefClick} navBarRef={navBarRef} smallBarRef={smallBarRef} stickerRef={stickerRef} introRef={introRef} aboutRef={aboutRef} experienceRef={experienceRef} projectRef={projectRef} 

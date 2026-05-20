@@ -30,6 +30,7 @@ test("opens chat when an assistant prompt is clicked", async () => {
   await userEvent.click(screen.getByRole("button", { name: /Role fit/i }));
 
   expect(store.getState().chatbotState.showChat).toBe(true);
+  expect(store.getState().chatbotState.assistantPrompt).toMatch(/fits this role/i);
 });
 
 test("offers a mobile assistant entry point", () => {

@@ -7,6 +7,7 @@ import {
   setDialogue,
   setTempDialogue,
   setShowChat,
+  setAssistantPrompt,
 } from "../../store/chatbotStateSlice";
 import { sendChatMessage, getChatSuggestions } from "../../api/chatApi";
 import { linkTextParser } from "../../utils/Links";
@@ -101,6 +102,7 @@ const ChatBox = ({ handleRefStrClick }) => {
   const dispatch = useDispatch();
   const chatHistory = useSelector((state) => state.chatbotState.chatHistory);
   const isThinking = useSelector((state) => state.chatbotState.isThinking);
+  const assistantPrompt = useSelector((state) => state.chatbotState.assistantPrompt);
   const handleInput = async (e) => {
     if (e.key === "Enter" && !e.shiftKey && isThinking === true) {
       e.preventDefault();
@@ -228,6 +230,13 @@ const ChatBox = ({ handleRefStrClick }) => {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatHistory, showSuggestions, suggestions]);
+
+  useEffect(() => {
+    if (assistantPrompt) {
+      setMessage(assistantPrompt);
+      dispatch(setAssistantPrompt(""));
+    }
+  }, [assistantPrompt, dispatch]);
 
 
   return (

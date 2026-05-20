@@ -7,6 +7,7 @@ const initialState = {
   isBootingUp: true,
   isThinking: false,
   isChatActive: false,
+  assistantPrompt: "",
   dialogue: "Hey there, click on me. I'd like to chat with you!",
   chatHistory: [{
     entity: "AI",
@@ -40,12 +41,15 @@ const chatbotStateSlice = createSlice({
     setDialogue: (state, action) => {
     
         state.dialogue = action.payload;
+    },
+    setAssistantPrompt: (state, action) => {
+        state.assistantPrompt = action.payload;
     }
 
   },
 });
 
-export const { setShowChat, setThinking, toggleThinking, setBootingUp, setChatActive, addChatMessage, setDialogue } = chatbotStateSlice.actions;
+export const { setShowChat, setThinking, toggleThinking, setBootingUp, setChatActive, addChatMessage, setDialogue, setAssistantPrompt } = chatbotStateSlice.actions;
 export default chatbotStateSlice.reducer;
 
 // Redux Thunk for setTempDialogue

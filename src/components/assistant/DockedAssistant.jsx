@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { setShowChat, setTempDialogue } from "../../store/chatbotStateSlice";
+import { setAssistantPrompt, setShowChat, setTempDialogue } from "../../store/chatbotStateSlice";
 
 const promptActions = [
   {
@@ -36,6 +36,7 @@ const DockedAssistant = ({ onNavigate }) => {
   const dispatch = useDispatch();
 
   const openChat = (dialogue = "What would you like to know?") => {
+    dispatch(setAssistantPrompt(dialogue));
     dispatch(setTempDialogue(dialogue));
     dispatch(setShowChat(true));
   };
