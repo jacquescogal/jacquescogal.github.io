@@ -1,7 +1,7 @@
 import axios from "axios";
 import { linkToText } from "../utils/Links";
 
-const CHAT_URL = process.env.REACT_APP_CHAT_URL; // Read from .env
+const CHAT_URL = import.meta.env.VITE_CHAT_URL; // Read from .env
 
 export const sendChatMessage = async (chat_history, user_message) => {
 

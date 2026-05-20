@@ -1,6 +1,3 @@
-import { ChatLink } from "../types/Chatbot.ss"
-
-
 const extractLinks = (texts)=>{
     const links=[]
     texts.forEach(text=>{

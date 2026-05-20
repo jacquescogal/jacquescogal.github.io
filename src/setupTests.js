@@ -3,23 +3,27 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+import React from 'react';
+import { vi } from 'vitest';
 
 const mockAxios = {
-  get: jest.fn(() => Promise.resolve({ data: { body: '[]' } })),
-  post: jest.fn(() => Promise.resolve({ data: { ai_message: 'Hello!' } })),
+  get: vi.fn(() => Promise.resolve({ data: { body: '[]' } })),
+  post: vi.fn(() => Promise.resolve({ data: { ai_message: 'Hello!' } })),
 };
 
-jest.mock('axios', () => ({
+vi.mock('axios', () => ({
   __esModule: true,
   default: mockAxios,
   ...mockAxios,
 }));
 
-jest.mock('react-markdown', () => ({ children }) => <>{children}</>);
-jest.mock('remark-gfm', () => jest.fn());
+vi.mock('react-markdown', () => ({
+  default: ({ children }) => React.createElement(React.Fragment, null, children),
+}));
+vi.mock('remark-gfm', () => ({ default: vi.fn() }));
 
-window.HTMLElement.prototype.scrollIntoView = jest.fn();
-window.HTMLElement.prototype.scrollTo = jest.fn();
+window.HTMLElement.prototype.scrollIntoView = vi.fn();
+window.HTMLElement.prototype.scrollTo = vi.fn();
 
 class MockIntersectionObserver {
   observe() {}

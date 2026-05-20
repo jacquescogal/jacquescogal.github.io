@@ -112,7 +112,7 @@ function App() {
     // ping the backend every 1 second until the backend is up
     const interval=setInterval(async()=>{
       try{
-        const response=await axios.get(process.env.REACT_APP_URL);
+        const response=await axios.get(import.meta.env.VITE_URL);
         console.log('Successfully pinged backend:', response.data);
         setIsBootingUp(false);
         clearInterval(interval);
@@ -131,7 +131,7 @@ function App() {
     }
     const interval=setInterval(async()=>{
       try{
-        const response=await axios.get(process.env.REACT_APP_URL);
+        const response=await axios.get(import.meta.env.VITE_URL);
         console.log('Successfully pinged backend:', response.data);
       } catch (error) {
         console.error('Error pinging backend:', error);
@@ -167,7 +167,7 @@ function App() {
       chat_history:temp_history
     }
     try{
-      const response=await axios.post(process.env.REACT_APP_CHAT_URL,data);
+      const response=await axios.post(import.meta.env.VITE_CHAT_URL,data);
       console.log('Successfully posted data:', response.data);
       let ai_chat_bubble={
         ...linkTextParser(response.data.ai_message),

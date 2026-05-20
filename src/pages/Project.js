@@ -45,7 +45,7 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
       onceRef.current = true;
       const fetchData = async () => {
   
-        const reposResponse = await axios.get(process.env.REACT_APP_PROJECT_URL);
+        const reposResponse = await axios.get(import.meta.env.VITE_PROJECT_URL);
         const repos = JSON.parse(reposResponse.data.body).slice(0,5);
   
         setProjectCards(repos);
