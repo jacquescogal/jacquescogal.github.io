@@ -4,7 +4,6 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   showChat: false,
-  isBootingUp: true,
   isThinking: false,
   isChatActive: false,
   assistantPrompt: "",
@@ -29,9 +28,6 @@ const chatbotStateSlice = createSlice({
     toggleThinking: (state) => {
       state.isThinking = !state.isThinking;
     },
-    setBootingUp: (state, isAction) => {
-        state.isBootingUp = isAction.payload;
-    },
     setChatActive: (state, isAction) => {
         state.isChatActive = isAction.payload;
     },
@@ -49,7 +45,7 @@ const chatbotStateSlice = createSlice({
   },
 });
 
-export const { setShowChat, setThinking, toggleThinking, setBootingUp, setChatActive, addChatMessage, setDialogue, setAssistantPrompt } = chatbotStateSlice.actions;
+export const { setShowChat, setThinking, toggleThinking, setChatActive, addChatMessage, setDialogue, setAssistantPrompt } = chatbotStateSlice.actions;
 export default chatbotStateSlice.reducer;
 
 // Redux Thunk for setTempDialogue
