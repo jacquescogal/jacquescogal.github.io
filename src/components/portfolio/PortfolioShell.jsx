@@ -204,7 +204,7 @@ const PortfolioShell = () => {
 
   const getSectionClassName = (sectionKey) =>
     cn(
-      "-m-3 scroll-mt-24 rounded-2xl p-3 transition-[background-color,box-shadow] duration-300",
+      "-m-2 scroll-mt-20 rounded-2xl p-2 transition-[background-color,box-shadow] duration-300 sm:-m-3 sm:scroll-mt-24 sm:p-3",
       highlightedSection === sectionKey &&
         "bg-emerald-50/60 shadow-[0_0_0_3px_rgba(16,185,129,0.28)]"
     );
@@ -220,15 +220,15 @@ const PortfolioShell = () => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
       <header className="sticky top-0 z-40 border-b bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-6 lg:px-8">
           <Button
             type="button"
             variant="ghost"
-            className="h-auto flex-col items-start gap-0 px-2 py-1 text-left"
+            className="h-auto min-w-0 flex-col items-start gap-0 px-2 py-1 text-left"
             onClick={() => scrollTo("profile")}
           >
             <div className="text-sm font-semibold">Jacques Cogal</div>
-            <div className="text-xs text-slate-500">Software engineer</div>
+            <div className="hidden text-xs text-slate-500 min-[380px]:block">Software engineer</div>
           </Button>
           <nav className="hidden items-center gap-1 md:flex">
             {[
@@ -254,16 +254,16 @@ const PortfolioShell = () => {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:px-8">
-        <main className="space-y-6">
+      <div className="mx-auto grid max-w-7xl gap-5 px-3 py-5 sm:gap-6 sm:px-6 sm:py-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:px-8">
+        <main className="space-y-5 sm:space-y-6">
           <section ref={profileRef} className={getSectionClassName("profile")}>
             <Card className="overflow-hidden border-slate-200 bg-white shadow-sm">
-              <CardContent className="grid gap-8 p-6 md:grid-cols-[220px_minmax(0,1fr)] md:p-8">
+              <CardContent className="grid gap-6 p-4 sm:p-6 md:grid-cols-[220px_minmax(0,1fr)] md:gap-8 md:p-8">
                 <div className="space-y-4">
                   <img
                     src="/jacques.jpg"
                     alt="Jacques Cogal"
-                    className="aspect-[4/5] w-full rounded-xl border object-cover shadow-sm"
+                    className="mx-auto aspect-[4/5] w-full max-w-56 rounded-xl border object-cover shadow-sm md:max-w-none"
                   />
                   <div className="grid grid-cols-2 gap-2">
                     <a
@@ -289,12 +289,12 @@ const PortfolioShell = () => {
 
                 <div className="flex flex-col justify-center gap-6">
                   <div className="space-y-4">
-                    <Badge variant="secondary" className="w-fit gap-1 bg-emerald-50 text-emerald-700">
+                    <Badge variant="secondary" className="h-auto w-fit whitespace-normal gap-1 bg-emerald-50 text-emerald-700">
                       <IconSparkles className="size-3" />
                       Available for focused engineering conversations
                     </Badge>
                     <div className="space-y-3">
-                      <h1 className="max-w-3xl text-4xl font-semibold tracking-normal text-slate-950 sm:text-5xl">
+                      <h1 className="max-w-3xl text-3xl font-semibold tracking-normal text-slate-950 sm:text-5xl">
                         Software Engineer
                       </h1>
                       <p className="max-w-2xl text-base leading-7 text-slate-600">
@@ -304,7 +304,7 @@ const PortfolioShell = () => {
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-3">
+                  <div className="grid gap-3 min-[420px]:grid-cols-2 sm:flex sm:flex-wrap">
                     <Button
                       type="button"
                       variant="secondary"
@@ -342,10 +342,10 @@ const PortfolioShell = () => {
               description="A compact view of roles and achievements most relevant to software engineering teams."
             />
             <Tabs defaultValue="work" className="mt-4 flex-col gap-0">
-              <div className="mb-4 flex justify-start border-b border-slate-200">
+              <div className="mb-4 flex justify-start overflow-x-auto border-b border-slate-200">
                 <TabsList
                   variant="line"
-                  className="h-9 w-auto justify-start rounded-none p-0"
+                  className="h-9 min-w-max justify-start rounded-none p-0"
                 >
                   <TabsTrigger
                     className="h-9 flex-none px-3 data-[state=active]:text-emerald-700 data-[state=active]:after:bg-emerald-600"
@@ -367,13 +367,13 @@ const PortfolioShell = () => {
                   </TabsTrigger>
                 </TabsList>
               </div>
-              <TabsContent value="work" className="mt-4">
+              <TabsContent value="work" className="mt-3 sm:mt-4">
                 <ExperienceList items={workExperience} />
               </TabsContent>
-              <TabsContent value="education" className="mt-4">
+              <TabsContent value="education" className="mt-3 sm:mt-4">
                 <ExperienceList items={education} />
               </TabsContent>
-              <TabsContent value="achievements" className="mt-4">
+              <TabsContent value="achievements" className="mt-3 sm:mt-4">
                 <ExperienceList items={achievements} />
               </TabsContent>
             </Tabs>
@@ -386,7 +386,7 @@ const PortfolioShell = () => {
               description="Selected examples that show product, backend, retrieval, and AI delivery."
               icon={IconCode}
             />
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
+            <div className="mt-4 grid gap-3 sm:gap-4 md:grid-cols-3">
               {projects.map((project) => (
                 <Card key={project.title} className="border-slate-200 bg-white shadow-sm">
                   <CardHeader>
@@ -403,7 +403,7 @@ const PortfolioShell = () => {
                 </Card>
               ))}
             </div>
-            <Card className="mt-4 border-slate-200 bg-white shadow-sm">
+            <Card className="mt-3 border-slate-200 bg-white shadow-sm sm:mt-4">
               <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="font-medium">Project archive</div>
@@ -467,7 +467,7 @@ const PortfolioShell = () => {
                   <Button
                     type="button"
                     variant="secondary"
-                    className="gap-2 border border-slate-200 bg-slate-100 text-slate-800 hover:bg-slate-200"
+                    className="w-full gap-2 border border-slate-200 bg-slate-100 text-slate-800 hover:bg-slate-200 sm:w-auto"
                     onClick={sendEmail}
                   >
                     <IconMail className="size-4" />
@@ -494,7 +494,7 @@ const SectionHeader = ({ eyebrow, title, description, icon: Icon = IconBriefcase
       {eyebrow}
     </Badge>
     <div className="space-y-1">
-      <h2 className="text-2xl font-semibold tracking-normal text-slate-950">{title}</h2>
+      <h2 className="text-xl font-semibold tracking-normal text-slate-950 sm:text-2xl">{title}</h2>
       <p className="max-w-3xl text-sm leading-6 text-slate-600">{description}</p>
     </div>
   </div>
@@ -504,7 +504,7 @@ const ExperienceList = ({ items, className }) => (
   <div className={cn("grid grid-cols-1 gap-3", className)}>
     {items.map((item) => (
       <Card key={`${item.company}-${item.role}`} className="border-slate-200 bg-white shadow-sm">
-        <CardContent className="grid min-h-32 gap-3 p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,1fr)] md:items-start">
+        <CardContent className="grid gap-3 p-4 md:min-h-32 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,1fr)] md:items-start">
           <div className="space-y-1.5">
             <div className="flex items-start justify-between gap-2 md:block">
               <h3 className="text-sm font-medium leading-5 text-slate-950">{item.company}</h3>
@@ -512,14 +512,14 @@ const ExperienceList = ({ items, className }) => (
                 {item.date}
               </div>
             </div>
-            <Badge variant="secondary" className="h-6 w-fit px-2 text-xs">
+            <Badge variant="secondary" className="h-auto min-h-6 w-fit whitespace-normal px-2 py-1 text-xs leading-4">
               {item.role}
             </Badge>
           </div>
           <p className="text-sm leading-5 text-slate-600">{item.summary}</p>
           <div className="flex flex-wrap gap-1.5">
             {item.skills.map((skill) => (
-              <Badge key={skill} variant="outline" className="h-6 px-2 text-xs">
+              <Badge key={skill} variant="outline" className="h-auto min-h-6 whitespace-normal px-2 py-1 text-xs leading-4">
                 {skill}
               </Badge>
             ))}

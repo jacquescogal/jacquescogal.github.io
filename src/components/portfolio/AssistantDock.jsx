@@ -44,7 +44,7 @@ const AssistantDock = ({ onNavigate }) => {
         <SheetTrigger
           className={cn(
             buttonVariants(),
-            "fixed bottom-5 right-5 z-[1200] gap-2 rounded-full bg-slate-950 text-white shadow-lg hover:bg-slate-800 xl:hidden"
+            "fixed bottom-4 right-4 z-[1200] gap-2 rounded-full bg-slate-950 text-white shadow-lg hover:bg-slate-800 sm:bottom-5 sm:right-5 xl:hidden"
           )}
           onClick={() => setSheetOpen(true)}
         >
@@ -66,7 +66,7 @@ const AssistantDock = ({ onNavigate }) => {
           <div
             role="complementary"
             aria-label="Jacques AI workspace"
-            className="h-full p-3"
+            className="h-full min-h-0 p-2 sm:p-3"
           >
             <AssistantPanel
               onNavigate={(target) => {
@@ -155,7 +155,7 @@ const AssistantPanel = ({ onNavigate }) => {
 
   return (
     <Card className="h-full min-h-0 gap-3 border-slate-200 bg-white/95 py-0 shadow-sm">
-      <CardHeader className="gap-3 border-b px-4 py-4">
+      <CardHeader className="gap-3 border-b px-3 py-3 sm:px-4 sm:py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <Badge variant="secondary" className="mb-2 gap-1 bg-emerald-50 text-emerald-700">
@@ -178,7 +178,7 @@ const AssistantPanel = ({ onNavigate }) => {
         </p>
       </CardHeader>
 
-      <CardContent className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_auto] gap-3 overflow-hidden p-3">
+      <CardContent className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_auto] gap-3 overflow-hidden p-2 sm:p-3">
         <div
           ref={chatHistoryRef}
           className="min-h-0 overflow-y-auto overscroll-contain rounded-xl border bg-slate-50"
@@ -250,7 +250,7 @@ const AssistantPanel = ({ onNavigate }) => {
           >
             <Textarea
               aria-label="Message Jacques AI"
-              className="h-12 min-h-12 flex-1 resize-none bg-white"
+              className="h-12 min-h-12 min-w-0 flex-1 resize-none bg-white"
               placeholder="Ask about experience, projects, or fit..."
               value={message}
               onChange={(event) => setMessage(event.target.value)}
@@ -264,7 +264,7 @@ const AssistantPanel = ({ onNavigate }) => {
             <Button
               type="submit"
               size="icon"
-              className="size-12 bg-slate-950 text-white hover:bg-slate-800"
+              className="size-12 shrink-0 bg-slate-950 text-white hover:bg-slate-800"
               disabled={!message.trim() || isThinking}
             >
               <IconArrowUp className="size-4" />
