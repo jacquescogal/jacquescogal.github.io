@@ -5,7 +5,7 @@ import '../drag.scss';
 import TGS from '../components/TGS';
 import MultilineTGS from '../components/MultilineTGS';
 import DragSelect from '../components/drag/DragSelect';
-import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
 
@@ -342,6 +342,22 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
 
   const [popupImage,setPopupImage]=useState(workExperience[1]["imageURL"]);
   const ipPop=document.querySelector(".image-popup")
+  const selectExperienceGroup = (group) => {
+    if (disableChange) return;
+
+    setActiveGroup(group);
+    experienceImageHandler({show:false});
+    setActiveNode(0);
+
+    if (group === "work") {
+      setLoadThis(workExperience);
+    } else if (group === "notables") {
+      setLoadThis(notableAchievements);
+    } else {
+      setLoadThis(schoolExperience);
+    }
+  }
+
   const experienceImageHandler=({imageURL=null,show=null})=>{
     if (imageURL!=null){
       setPopupImage(imageURL);
@@ -368,9 +384,13 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
           <MultilineTGS toGenerateMap={["Experience"]} classNameMap={["number-text", "flair-text"]} observable={experienceReveal} />
         </p>
         <div className='button-group'>
-          <Button type="button" variant={activeGroup == "work" ? "default" : "outline"} className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "work") ? "  button-active no-click  " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("work");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(workExperience); }}>Work</Button>
-          <Button type="button" variant={activeGroup == "notables" ? "default" : "outline"} className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "notables") ? " button-active no-click " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("notables");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(notableAchievements); }}>Hackathons</Button>
-          <Button type="button" variant={activeGroup == "school" ? "default" : "outline"} className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "school") ? " button-active no-click  " : (disableChange) ? " bg-gray-500" : " ") + ((disableChange) ? " no-click" : "")} onClick={() => { setActiveGroup("school");experienceImageHandler({show:false}); setActiveNode(0); setLoadThis(schoolExperience); }}>Education</Button>
+          <Tabs value={activeGroup} onValueChange={selectExperienceGroup} className="flex-row">
+            <TabsList className="h-auto bg-transparent p-0">
+              <TabsTrigger value="work" disabled={disableChange} className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "work") ? "  button-active no-click  " : (disableChange) ? " bg-gray-500" : " ")}>Work</TabsTrigger>
+              <TabsTrigger value="notables" disabled={disableChange} className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "notables") ? " button-active no-click " : (disableChange) ? " bg-gray-500" : " ")}>Hackathons</TabsTrigger>
+              <TabsTrigger value="school" disabled={disableChange} className={'button-child h-8 px-4 rounded-xl noselect ' + ((activeGroup == "school") ? " button-active no-click  " : (disableChange) ? " bg-gray-500" : " ")}>Education</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
         <div className='image-popup' onClick={()=>{experienceImageHandler({})}}>
           <div className='ip-dark'/>
