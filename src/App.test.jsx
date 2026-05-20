@@ -14,5 +14,5 @@ test("renders the portfolio profile section", () => {
     </Router>
   );
 
-  expect(screen.getByRole("button", { name: /Resume/i })).toBeInTheDocument();
+  expect(screen.getAllByRole("button", { name: /Resume/i }).length).toBeGreaterThan(0);
 });

@@ -41,7 +41,7 @@ const ChatIcon = (props) => {
   },[isThinking])
   return (
     <>
-      <div ref={constraintsRef} className="fixed right-0 w-1/4 h-3/4 my-10 z-[20000] select-none pointer-events-none">
+      <div ref={constraintsRef} className="fixed right-0 w-1/4 h-3/4 my-10 z-[20000] select-none pointer-events-none xl:hidden">
         <motion.div
           drag={!showChat}
           dragControls={controls}

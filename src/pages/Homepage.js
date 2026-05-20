@@ -7,6 +7,7 @@ import Contact from './Contact';
 import Modal from '../components/modal/Modal';
 import ChatIcon from '../components/chat/ChatIcon';
 import BenDay from './BenDay';
+import DockedAssistant from '../components/assistant/DockedAssistant';
 
 const Homepage = (props) => {
   const [introRef,setIntroRef]=useState(null);
@@ -95,6 +96,7 @@ const Homepage = (props) => {
     light={light} handleLight={handleLight}
     />
     {/* <SideLinks/> */}
+    <DockedAssistant onNavigate={handleRefStrClick}/>
     <ChatIcon handleRefStrClick={handleRefStrClick}/>
     <Modal/>
     
