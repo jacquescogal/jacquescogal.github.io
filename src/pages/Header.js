@@ -7,6 +7,7 @@ import Exp_logo from '../svg/Exp_logo';
 import Proj_logo from '../svg/Proj_logo';
 import Contact_logo from '../svg/Contact_logo';
 import '../header.scss'
+import '../cube.scss'
 import { Button } from '@/components/ui/button';
 const Header = ({forceNav, setForceNav,forceNavMin, setForceNavMin,closable,setClosable,handleRefClick, navBarRef,smallBarRef,stickerRef,introRef, aboutRef, experienceRef, projectRef, contactRef, setExperienceReveal, setContactReveal, setProjectReveal, setExperienceFade, setProfileFade, setProjectFade, setContactFade, light, handleLight }) => {
   const [menuClosed, setMenuClosed] = useState(true);
@@ -83,7 +84,7 @@ const Header = ({forceNav, setForceNav,forceNavMin, setForceNavMin,closable,setC
   // For menu to stop loading in after 5 for drawer
   useEffect(() => {
     if (menuClosed || itemLoad >= 5) return;
-    const timeout = setTimeout(() => { setitemLoad(itemLoad + 1); console.log(itemLoad) }, 100);
+    const timeout = setTimeout(() => { setitemLoad(itemLoad + 1); }, 100);
     return () => clearTimeout(timeout);
   }, [menuClosed, itemLoad])
 

@@ -10,6 +10,7 @@ import {
   setShowChat,
 } from "../store/chatbotStateSlice";
 import { Button } from "@/components/ui/button";
+import "../image.scss";
 
 const Intro = ({ setIntroRef, contactRef, profileFade }) => {
   const dispatch = useDispatch();

@@ -6,11 +6,10 @@ import {
   IconBriefcase,
   IconDownload,
   IconMail,
-  IconMapPin,
   IconSparkles,
 } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -19,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Modal from "../../components/modal/Modal";
 import { setShowModal } from "../../store/modalStateSlice";
 import AssistantDock from "./AssistantDock";
+import { cn } from "@/lib/utils";
 
 const workExperience = [
   {
@@ -170,14 +170,15 @@ const PortfolioShell = () => {
     <div className="min-h-screen bg-slate-50 text-slate-950">
       <header className="sticky top-0 z-40 border-b bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-          <button
+          <Button
             type="button"
-            className="text-left"
+            variant="ghost"
+            className="h-auto flex-col items-start gap-0 px-2 py-1 text-left"
             onClick={() => scrollTo("profile")}
           >
             <div className="text-sm font-semibold">Jacques Cogal</div>
             <div className="text-xs text-slate-500">Software engineer</div>
-          </button>
+          </Button>
           <nav className="hidden items-center gap-1 md:flex">
             {[
               ["Profile", "profile"],
@@ -190,7 +191,11 @@ const PortfolioShell = () => {
               </Button>
             ))}
           </nav>
-          <Button type="button" className="gap-2" onClick={downloadResume}>
+          <Button
+            type="button"
+            className="gap-2 bg-slate-950 text-white hover:bg-slate-800"
+            onClick={downloadResume}
+          >
             <IconDownload className="size-4" />
             Resume
           </Button>
@@ -209,18 +214,24 @@ const PortfolioShell = () => {
                     className="aspect-[4/5] w-full rounded-xl border object-cover shadow-sm"
                   />
                   <div className="grid grid-cols-2 gap-2">
-                    <Button asChild variant="outline" className="gap-2">
-                      <a href="https://github.com/jacquescogal" target="_blank" rel="noreferrer">
-                        <IconBrandGithub className="size-4" />
-                        GitHub
-                      </a>
-                    </Button>
-                    <Button asChild variant="outline" className="gap-2">
-                      <a href="https://www.linkedin.com/in/j-cogal/" target="_blank" rel="noreferrer">
-                        <IconBrandLinkedin className="size-4" />
-                        LinkedIn
-                      </a>
-                    </Button>
+                    <a
+                      href="https://github.com/jacquescogal"
+                      target="_blank"
+                      rel="noreferrer"
+                      className={cn(buttonVariants({ variant: "outline" }), "gap-2 text-slate-700")}
+                    >
+                      <IconBrandGithub className="size-4" />
+                      GitHub
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/in/j-cogal/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className={cn(buttonVariants({ variant: "outline" }), "gap-2 text-slate-700")}
+                    >
+                      <IconBrandLinkedin className="size-4" />
+                      LinkedIn
+                    </a>
                   </div>
                 </div>
 
@@ -242,11 +253,20 @@ const PortfolioShell = () => {
                   </div>
 
                   <div className="flex flex-wrap gap-3">
-                    <Button type="button" className="gap-2" onClick={downloadResume}>
+                    <Button
+                      type="button"
+                      className="gap-2 bg-slate-950 text-white hover:bg-slate-800"
+                      onClick={downloadResume}
+                    >
                       <IconDownload className="size-4" />
                       Resume
                     </Button>
-                    <Button type="button" variant="outline" className="gap-2" onClick={() => scrollTo("contact")}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="gap-2 text-slate-700"
+                      onClick={() => scrollTo("contact")}
+                    >
                       <IconMail className="size-4" />
                       Contact
                     </Button>
@@ -315,7 +335,12 @@ const PortfolioShell = () => {
                   <div className="font-medium">Project archive</div>
                   <p className="text-sm text-slate-500">Open the existing project modal for more notes.</p>
                 </div>
-                <Button type="button" variant="outline" onClick={() => dispatch(setShowModal(true))}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="text-slate-700"
+                  onClick={() => dispatch(setShowModal(true))}
+                >
                   Constructing
                 </Button>
               </CardContent>
@@ -364,7 +389,11 @@ const PortfolioShell = () => {
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <Button type="button" className="gap-2" onClick={sendEmail}>
+                  <Button
+                    type="button"
+                    className="gap-2 bg-slate-950 text-white hover:bg-slate-800"
+                    onClick={sendEmail}
+                  >
                     <IconMail className="size-4" />
                     Send E-mail
                   </Button>
@@ -396,27 +425,28 @@ const SectionHeader = ({ eyebrow, title, description }) => (
 );
 
 const ExperienceList = ({ items }) => (
-  <div className="grid gap-3">
+  <div className="grid gap-3 md:grid-cols-2">
     {items.map((item) => (
       <Card key={`${item.company}-${item.role}`} className="border-slate-200 bg-white shadow-sm">
-        <CardContent className="grid gap-4 p-4 sm:grid-cols-[1fr_auto]">
+        <CardContent className="flex h-full flex-col gap-3 p-4">
           <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="font-medium text-slate-950">{item.company}</h3>
-              <Badge variant="secondary">{item.role}</Badge>
+            <div className="space-y-1">
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-medium leading-5 text-slate-950">{item.company}</h3>
+                <div className="shrink-0 text-right text-xs leading-5 text-slate-500">{item.date}</div>
+              </div>
+              <Badge variant="secondary" className="w-fit">
+                {item.role}
+              </Badge>
             </div>
             <p className="text-sm leading-6 text-slate-600">{item.summary}</p>
-            <div className="flex flex-wrap gap-2">
-              {item.skills.map((skill) => (
-                <Badge key={skill} variant="outline">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
           </div>
-          <div className="flex items-start gap-2 text-sm text-slate-500">
-            <IconMapPin className="mt-0.5 size-4" />
-            {item.date}
+          <div className="mt-auto flex flex-wrap gap-2">
+            {item.skills.map((skill) => (
+              <Badge key={skill} variant="outline">
+                {skill}
+              </Badge>
+            ))}
           </div>
         </CardContent>
       </Card>

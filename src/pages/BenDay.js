@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react"
-import ChatIcon from "../components/chat/ChatIcon"
 import { motion, useMotionValue,useTransform } from "motion/react"
 
 /** ----------------- Global pointer (shared by all balls) ----------------- */
@@ -157,11 +156,3 @@ function Drag({parity}) {
 
 
 /** ----------------- Styles ----------------------------------------------- */
-
-const ball = {
-  width: 5,
-  height: 5,
-  backgroundColor: "#5d7687ff",
-  borderRadius: "50%",
-  opacity: 0.5,
-}

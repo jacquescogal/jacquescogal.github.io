@@ -8,7 +8,7 @@ import {
   IconSparkles,
 } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -21,7 +21,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
-import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   addChatMessage,
@@ -63,7 +62,7 @@ const AssistantDock = ({ onNavigate }) => {
     <>
       <aside
         aria-label="Jacques AI workspace"
-        className="sticky top-20 hidden h-[calc(100vh-6rem)] min-h-[680px] xl:block"
+        className="sticky top-20 hidden h-[calc(100vh-6rem)] min-h-0 xl:block"
       >
         <AssistantPanel onNavigate={onNavigate} />
       </aside>
@@ -72,7 +71,7 @@ const AssistantDock = ({ onNavigate }) => {
         <SheetTrigger
           className={cn(
             buttonVariants(),
-            "fixed bottom-5 right-5 z-[1200] gap-2 rounded-full shadow-lg xl:hidden"
+            "fixed bottom-5 right-5 z-[1200] gap-2 rounded-full bg-slate-950 text-white shadow-lg hover:bg-slate-800 xl:hidden"
           )}
           onClick={() => setSheetOpen(true)}
         >
@@ -125,9 +124,9 @@ const AssistantPanel = ({ onNavigate }) => {
   }, [chatHistory, isThinking, suggestions, showSuggestions]);
 
   const seedPrompt = (prompt) => {
-    dispatch(setAssistantPrompt(prompt));
-    dispatch(setTempDialogue(prompt));
     dispatch(setShowChat(true));
+    dispatch(setTempDialogue(prompt));
+    void deliverMessage(prompt);
   };
 
   const deliverMessage = async (nextMessage = message) => {
@@ -175,7 +174,7 @@ const AssistantPanel = ({ onNavigate }) => {
   };
 
   return (
-    <Card className="h-full gap-3 border-slate-200 bg-white/95 py-0 shadow-sm">
+    <Card className="h-full min-h-0 gap-3 border-slate-200 bg-white/95 py-0 shadow-sm">
       <CardHeader className="gap-3 border-b px-4 py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
@@ -194,7 +193,7 @@ const AssistantPanel = ({ onNavigate }) => {
         </p>
       </CardHeader>
 
-      <CardContent className="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)_auto] gap-3 p-3">
+      <CardContent className="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)_auto] gap-3 overflow-hidden p-3">
         <div className="grid grid-cols-2 gap-2">
           {promptActions.map((action) => (
             <Button
@@ -209,8 +208,8 @@ const AssistantPanel = ({ onNavigate }) => {
           ))}
         </div>
 
-        <div className="min-h-0 rounded-xl border bg-slate-50">
-          <ScrollArea className="h-full">
+        <div className="min-h-0 overflow-hidden rounded-xl border bg-slate-50">
+          <ScrollArea className="h-full min-h-0">
             <div className="space-y-3 p-3">
               {chatHistory.map((chatMessage, index) => (
                 <AssistantMessage
@@ -291,7 +290,12 @@ const AssistantPanel = ({ onNavigate }) => {
                 }
               }}
             />
-            <Button type="submit" size="icon-lg" disabled={!message.trim() || isThinking}>
+            <Button
+              type="submit"
+              size="icon-lg"
+              className="bg-slate-950 text-white hover:bg-slate-800"
+              disabled={!message.trim() || isThinking}
+            >
               <IconArrowUp className="size-4" />
               <span className="sr-only">Send message</span>
             </Button>
@@ -336,12 +340,16 @@ const AssistantMessage = ({ chatMessage, onNavigate }) => {
                 {link.text}
               </Button>
             ) : (
-              <Button key={`${link.where}-${index}`} asChild variant="outline" size="sm">
-                <a href={link.where} target="_blank" rel="noreferrer">
-                  {link.text}
-                  <IconExternalLink className="size-3" />
-                </a>
-              </Button>
+              <a
+                key={`${link.where}-${index}`}
+                href={link.where}
+                target="_blank"
+                rel="noreferrer"
+                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1")}
+              >
+                {link.text}
+                <IconExternalLink className="size-3" />
+              </a>
             )
           )}
         </div>

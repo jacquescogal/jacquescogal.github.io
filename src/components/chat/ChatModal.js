@@ -175,7 +175,6 @@ const ChatBox = ({ handleRefStrClick }) => {
         );
       })
       .catch((error) => {
-        console.log("error");
         dispatch(
           addChatMessage({
             entity: "SYSTEM",
@@ -205,7 +204,6 @@ const ChatBox = ({ handleRefStrClick }) => {
         );
       })
       .catch((error) => {
-        console.log("error");
         dispatch(
           addChatMessage({
             entity: "SYSTEM",

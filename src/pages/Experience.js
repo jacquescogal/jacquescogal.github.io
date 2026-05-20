@@ -281,7 +281,6 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
   window.addEventListener("resize", (e) => {
     clearTimeout(e.target.resizeTimeout);
     e.target.resizeTimeout = setTimeout(() => {
-      console.log("resize")
       dragLineSizer()
     }, 500);
   });

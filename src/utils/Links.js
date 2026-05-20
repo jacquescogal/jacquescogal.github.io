@@ -27,8 +27,18 @@ const extractLinks = (texts)=>{
     return links;
   }
 
+  const linkTokenMap = {
+    "Contact me": "contact",
+    LinkedIn: "linkedin",
+    GitHub: "github",
+    LeetCode: "leetcode",
+    Projects: "project",
+    Experience: "experience",
+    Resume: "resume",
+  };
+
   export const linkToText = (link)=>{
-    return ` ${link.map(l => `%%${l.text}%%`).join(' ')}`
+    return ` ${link.map(l => `%%${linkTokenMap[l.text] ?? l.where ?? l.text}%%`).join(' ')}`
   }
   
   export const linkTextParser = (text) => {
@@ -37,11 +47,9 @@ const extractLinks = (texts)=>{
   
     const matches = text.match(pattern);
 
-    console.log("link",text, matches)
     const texts = matches ? matches.map(match => match.slice(2, -2)) : [];
     const modifiedPassage = text.replace(pattern, '');
     const links = extractLinks(texts);
-    console.log(links)
     return {
       links: links,
       message: modifiedPassage

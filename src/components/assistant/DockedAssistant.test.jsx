@@ -25,17 +25,25 @@ test("renders assistant prompts and chat for desktop visitors", () => {
   expect(screen.getByRole("textbox", { name: /Message Jacques AI/i })).toBeInTheDocument();
 });
 
-test("seeds the dock chat when an assistant prompt is clicked", async () => {
+test("sends a dock prompt immediately when clicked", async () => {
   const store = renderWithStore(<AssistantDock onNavigate={() => {}} />);
 
   await userEvent.click(screen.getByRole("button", { name: /Role fit/i }));
 
   expect(store.getState().chatbotState.showChat).toBe(true);
   await waitFor(() => {
-    expect(screen.getByRole("textbox", { name: /Message Jacques AI/i }).value).toMatch(
-      /fits this role/i
-    );
+    expect(
+      store
+        .getState()
+        .chatbotState.chatHistory.some(
+          (message) => message.entity === "USER" && /fits this role/i.test(message.message)
+        )
+    ).toBe(true);
   });
+  await waitFor(() => {
+    expect(store.getState().chatbotState.chatHistory.length).toBeGreaterThanOrEqual(3);
+  });
+  expect(screen.getByRole("textbox", { name: /Message Jacques AI/i })).toHaveValue("");
 });
 
 test("offers a mobile assistant entry point", () => {
