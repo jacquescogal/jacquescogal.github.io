@@ -1,8 +1,17 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { BrowserRouter as Router } from "react-router-dom";
+import App from "./App";
+import { store } from "./store/store";
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+test("renders the portfolio profile section", () => {
+  render(
+    <Router>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </Router>
+  );
+
+  expect(screen.getByRole("button", { name: /Resume/i })).toBeInTheDocument();
 });

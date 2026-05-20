@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState, createRef } from 'react'
 import TGP from '../components/TGP';
-import useScrollSnap from "react-use-scroll-snap";
 
 import '../drag.scss';
 import TGS from '../components/TGS';
