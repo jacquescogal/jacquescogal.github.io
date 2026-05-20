@@ -7,6 +7,7 @@ import Exp_logo from '../svg/Exp_logo';
 import Proj_logo from '../svg/Proj_logo';
 import Contact_logo from '../svg/Contact_logo';
 import '../header.scss'
+import { Button } from '@/components/ui/button';
 const Header = ({forceNav, setForceNav,forceNavMin, setForceNavMin,closable,setClosable,handleRefClick, navBarRef,smallBarRef,stickerRef,introRef, aboutRef, experienceRef, projectRef, contactRef, setExperienceReveal, setContactReveal, setProjectReveal, setExperienceFade, setProfileFade, setProjectFade, setContactFade, light, handleLight }) => {
   const [menuClosed, setMenuClosed] = useState(true);
   const [itemLoad, setitemLoad] = useState(0);
@@ -105,12 +106,12 @@ const Header = ({forceNav, setForceNav,forceNavMin, setForceNavMin,closable,setC
           <div className={' right-0 col-start-5 col-span-4 grid grid-cols-11 pr-20 '}>
 
             {menu.map((mi) =>
-              <p className={isActiveRegion[mi.name] ? ' col-span-2 mx-8 mt-4 text-left header-holder active' : 'col-span-2 mx-8 mt-4 text-left header-holder'} onClick={() => handleRefClick(mi.ref)}>
+              <Button key={mi.name} type="button" variant="ghost" className={isActiveRegion[mi.name] ? ' col-span-2 mx-8 mt-4 text-left header-holder active' : 'col-span-2 mx-8 mt-4 text-left header-holder'} onClick={() => handleRefClick(mi.ref)}>
                 <span className='header-id-color'>{mi.id + "."}</span>
                 <TGS className='header-text text-left' toGenerate={mi.name} />
                 <div className='header-underline'></div>
                 <div className='header-underline-back'></div>
-              </p>
+              </Button>
             )}
             {/* {(light) ? <Moon_logo className={"moon"} onClick={handleLight} /> :
               <Sun_logo className={"sun"} onClick={handleLight} />
@@ -130,7 +131,7 @@ const Header = ({forceNav, setForceNav,forceNavMin, setForceNavMin,closable,setC
           {/* Holds size */}
           <div className='col-span-1 text-white pt-4 invisible'>Placeholder</div>
 
-          <div class="menu-btn btn-center" onClick={(e) => { e.currentTarget.classList.toggle('close'); stickerRef.current?.classList.toggle('sticker-open'); setClosable(!closable); }}>
+          <div className="menu-btn btn-center" onClick={(e) => { e.currentTarget.classList.toggle('close'); stickerRef.current?.classList.toggle('sticker-open'); setClosable(!closable); }}>
             <span />
             <span />
             <span />

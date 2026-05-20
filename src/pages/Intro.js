@@ -13,6 +13,7 @@ import {
   setTempDialogue,
   setShowChat,
 } from "../store/chatbotStateSlice";
+import { Button } from "@/components/ui/button";
 
 const Intro = ({ setIntroRef, contactRef, profileFade }) => {
   const dispatch = useDispatch();
@@ -130,15 +131,17 @@ const Intro = ({ setIntroRef, contactRef, profileFade }) => {
                   speed={1}
                 />
                 <div className="flex flex-row content-center items-center">
-                  <button
+                  <Button
+                    variant="outline"
                     className="skip-button"
                     onClick={() => {
                       getResume();
                     }}
                   >
                     Resume
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="outline"
                     className="skip-button"
                     onClick={() =>
                       window.scrollTo({
@@ -148,15 +151,16 @@ const Intro = ({ setIntroRef, contactRef, profileFade }) => {
                     }
                   >
                     Contact Me
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="outline"
                     className="skip-button"
                     onClick={() => {
                       dispatch(setShowChat(true));
                     }}
                   >
                     Chat Bot
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

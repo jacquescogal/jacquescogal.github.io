@@ -10,6 +10,8 @@ import Modal from '../components/modal/Modal';
 import Article from '../components/Article';
 import { useDispatch } from 'react-redux';
 import { setShowModal } from '../store/modalStateSlice';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 const Project = ({setProjectRef,projectReveal,projectFade}) => {
     const onceRef=useRef(null);
@@ -62,11 +64,13 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
     <MultilineTGS toGenerateMap={["Projects"," (github API)"]} classNameMap={["number-text","flair-text"]}/>
     </p>
     {projectCards.length===0 && <p className='flex-none px-8 pt-4 text-left title-comp intro-load text-white'>Fetching projects... (May have capped API limit, come again later)</p>}
-    <div className="">
-      <h1 className='text-primary-text' onClick={()=>{dispatch(setShowModal(true))}}>Constructing</h1>
+    <Card className="mx-auto max-w-3xl border-primary-text/30 bg-slate-950/80 text-primary-text">
+      <CardContent className="flex flex-col items-start gap-4 p-6">
+      <Button type="button" variant="outline" className='text-primary-text' onClick={()=>{dispatch(setShowModal(true))}}>Constructing</Button>
       <Article/>
       {/* <Modal/> */}
-    </div>
+      </CardContent>
+    </Card>
     </div>
     </>
   )
