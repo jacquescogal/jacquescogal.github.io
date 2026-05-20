@@ -134,7 +134,7 @@
 @media screen and (min-width: 0px) and (max-width: 640px) {
     .image-text-holder{
         display: flex;
-        flex-direction: column-reverse;
+        flex-direction: column;
         align-items: center;
     }
     .image-size{
@@ -150,7 +150,7 @@
   @media screen and (min-width: 641px) and (max-width: 768px) {
     .image-text-holder{
         display: flex;
-        flex-direction: column-reverse;
+        flex-direction: column;
         align-items: center;
     }
     .image-size{
@@ -166,7 +166,7 @@
   @media screen and (min-width: 769px) and (max-width: 1024px) {
     .image-text-holder{
         display: flex;
-        flex-direction: column-reverse;
+        flex-direction: column;
         align-items: center;
     }
     .image-size{

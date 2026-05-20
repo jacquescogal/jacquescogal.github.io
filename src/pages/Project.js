@@ -4,13 +4,17 @@ import Proj_logo from '../svg/Proj_logo';
 import TGS from '../components/TGS';
 import TGP from '../components/TGP';
 import '../project.scss'
-import styles from './Project.module.scss';
 import {BiLinkExternal} from 'react-icons/bi';
 import axios from 'axios';
+import Modal from '../components/modal/Modal';
+import Article from '../components/Article';
+import { useDispatch } from 'react-redux';
+import { setShowModal } from '../store/modalStateSlice';
 
 const Project = ({setProjectRef,projectReveal,projectFade}) => {
     const onceRef=useRef(null);
     const projectRef=useRef(null);
+    const dispatch = useDispatch();
     const [activeProject,setActiveProject]=useState(0);
     const [projectCards,setProjectCards]=useState([
     ]);
@@ -58,19 +62,10 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
     <MultilineTGS toGenerateMap={["Projects"," (github API)"]} classNameMap={["number-text","flair-text"]}/>
     </p>
     {projectCards.length===0 && <p className='flex-none px-8 pt-4 text-left title-comp intro-load text-white'>Fetching projects... (May have capped API limit, come again later)</p>}
-    <div className={styles.CardDeck}>
-      {projectCards.map((card,id)=>(
-        <div key={id} className={`${styles.Card} ${activeProject===id && styles.Active}`} onMouseEnter={e=>{setActiveProject(id)}}>
-          {/* <div className={styles.TitleJustify}> */}
-          <a href={card.url_link} target="_blank" rel="noreferrer">
-          <span className={styles.CardTitle}>{card.title}   <BiLinkExternal size={15}/></span>
-          </a>
-
-          <span className={styles.CardDate}>Created on: {new Date(card.created_at).toLocaleDateString()}</span>
-          {/* </div> */}
-          <span className={styles.CardDescription}>{card.description}</span>
-        </div>
-      ))}
+    <div className="">
+      <h1 className='text-primary-text' onClick={()=>{dispatch(setShowModal(true))}}>Constructing</h1>
+      <Article/>
+      {/* <Modal/> */}
     </div>
     </div>
     </>

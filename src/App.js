@@ -6,7 +6,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import {React,useEffect,useState,useRef} from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import ChatTest from './pages/ChatTest';
+import ChatTest from './pages/BenDay';
+import Modal from './components/modal/Modal';
+import ChatIcon from './components/chat/ChatIcon';
 
 const extractLinks=(texts)=>{
   let links=[]

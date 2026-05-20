@@ -10,7 +10,7 @@ const initialState = {
   dialogue: "Hey there, click on me. I'd like to chat with you!",
   chatHistory: [{
     entity: "AI",
-    message: "Hello! Ask me anything about Jacques!",
+    message: "Hello!",
     links: [],
   }],
 };
@@ -56,13 +56,3 @@ export const setTempDialogue = (message) => (dispatch) => {
     dispatch(setDialogue(""));
   }, 2000);
 };
-
-
-import { configureStore } from "@reduxjs/toolkit";
-import chatbotStateReducer from "./chatbotStateSlice";
-
-export const store = configureStore({
-  reducer: {
-    chatbotState: chatbotStateReducer,
-  },
-});

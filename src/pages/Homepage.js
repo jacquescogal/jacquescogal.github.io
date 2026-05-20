@@ -1,12 +1,12 @@
 import React, { useState,useRef } from 'react'
 import Intro from './Intro'
 import Header from './Header';
-import LogoLoad from './LogoLoad';
 import Experience from './Experience';
 import Project from './Project';
 import Contact from './Contact';
 import Modal from '../components/modal/Modal';
 import ChatIcon from '../components/chat/ChatIcon';
+import BenDay from './BenDay';
 
 const Homepage = (props) => {
   const [introRef,setIntroRef]=useState(null);
@@ -14,12 +14,9 @@ const Homepage = (props) => {
   const [experienceRef,setExperienceRef]=useState(null);
   const [projectRef,setProjectRef]=useState(null);
   const [contactRef,setContactRef]=useState(null);
-  const [logoLoaded,setLogoLoaded]=useState(false);
-  const [headerLoaded,setHeaderLoaded]=useState(false);
   const [experienceReveal,setExperienceReveal]=useState(false);
   const [projectReveal,setProjectReveal]=useState(false);
   const [contactReveal,setContactReveal]=useState(false);
-
   const [profileFade,setProfileFade]=useState(false);
   const [experienceFade,setExperienceFade]=useState(false);
   const [projectFade,setProjectFade]=useState(false);
@@ -89,30 +86,23 @@ const Homepage = (props) => {
 
   return (
     <div className="light-mode">
-    
-    {/* <button onClick={()=>{handleLight()}} className='fixed h-40 w-40 top-0 bg-white z-50'>HELLO</button> */}
-    {(logoLoaded)?
     <>
     <div className='fixed w-full h-full background-parent -z-50'/>
-    {/* <Modal/> */}
     <Header forceNav={forceNav} forceNavMin={forceNavMin} setForceNav={setForceNav} setForceNavMin={setForceNavMin}closable={closable} setClosable={setClosable} handleRefClick={handleRefClick} navBarRef={navBarRef} smallBarRef={smallBarRef} stickerRef={stickerRef} introRef={introRef} aboutRef={aboutRef} experienceRef={experienceRef} projectRef={projectRef} 
-    contactRef={contactRef} setHeaderLoaded={setHeaderLoaded} setExperienceReveal={setExperienceReveal} 
+    contactRef={contactRef} setExperienceReveal={setExperienceReveal} 
     setProjectReveal={setProjectReveal} setContactReveal={setContactReveal} 
     setExperienceFade={setExperienceFade} setProfileFade={setProfileFade} setContactFade={setContactFade} setProjectFade={setProjectFade}
     light={light} handleLight={handleLight}
     />
-    {(headerLoaded)?
-    <>
     {/* <SideLinks/> */}
     <ChatIcon handleRefStrClick={handleRefStrClick}/>
+    <Modal/>
     
-    <Intro setChatBoxActive={props.setChatBoxActive} contactRef={contactRef} setIntroRef={setIntroRef} setAboutRef={setAboutRef} profileFade={profileFade}/>
+    <Intro  contactRef={contactRef} setIntroRef={setIntroRef} setAboutRef={setAboutRef} profileFade={profileFade}/>
     <Experience setExperienceRef={setExperienceRef} experienceReveal={experienceReveal} experienceFade={experienceFade}/>
     <Project setProjectRef={setProjectRef} projectReveal={projectReveal} projectFade={projectFade}/>
-    <Contact setContactRef={setContactRef} contactReveal={contactReveal} contactFade={contactFade}/></>:<></>}
-    </>
-    :
-    <LogoLoad setLogoLoaded={setLogoLoaded}/>}
+    <Contact setContactRef={setContactRef} contactReveal={contactReveal} contactFade={contactFade}/></>:<></>
+    
 </div>
   )
 }
