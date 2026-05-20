@@ -1,9 +1,10 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   IconBrandGithub,
   IconBrandLinkedin,
   IconBriefcase,
+  IconCode,
   IconDownload,
   IconMail,
   IconSparkles,
@@ -114,12 +115,26 @@ const projects = [
   },
 ];
 
+const highlightTargetMap = {
+  profile: "profile",
+  resume: "profile",
+  experiences: "experience",
+  experience: "experience",
+  projects: "projects",
+  project: "projects",
+  contact: "contact",
+};
+
+const highlightDurationMs = 1800;
+
 const PortfolioShell = () => {
   const dispatch = useDispatch();
   const profileRef = useRef(null);
   const experienceRef = useRef(null);
   const projectRef = useRef(null);
   const contactRef = useRef(null);
+  const highlightTimeoutRef = useRef(null);
+  const [highlightedSection, setHighlightedSection] = useState(null);
   const [contactForm, setContactForm] = useState({
     name: "",
     subject: "",
@@ -136,6 +151,15 @@ const PortfolioShell = () => {
       project: projectRef,
       contact: contactRef,
     }),
+    []
+  );
+
+  useEffect(
+    () => () => {
+      if (highlightTimeoutRef.current) {
+        window.clearTimeout(highlightTimeoutRef.current);
+      }
+    },
     []
   );
 
@@ -156,7 +180,26 @@ const PortfolioShell = () => {
       downloadResume();
     }
     refs[target]?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    const sectionKey = highlightTargetMap[target];
+    if (!sectionKey) return;
+
+    if (highlightTimeoutRef.current) {
+      window.clearTimeout(highlightTimeoutRef.current);
+    }
+    setHighlightedSection(sectionKey);
+    highlightTimeoutRef.current = window.setTimeout(() => {
+      setHighlightedSection(null);
+      highlightTimeoutRef.current = null;
+    }, highlightDurationMs);
   };
+
+  const getSectionClassName = (sectionKey) =>
+    cn(
+      "-m-3 scroll-mt-24 rounded-2xl p-3 transition-[background-color,box-shadow] duration-300",
+      highlightedSection === sectionKey &&
+        "bg-emerald-50/60 shadow-[0_0_0_3px_rgba(16,185,129,0.28)]"
+    );
 
   const sendEmail = () => {
     const subject = encodeURIComponent(contactForm.subject || "Work Opportunity");
@@ -205,7 +248,7 @@ const PortfolioShell = () => {
 
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:px-8">
         <main className="space-y-6">
-          <section ref={profileRef} className="scroll-mt-24">
+          <section ref={profileRef} className={getSectionClassName("profile")}>
             <Card className="overflow-hidden border-slate-200 bg-white shadow-sm">
               <CardContent className="grid gap-8 p-6 md:grid-cols-[220px_minmax(0,1fr)] md:p-8">
                 <div className="space-y-4">
@@ -284,7 +327,7 @@ const PortfolioShell = () => {
             </Card>
           </section>
 
-          <section ref={experienceRef} className="scroll-mt-24">
+          <section ref={experienceRef} className={getSectionClassName("experience")}>
             <SectionHeader
               eyebrow="Experience"
               title="Recent work, education, and wins"
@@ -328,11 +371,12 @@ const PortfolioShell = () => {
             </Tabs>
           </section>
 
-          <section ref={projectRef} className="scroll-mt-24">
+          <section ref={projectRef} className={getSectionClassName("projects")}>
             <SectionHeader
               eyebrow="Projects"
               title="Proof of delivery"
               description="Selected examples that show product, backend, retrieval, and AI delivery."
+              icon={IconCode}
             />
             <div className="mt-4 grid gap-4 md:grid-cols-3">
               {projects.map((project) => (
@@ -369,11 +413,12 @@ const PortfolioShell = () => {
             </Card>
           </section>
 
-          <section ref={contactRef} className="scroll-mt-24">
+          <section ref={contactRef} className={getSectionClassName("contact")}>
             <SectionHeader
               eyebrow="Contact"
               title="Send a focused note"
               description="Use mailto for now; the assistant can help summarize fit before you reach out."
+              icon={IconMail}
             />
             <Card className="mt-4 border-slate-200 bg-white shadow-sm">
               <CardContent className="grid gap-4 p-4 sm:grid-cols-2">
@@ -434,10 +479,10 @@ const PortfolioShell = () => {
   );
 };
 
-const SectionHeader = ({ eyebrow, title, description }) => (
+const SectionHeader = ({ eyebrow, title, description, icon: Icon = IconBriefcase }) => (
   <div className="space-y-2">
-    <Badge variant="outline" className="gap-1">
-      <IconBriefcase className="size-3" />
+    <Badge variant="ghost" className="gap-1 px-0 text-slate-500 hover:bg-transparent">
+      <Icon className="size-3" />
       {eyebrow}
     </Badge>
     <div className="space-y-1">

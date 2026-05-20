@@ -109,7 +109,7 @@ const AssistantPanel = ({ onNavigate }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const bottomRef = useRef(null);
+  const chatHistoryRef = useRef(null);
 
   useEffect(() => {
     if (assistantPrompt) {
@@ -119,7 +119,13 @@ const AssistantPanel = ({ onNavigate }) => {
   }, [assistantPrompt, dispatch]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    const chatHistoryElement = chatHistoryRef.current;
+    if (!chatHistoryElement) return;
+
+    chatHistoryElement.scrollTo({
+      top: chatHistoryElement.scrollHeight,
+      behavior: "smooth",
+    });
   }, [chatHistory, isThinking, suggestions, showSuggestions]);
 
   const seedPrompt = (prompt) => {
@@ -207,7 +213,10 @@ const AssistantPanel = ({ onNavigate }) => {
           ))}
         </div>
 
-        <div className="min-h-0 overflow-y-auto rounded-xl border bg-slate-50">
+        <div
+          ref={chatHistoryRef}
+          className="min-h-0 overflow-y-auto overscroll-contain rounded-xl border bg-slate-50"
+        >
           <div className="space-y-3 p-3">
             {chatHistory.map((chatMessage, index) => (
               <AssistantMessage
@@ -248,7 +257,6 @@ const AssistantPanel = ({ onNavigate }) => {
                 )}
               </div>
             )}
-            <div ref={bottomRef} />
           </div>
         </div>
 
