@@ -10,7 +10,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
@@ -208,51 +207,49 @@ const AssistantPanel = ({ onNavigate }) => {
           ))}
         </div>
 
-        <div className="min-h-0 overflow-hidden rounded-xl border bg-slate-50">
-          <ScrollArea className="h-full min-h-0">
-            <div className="space-y-3 p-3">
-              {chatHistory.map((chatMessage, index) => (
-                <AssistantMessage
-                  key={`${chatMessage.entity}-${index}`}
-                  chatMessage={chatMessage}
-                  onNavigate={onNavigate}
-                />
-              ))}
-              {isThinking && (
-                <div className="w-fit rounded-xl border bg-white px-3 py-2 text-sm text-slate-600">
-                  Thinking...
+        <div className="min-h-0 overflow-y-auto rounded-xl border bg-slate-50">
+          <div className="space-y-3 p-3">
+            {chatHistory.map((chatMessage, index) => (
+              <AssistantMessage
+                key={`${chatMessage.entity}-${index}`}
+                chatMessage={chatMessage}
+                onNavigate={onNavigate}
+              />
+            ))}
+            {isThinking && (
+              <div className="w-fit rounded-xl border bg-white px-3 py-2 text-sm text-slate-600">
+                Thinking...
+              </div>
+            )}
+            {showSuggestions && (
+              <div className="space-y-2 rounded-xl border bg-white p-3">
+                <div className="flex items-center gap-2 text-sm font-medium text-slate-800">
+                  <IconBulb className="size-4 text-amber-500" />
+                  Suggested questions
                 </div>
-              )}
-              {showSuggestions && (
-                <div className="space-y-2 rounded-xl border bg-white p-3">
-                  <div className="flex items-center gap-2 text-sm font-medium text-slate-800">
-                    <IconBulb className="size-4 text-amber-500" />
-                    Suggested questions
+                {loadingSuggestions ? (
+                  <p className="text-sm text-slate-500">Loading suggestions...</p>
+                ) : suggestions.length ? (
+                  <div className="space-y-2">
+                    {suggestions.map((suggestion) => (
+                      <Button
+                        key={suggestion}
+                        type="button"
+                        variant="outline"
+                        className="h-auto w-full justify-start whitespace-normal text-left"
+                        onClick={() => deliverMessage(suggestion)}
+                      >
+                        {suggestion}
+                      </Button>
+                    ))}
                   </div>
-                  {loadingSuggestions ? (
-                    <p className="text-sm text-slate-500">Loading suggestions...</p>
-                  ) : suggestions.length ? (
-                    <div className="space-y-2">
-                      {suggestions.map((suggestion) => (
-                        <Button
-                          key={suggestion}
-                          type="button"
-                          variant="outline"
-                          className="h-auto w-full justify-start whitespace-normal text-left"
-                          onClick={() => deliverMessage(suggestion)}
-                        >
-                          {suggestion}
-                        </Button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-slate-500">No suggestions available.</p>
-                  )}
-                </div>
-              )}
-              <div ref={bottomRef} />
-            </div>
-          </ScrollArea>
+                ) : (
+                  <p className="text-sm text-slate-500">No suggestions available.</p>
+                )}
+              </div>
+            )}
+            <div ref={bottomRef} />
+          </div>
         </div>
 
         <div className="space-y-2">

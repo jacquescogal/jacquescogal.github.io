@@ -31,7 +31,7 @@ const workExperience = [
   {
     company: "Shopee",
     role: "Software Engineer",
-    date: "Jun 2024 - Present",
+    date: "Jun 2024 - Feb 2025",
     summary: "Marketplace core team with production backend ownership.",
     skills: ["Golang", "Marketplace", "Backend"],
   },
@@ -71,13 +71,6 @@ const education = [
 
 const achievements = [
   {
-    company: "J.P. Morgan Code For Good",
-    role: "Champion",
-    date: "Oct 2022",
-    summary: "Built and demonstrated a system to address client query-processing bottlenecks.",
-    skills: ["React", "Node.js", "Team delivery"],
-  },
-  {
     company: "GIC Code To Impact",
     role: "Champion",
     date: "Sep 2023",
@@ -90,6 +83,13 @@ const achievements = [
     date: "Jun 2023",
     summary: "Led delivery of an internal proof of concept.",
     skills: ["Leadership", "Prototype", "API"],
+  },
+  {
+    company: "J.P. Morgan Code For Good",
+    role: "Champion",
+    date: "Oct 2022",
+    summary: "Built and demonstrated a system to address client query-processing bottlenecks.",
+    skills: ["React", "Node.js", "Team delivery"],
   },
 ];
 
@@ -193,7 +193,8 @@ const PortfolioShell = () => {
           </nav>
           <Button
             type="button"
-            className="gap-2 bg-slate-950 text-white hover:bg-slate-800"
+            variant="secondary"
+            className="gap-2 border border-slate-200 bg-slate-100 text-slate-800 hover:bg-slate-200"
             onClick={downloadResume}
           >
             <IconDownload className="size-4" />
@@ -255,7 +256,8 @@ const PortfolioShell = () => {
                   <div className="flex flex-wrap gap-3">
                     <Button
                       type="button"
-                      className="gap-2 bg-slate-950 text-white hover:bg-slate-800"
+                      variant="secondary"
+                      className="gap-2 border border-slate-200 bg-slate-100 text-slate-800 hover:bg-slate-200"
                       onClick={downloadResume}
                     >
                       <IconDownload className="size-4" />
@@ -273,7 +275,7 @@ const PortfolioShell = () => {
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-3">
-                    <StatCard label="Current" value="UBS / Shopee" />
+                    <StatCard label="Current" value="UBS" />
                     <StatCard label="Focus" value="Full-stack + AI" />
                     <StatCard label="Base" value="Singapore" />
                   </div>
@@ -288,12 +290,32 @@ const PortfolioShell = () => {
               title="Recent work, education, and wins"
               description="A compact view of roles and achievements most relevant to software engineering teams."
             />
-            <Tabs defaultValue="work" className="mt-4">
-              <TabsList>
-                <TabsTrigger value="work">Work</TabsTrigger>
-                <TabsTrigger value="education">Education</TabsTrigger>
-                <TabsTrigger value="achievements">Hackathons</TabsTrigger>
-              </TabsList>
+            <Tabs defaultValue="work" className="mt-4 flex-col gap-0">
+              <div className="mb-4 flex justify-start border-b border-slate-200">
+                <TabsList
+                  variant="line"
+                  className="h-9 w-auto justify-start rounded-none p-0"
+                >
+                  <TabsTrigger
+                    className="h-9 flex-none px-3 data-[state=active]:text-emerald-700 data-[state=active]:after:bg-emerald-600"
+                    value="work"
+                  >
+                    Work
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className="h-9 flex-none px-3 data-[state=active]:text-emerald-700 data-[state=active]:after:bg-emerald-600"
+                    value="education"
+                  >
+                    Education
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className="h-9 flex-none px-3 data-[state=active]:text-emerald-700 data-[state=active]:after:bg-emerald-600"
+                    value="achievements"
+                  >
+                    Hackathons
+                  </TabsTrigger>
+                </TabsList>
+              </div>
               <TabsContent value="work" className="mt-4">
                 <ExperienceList items={workExperience} />
               </TabsContent>
@@ -391,7 +413,8 @@ const PortfolioShell = () => {
                 <div className="sm:col-span-2">
                   <Button
                     type="button"
-                    className="gap-2 bg-slate-950 text-white hover:bg-slate-800"
+                    variant="secondary"
+                    className="gap-2 border border-slate-200 bg-slate-100 text-slate-800 hover:bg-slate-200"
                     onClick={sendEmail}
                   >
                     <IconMail className="size-4" />
@@ -424,26 +447,26 @@ const SectionHeader = ({ eyebrow, title, description }) => (
   </div>
 );
 
-const ExperienceList = ({ items }) => (
-  <div className="grid gap-3 md:grid-cols-2">
+const ExperienceList = ({ items, className }) => (
+  <div className={cn("grid grid-cols-1 gap-3", className)}>
     {items.map((item) => (
       <Card key={`${item.company}-${item.role}`} className="border-slate-200 bg-white shadow-sm">
-        <CardContent className="flex h-full flex-col gap-3 p-4">
-          <div className="space-y-2">
-            <div className="space-y-1">
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="font-medium leading-5 text-slate-950">{item.company}</h3>
-                <div className="shrink-0 text-right text-xs leading-5 text-slate-500">{item.date}</div>
+        <CardContent className="grid min-h-32 gap-3 p-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,2fr)_minmax(180px,auto)] md:items-start">
+          <div className="space-y-1.5">
+            <div className="flex items-start justify-between gap-2 md:block">
+              <h3 className="text-sm font-medium leading-5 text-slate-950">{item.company}</h3>
+              <div className="shrink-0 text-right text-xs leading-5 text-slate-500 md:mt-1 md:text-left">
+                {item.date}
               </div>
-              <Badge variant="secondary" className="w-fit">
-                {item.role}
-              </Badge>
             </div>
-            <p className="text-sm leading-6 text-slate-600">{item.summary}</p>
+            <Badge variant="secondary" className="h-6 w-fit px-2 text-xs">
+              {item.role}
+            </Badge>
           </div>
-          <div className="mt-auto flex flex-wrap gap-2">
+          <p className="text-sm leading-5 text-slate-600">{item.summary}</p>
+          <div className="flex flex-wrap gap-1.5 md:justify-end">
             {item.skills.map((skill) => (
-              <Badge key={skill} variant="outline">
+              <Badge key={skill} variant="outline" className="h-6 px-2 text-xs">
                 {skill}
               </Badge>
             ))}

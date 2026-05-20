@@ -62,7 +62,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
     {
       Id: "Shopee",
       Role: "Software Engineer",
-      Date: "Jun 2024 - Present",
+      Date: "Jun 2024 - Feb 2025",
       Description: "Marketplace core team",
       imageURL: '/images/shopee_logo.png',
       logos: [{ Id: "Golang", imageURL: "/images/go_logo.png" }]
