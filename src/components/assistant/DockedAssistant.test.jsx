@@ -1,6 +1,5 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import chatbotStateReducer from "../../store/chatbotStateSlice";
@@ -19,31 +18,10 @@ test("renders assistant prompts and chat for desktop visitors", () => {
   renderWithStore(<AssistantDock onNavigate={() => {}} />);
 
   expect(screen.getByRole("complementary", { name: /Jacques AI workspace/i })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: /Role fit/i })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: /Project proof/i })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: /Experience summary/i })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /Role fit/i })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /Project proof/i })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /Experience summary/i })).not.toBeInTheDocument();
   expect(screen.getByRole("textbox", { name: /Message Jacques AI/i })).toBeInTheDocument();
-});
-
-test("sends a dock prompt immediately when clicked", async () => {
-  const store = renderWithStore(<AssistantDock onNavigate={() => {}} />);
-
-  await userEvent.click(screen.getByRole("button", { name: /Role fit/i }));
-
-  expect(store.getState().chatbotState.showChat).toBe(true);
-  await waitFor(() => {
-    expect(
-      store
-        .getState()
-        .chatbotState.chatHistory.some(
-          (message) => message.entity === "USER" && /fits this role/i.test(message.message)
-        )
-    ).toBe(true);
-  });
-  await waitFor(() => {
-    expect(store.getState().chatbotState.chatHistory.length).toBeGreaterThanOrEqual(3);
-  });
-  expect(screen.getByRole("textbox", { name: /Message Jacques AI/i })).toHaveValue("");
 });
 
 test("offers a mobile assistant entry point", () => {

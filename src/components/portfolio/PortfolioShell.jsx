@@ -24,10 +24,11 @@ import { cn } from "@/lib/utils";
 const workExperience = [
   {
     company: "UBS",
-    role: "Software Engineer",
+    role: "Software Engineer / AI Engineer",
     date: "Feb 2025 - Present",
-    summary: "Group Operations and Technology Office Graduate Talent Program.",
-    skills: ["Software engineering", "Enterprise systems"],
+    summary:
+      "Group Operations and Technology Office Graduate Talent Program, rotating into the Agentic Products Crew.",
+    skills: ["Software engineering", "AI engineering", "Agentic products"],
   },
   {
     company: "Shopee",
@@ -65,12 +66,19 @@ const education = [
     company: "Temasek Polytechnic",
     role: "Accounting and Finance Diploma",
     date: "Apr 2015 - Apr 2018",
-    summary: "Diploma plus with merit and a CGPA of 3.93/4.00.",
+    summary: "Diploma plus with merit and a CGPA of 3.92/4.00.",
     skills: ["Finance", "Accounting"],
   },
 ];
 
 const achievements = [
+  {
+    company: "UBS Global Hackathon",
+    role: "Champion",
+    date: "Jul 2025",
+    summary: "Led team to victory implementing an AI workflow for a regulatory oversight case challenge.",
+    skills: ["AI workflow", "Regulatory oversight", "Team leadership"],
+  },
   {
     company: "GIC Code To Impact",
     role: "Champion",
@@ -287,11 +295,11 @@ const PortfolioShell = () => {
                     </Badge>
                     <div className="space-y-3">
                       <h1 className="max-w-3xl text-4xl font-semibold tracking-normal text-slate-950 sm:text-5xl">
-                        Full-stack software engineer
+                        Software Engineer
                       </h1>
                       <p className="max-w-2xl text-base leading-7 text-slate-600">
-                        I build practical software across product surfaces, backend systems, data
-                        workflows, and AI-assisted experiences.
+                        Looking to solve meaningful problems and write impactful code across
+                        full-stack, data, and AI systems.
                       </p>
                     </div>
                   </div>
@@ -496,7 +504,7 @@ const ExperienceList = ({ items, className }) => (
   <div className={cn("grid grid-cols-1 gap-3", className)}>
     {items.map((item) => (
       <Card key={`${item.company}-${item.role}`} className="border-slate-200 bg-white shadow-sm">
-        <CardContent className="grid min-h-32 gap-3 p-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,2fr)_minmax(180px,auto)] md:items-start">
+        <CardContent className="grid min-h-32 gap-3 p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,1fr)] md:items-start">
           <div className="space-y-1.5">
             <div className="flex items-start justify-between gap-2 md:block">
               <h3 className="text-sm font-medium leading-5 text-slate-950">{item.company}</h3>
@@ -509,7 +517,7 @@ const ExperienceList = ({ items, className }) => (
             </Badge>
           </div>
           <p className="text-sm leading-5 text-slate-600">{item.summary}</p>
-          <div className="flex flex-wrap gap-1.5 md:justify-end">
+          <div className="flex flex-wrap gap-1.5">
             {item.skills.map((skill) => (
               <Badge key={skill} variant="outline" className="h-6 px-2 text-xs">
                 {skill}

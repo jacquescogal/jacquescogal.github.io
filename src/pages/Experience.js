@@ -69,9 +69,9 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
     },
     {
       Id: "UBS",
-      Role: "Software Engineer",
+      Role: "Software Engineer / AI Engineer",
       Date: "Feb 2025 - Present",
-      Description: "Group Operations and Technology Office (GOTO) Graduate Talent Program (GTP)",
+      Description: "Group Operations and Technology Office (GOTO) Graduate Talent Program (GTP)|Rotated into Agentic Products Crew",
       imageURL: '/images/ubs_logo.png',
       logos: []
     },
@@ -82,7 +82,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
       Id: "Temasek Polytechnic",
       Role: "Accounting and Finance Diploma",
       Date: "Apr 2015 - Apr 2018",
-      Description: "Diploma plus with merit and a CGPA of 3.93/4.00.",
+      Description: "Diploma plus with merit and a CGPA of 3.92/4.00.",
       imageURL: '/images/tp_logo.png',
       logos: [{ Id: "MS Office", imageURL: "/images/ms_logo.jpg" }]
     },
@@ -97,6 +97,14 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
   ]
 
   const notableAchievements = [
+    {
+      Id: "UBS Global Hackathon 2025 - Champions",
+      Role: "Team lead",
+      Date: "Jul 2025",
+      Description: "Led team to victory implementing AI workflow for a regulatory oversight case challenge.",
+      imageURL: '/images/ubs_logo.png',
+      logos: []
+    },
     {
       Id: "Deloitte BA Hackathon - 2nd Runner-up",
       Role: "Red-pill group leader",

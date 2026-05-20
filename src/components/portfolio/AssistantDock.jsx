@@ -4,7 +4,6 @@ import {
   IconArrowUp,
   IconBulb,
   IconExternalLink,
-  IconMessageChatbot,
   IconSparkles,
 } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/badge";
@@ -24,35 +23,10 @@ import { cn } from "@/lib/utils";
 import {
   addChatMessage,
   setAssistantPrompt,
-  setShowChat,
-  setTempDialogue,
   setThinking,
 } from "../../store/chatbotStateSlice";
 import { getChatSuggestions, sendChatMessage } from "../../api/chatApi";
 import { linkTextParser } from "../../utils/Links";
-
-const promptActions = [
-  {
-    title: "Role fit",
-    prompt:
-      "Summarize why Jacques Cogal fits this role using his recent software engineering, data, and LLM experience.",
-  },
-  {
-    title: "Project proof",
-    prompt:
-      "Which projects best prove Jacques can build production-ready full-stack and AI features?",
-  },
-  {
-    title: "Experience summary",
-    prompt:
-      "Give me a concise timeline of Jacques' work, internship, and education experience.",
-  },
-  {
-    title: "Interview notes",
-    prompt:
-      "Create three interview talking points based on Jacques' portfolio and resume.",
-  },
-];
 
 const AssistantDock = ({ onNavigate }) => {
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -74,7 +48,14 @@ const AssistantDock = ({ onNavigate }) => {
           )}
           onClick={() => setSheetOpen(true)}
         >
-          <IconMessageChatbot className="size-4" />
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
+            <img
+              src="/ai_mascot_only.png"
+              alt=""
+              className="block object-cover"
+              style={{ width: 28, height: 28, maxWidth: 28, maxHeight: 28 }}
+            />
+          </span>
           Ask Jacques AI
         </SheetTrigger>
         <SheetContent className="w-full p-0 sm:max-w-md" side="right">
@@ -127,12 +108,6 @@ const AssistantPanel = ({ onNavigate }) => {
       behavior: "smooth",
     });
   }, [chatHistory, isThinking, suggestions, showSuggestions]);
-
-  const seedPrompt = (prompt) => {
-    dispatch(setShowChat(true));
-    dispatch(setTempDialogue(prompt));
-    void deliverMessage(prompt);
-  };
 
   const deliverMessage = async (nextMessage = message) => {
     const trimmed = nextMessage.trim();
@@ -189,8 +164,13 @@ const AssistantPanel = ({ onNavigate }) => {
             </Badge>
             <CardTitle className="text-base">Jacques AI workspace</CardTitle>
           </div>
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border bg-slate-950 text-white">
-            <IconMessageChatbot className="size-5" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-slate-100">
+            <img
+              src="/ai_mascot_only.png"
+              alt=""
+              className="block object-cover"
+              style={{ width: 44, height: 44, maxWidth: 44, maxHeight: 44 }}
+            />
           </div>
         </div>
         <p className="text-sm leading-5 text-slate-600">
@@ -198,21 +178,7 @@ const AssistantPanel = ({ onNavigate }) => {
         </p>
       </CardHeader>
 
-      <CardContent className="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)_auto] gap-3 overflow-hidden p-3">
-        <div className="grid grid-cols-2 gap-2">
-          {promptActions.map((action) => (
-            <Button
-              key={action.title}
-              type="button"
-              variant="outline"
-              className="h-auto justify-start whitespace-normal rounded-lg border-slate-200 bg-white p-3 text-left text-slate-900 hover:border-emerald-300 hover:bg-emerald-50"
-              onClick={() => seedPrompt(action.prompt)}
-            >
-              <span className="text-sm font-medium">{action.title}</span>
-            </Button>
-          ))}
-        </div>
-
+      <CardContent className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_auto] gap-3 overflow-hidden p-3">
         <div
           ref={chatHistoryRef}
           className="min-h-0 overflow-y-auto overscroll-contain rounded-xl border bg-slate-50"
@@ -284,7 +250,7 @@ const AssistantPanel = ({ onNavigate }) => {
           >
             <Textarea
               aria-label="Message Jacques AI"
-              className="max-h-32 min-h-12 flex-1 resize-none bg-white"
+              className="h-12 min-h-12 flex-1 resize-none bg-white"
               placeholder="Ask about experience, projects, or fit..."
               value={message}
               onChange={(event) => setMessage(event.target.value)}
@@ -297,8 +263,8 @@ const AssistantPanel = ({ onNavigate }) => {
             />
             <Button
               type="submit"
-              size="icon-lg"
-              className="bg-slate-950 text-white hover:bg-slate-800"
+              size="icon"
+              className="size-12 bg-slate-950 text-white hover:bg-slate-800"
               disabled={!message.trim() || isThinking}
             >
               <IconArrowUp className="size-4" />
