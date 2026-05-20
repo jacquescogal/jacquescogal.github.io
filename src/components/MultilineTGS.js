@@ -13,11 +13,11 @@ const MultilineTGS = ({toGenerateMap,classNameMap,observable}) => {
   return (
     <>
     {generated.map((object,index)=>
-        <>
+        <React.Fragment key={`${object.toGenerate}-${index}`}>
         <TGS key={index} toGenerate={object.toGenerate} className={object.className} 
         setIsAnimating={setIsAnimating} observable={observable}
         />
-        </>
+        </React.Fragment>
         )
     }
     </>

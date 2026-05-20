@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setThinking,
   addChatMessage,
-  setDialogue,
   setTempDialogue,
   setShowChat,
   setAssistantPrompt,
@@ -17,7 +16,8 @@ import { HiLightBulb } from "react-icons/hi";
 
 import style from "./AIChat.module.scss";
 import { BiLinkExternal } from "react-icons/bi";
-import { useAnimation } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 const sendDialogue = "It's here!";
 const thinkingDialogue = "Thinking...";
@@ -27,7 +27,6 @@ const talkSoonDialogue = "Talk to you soon!";
 const ChatModal = ({ handleRefStrClick }) => {
   const dispatch = useDispatch();
   const showChat = useSelector((state) => state.chatbotState.showChat);
-  const dialogue = useSelector((state) => state.chatbotState.dialogue);
   const isThinking = useSelector((state) => state.chatbotState.isThinking);
   const [animState, setAnimState] = useState(0);
   useEffect(() => {
@@ -257,13 +256,15 @@ const ChatBox = ({ handleRefStrClick }) => {
             <p className="text-sm text-slate-800 mb-2 font-medium">Suggested questions:</p>
             <div className="flex flex-col gap-2">
               {suggestions.map((suggestion, index) => (
-                <button
+                <Button
                   key={index}
+                  type="button"
+                  variant="outline"
                   onClick={() => handleSuggestionClick(suggestion)}
-                  className="text-left p-2 text-sm bg-white border border-gray-200 rounded hover:bg-blue-50 hover:border-blue-300 transition-colors duration-200"
+                  className="h-auto justify-start whitespace-normal rounded-md bg-white p-2 text-left text-sm"
                 >
                   {suggestion}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -272,10 +273,12 @@ const ChatBox = ({ handleRefStrClick }) => {
       </div>
       {chatHistory.length > 0 && !isThinking && (
         <div className="px-3 py-2 border-t border-gray-200">
-          <button
+          <Button
+            type="button"
+            variant="secondary"
             onClick={toggleSuggestions}
             disabled={loadingSuggestions}
-            className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition-colors duration-200 disabled:opacity-50"
+            className="text-blue-800"
           >
             <HiLightBulb className="text-lg" />
             {loadingSuggestions ? (
@@ -285,14 +288,13 @@ const ChatBox = ({ handleRefStrClick }) => {
             ) : (
               "Get suggestions"
             )}
-          </button>
+          </Button>
         </div>
       )}
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="relative color-content h-32 w-full  rounded-b-md border-t-2 border-slate-600 flex">
-          <textarea
-            className=" w-full bg-inherit h-full inset-shadow-sm
-        shadow"
+          <Textarea
+            className="h-full min-h-0 w-full rounded-none border-0 bg-inherit shadow-none focus-visible:ring-0"
             onKeyDown={handleInput}
             style={{ resize: "none" }}
             value={message}
@@ -302,15 +304,17 @@ const ChatBox = ({ handleRefStrClick }) => {
             <div className="absolute h-full w-full bg-slate-500 z-10 opacity-80" />
           )}
           <div className="relative flex flex-col justify-center items-center">
-            <motion.div
-              className="right-2 bg-blue-700 h-12 w-12 rounded-full  flex items-center justify-center cursor-pointer overflow-hidden align-middle justify-middle align-center mx-2"
-              onHoverStart={() => {
+            <Button
+              type="button"
+              size="icon-lg"
+              className="right-2 mx-2 h-12 w-12 overflow-hidden rounded-full bg-blue-700 hover:bg-blue-800"
+              onMouseEnter={() => {
                 setSendIsHovered(true);
               }}
-              onHoverEnd={() => {
+              onMouseLeave={() => {
                 setSendIsHovered(false);
               }}
-              onTap={DeliverMessage}
+              onClick={DeliverMessage}
             >
               <motion.div
                 animate={
@@ -327,7 +331,7 @@ const ChatBox = ({ handleRefStrClick }) => {
               >
                 <IoIosSend className="text-white text-2xl" />
               </motion.div>
-            </motion.div>
+            </Button>
           </div>
         </div>
       </form>
@@ -352,8 +356,8 @@ const ChatMessage = (prop) => {
         <div className={style.BotBubble}>
           {prop.message}
           <br />
-          {prop.links.map((link) => (
-            <>
+          {prop.links.map((link, index) => (
+            <React.Fragment key={`${link.type}-${link.where}-${index}`}>
               {link.type === "internal" && (
                 <a
                   onClick={() => {
@@ -362,6 +366,8 @@ const ChatMessage = (prop) => {
                     dispatch(setShowChat(false));
                   }}
                   className={style.BubbleLink}
+                  role="button"
+                  tabIndex={0}
                 >
                   <span className={style.BubbleAlign}>
                     {link.text}
@@ -373,6 +379,7 @@ const ChatMessage = (prop) => {
                 <a
                   href={link.where}
                   target="_blank"
+                  rel="noreferrer"
                   className={style.BubbleLink}
                 >
                   <span className={style.BubbleAlign}>
@@ -381,7 +388,7 @@ const ChatMessage = (prop) => {
                   </span>
                 </a>
               )}
-            </>
+            </React.Fragment>
           ))}
         </div>
       )}

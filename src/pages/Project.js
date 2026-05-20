@@ -1,12 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import MultilineTGS from '../components/MultilineTGS';
-import Proj_logo from '../svg/Proj_logo';
-import TGS from '../components/TGS';
-import TGP from '../components/TGP';
 import '../project.scss'
-import {BiLinkExternal} from 'react-icons/bi';
 import axios from 'axios';
-import Modal from '../components/modal/Modal';
 import Article from '../components/Article';
 import { useDispatch } from 'react-redux';
 import { setShowModal } from '../store/modalStateSlice';
@@ -17,7 +12,6 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
     const onceRef=useRef(null);
     const projectRef=useRef(null);
     const dispatch = useDispatch();
-    const [activeProject,setActiveProject]=useState(0);
     const [projectCards,setProjectCards]=useState([
     ]);
     useEffect(()=>{
@@ -68,7 +62,6 @@ const Project = ({setProjectRef,projectReveal,projectFade}) => {
       <CardContent className="flex flex-col items-start gap-4 p-6">
       <Button type="button" variant="outline" className='text-primary-text' onClick={()=>{dispatch(setShowModal(true))}}>Constructing</Button>
       <Article/>
-      {/* <Modal/> */}
       </CardContent>
     </Card>
     </div>

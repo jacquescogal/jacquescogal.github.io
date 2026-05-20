@@ -5,12 +5,8 @@ import introStyle from "../intro.module.css";
 import MouseSVG from "../svg/Mouse";
 import ScrollMouse from "../svg/ScrollMouse";
 import MultilineTGS from "../components/MultilineTGS";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
-  setThinking,
-  addChatMessage,
-  setDialogue,
-  setTempDialogue,
   setShowChat,
 } from "../store/chatbotStateSlice";
 import { Button } from "@/components/ui/button";
@@ -53,7 +49,6 @@ const Intro = ({ setIntroRef, contactRef, profileFade }) => {
   const blockSelect = document.querySelector(".section-block.profile-block");
 
   useEffect(() => {
-    console.log(profileFade);
     if (profileFade) {
       blockSelect?.classList.add("fade");
     } else {

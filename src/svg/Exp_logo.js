@@ -3,7 +3,7 @@ import React from 'react'
 const Exp_logo = ({className,onClick}) => {
   return (
     <svg className={className} onClick={onClick} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="100%" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xmlSpace="preserve" fill='current'>
+	 width="100%" viewBox="0 0 512 512" enableBackground="new 0 0 512 512" xmlSpace="preserve" fill='current'>
 
 <path fill="current" opacity="1.000000" stroke="none" 
 	d="

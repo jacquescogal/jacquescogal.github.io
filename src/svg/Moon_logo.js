@@ -3,7 +3,7 @@ import React from 'react'
 const Moon_logo = ({onClick,className}) => {
   return (
     <svg onClick={onClick} className={className} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="100%" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xmlSpace="preserve">
+	 width="100%" viewBox="0 0 512 512" enableBackground="new 0 0 512 512" xmlSpace="preserve">
 <path fill='current' opacity="1.000000" stroke="none" 
 	d="
 M513.000000,302.000000 

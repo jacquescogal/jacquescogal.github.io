@@ -391,8 +391,7 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
           <div className='drag-line '
             style={{ width: `${scrollRefs.current[scrollRefs.current.length - 1]?.offsetLeft - scrollRefs.current[0]?.offsetLeft}px` }}></div>
           {loadThis.map((exp, i) =>
-            <>
-              <div key={i} id={exp.Id} ref={ref => (scrollRefs.current[i] = ref)} className=' drag-item snap-center '
+              <div key={exp.Id} id={exp.Id} ref={ref => (scrollRefs.current[i] = ref)} className=' drag-item snap-center '
                 onLoadCapture={() => { setLoadThis(loadThis); dragLineSizer() }}
                 onAnimationEnd={() => { dragLineSizer(); scrollReset() }}
               >
@@ -400,12 +399,12 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
                 <p className='drag-date'>{exp.Date}</p>
                 <img className='circle absolute z-50' src={exp.imageURL} onClick={()=>{experienceImageHandler({imageURL:exp.imageURL})}} />
                 <div className='square'>
-                  <p className='drag-text-body'><span className='underline drag-text-title'>{exp.Role}</span>{
+                  <div className='drag-text-body'><span className='underline drag-text-title'>{exp.Role}</span>{
                     exp.Description.split("|").map((line, index) => {
                       return <p key={index} className='drag-text'>• {line}</p>
                     }
                     )
-                  }</p>
+                  }</div>
 
                   {/* pill */}
                   <div className='drag-pill-group'>
@@ -418,7 +417,6 @@ const Experience = ({ setExperienceRef, experienceReveal,experienceFade }) => {
                   </div>
                 </div>
               </div>
-            </>
           )}
         </div>
       </div>

@@ -121,7 +121,7 @@ const DragSelect = ({ experience, scrollTo }) => {
         >
         {experience.map((exp, index) => {
           return (
-            <>
+            <React.Fragment key={exp.Id}>
               {/* green circle */}
               <motion.div
                 className="rounded-full bg-white h-8 w-8"
@@ -133,7 +133,7 @@ const DragSelect = ({ experience, scrollTo }) => {
               {index < experience.length - 1 && (
                 <div className=" bg-white h-2 w-8 -mx-2" />
               )}
-            </>
+            </React.Fragment>
           );
         })}
         {/* selector */}
