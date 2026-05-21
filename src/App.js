@@ -1,6 +1,7 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { Toaster } from "@/components/ui/sonner";
 import "./App.css";
 import Homepage from "./pages/Homepage";
 
@@ -14,6 +15,7 @@ function App() {
   return (
     <div className="App">
       <ToastContainer />
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route

@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
-import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import {
   IconCircleCheck,
   IconLock,
-  IconRefresh,
   IconTrophy,
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,6 @@ export function AchievementCenter({
   progress,
   latestUnlock,
   isUnlocked,
-  resetAchievements,
   clearLatestUnlock,
 }) {
   const unlockedCount = progress?.unlocked ?? 0;
@@ -34,12 +32,23 @@ export function AchievementCenter({
       return undefined;
     }
 
+    const toastId = `achievement-${latestUnlock.achievement.id}-${latestUnlock.unlockedAt}`;
+
+    toast.custom(
+      () => <AchievementToastContent latestUnlock={latestUnlock} />,
+      {
+        id: toastId,
+        duration: toastDurationMs,
+      },
+    );
+
     const timeoutId = window.setTimeout(() => {
       clearLatestUnlock();
     }, toastDurationMs);
 
     return () => {
       window.clearTimeout(timeoutId);
+      toast.dismiss(toastId);
     };
   }, [clearLatestUnlock, latestUnlock]);
 
@@ -75,16 +84,6 @@ export function AchievementCenter({
                 <h2 className="text-sm font-semibold text-slate-950">Achievements</h2>
                 <p className="text-xs text-slate-500">{unlockedCount} of {totalCount} unlocked</p>
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={resetAchievements}
-                className="h-7 shrink-0 px-2 text-xs text-slate-600 hover:text-slate-950"
-              >
-                <IconRefresh className="size-3.5" aria-hidden="true" />
-                Reset progress
-              </Button>
             </div>
             <div className="mt-2 h-1 overflow-hidden rounded-full bg-slate-100">
               <div
@@ -107,19 +106,15 @@ export function AchievementCenter({
           </div>
         </PopoverContent>
       </Popover>
-
-      <AchievementToast latestUnlock={latestUnlock} />
     </>
   );
 }
 
-function AchievementToast({ latestUnlock }) {
-  if (!latestUnlock || typeof document === "undefined") return null;
-
-  return createPortal(
+function AchievementToastContent({ latestUnlock }) {
+  return (
     <div
       role="status"
-      className="fixed bottom-4 right-4 z-[1400] w-[min(calc(100vw-2rem),20rem)] rounded-lg border border-emerald-200 bg-white p-3 text-slate-900 shadow-xl"
+      className="w-[min(calc(100vw-2rem),20rem)] rounded-lg border border-emerald-200 bg-white p-3 text-slate-900 shadow-xl"
     >
       <div className="flex gap-2">
         <IconCircleCheck className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-hidden="true" />
@@ -135,8 +130,7 @@ function AchievementToast({ latestUnlock }) {
           </p>
         </div>
       </div>
-    </div>,
-    document.body,
+    </div>
   );
 }
 

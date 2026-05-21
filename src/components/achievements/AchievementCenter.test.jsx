@@ -1,10 +1,11 @@
 import React from "react";
-import { act, render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { achievementRegistry } from "./achievementRegistry";
 import { AchievementCenter } from "./AchievementCenter";
 import { useAchievements } from "./useAchievements";
+import { Toaster } from "@/components/ui/sonner";
 
 const unlockedProgress = { unlocked: 0, total: achievementRegistry.length, ratio: 0 };
 
@@ -29,6 +30,7 @@ function AchievementCenterHarness() {
       <button type="button" onClick={() => achievementsState.unlockAchievement("first-contact")}>
         Unlock first
       </button>
+      <Toaster position="bottom-right" />
       <AchievementCenter {...achievementsState} />
     </>
   );
@@ -73,9 +75,7 @@ test("locked hidden achievement real name is not shown before unlock", async () 
   expect(within(dialog).queryByText("Off the Clock")).not.toBeInTheDocument();
 });
 
-test("toast appears after unlocking and reset works", async () => {
-  vi.useFakeTimers();
-
+test("toast appears after unlocking and reset is not exposed", async () => {
   render(<AchievementCenterHarness />);
 
   await userEvent.click(screen.getByRole("button", { name: "Unlock first" }));
@@ -86,14 +86,14 @@ test("toast appears after unlocking and reset works", async () => {
   expect(toast).toHaveTextContent("Sent a message to Jacques AI.");
   expect(screen.getByRole("button", { name: "Achievements 1/10" })).toBeInTheDocument();
 
-  await act(async () => {
-    vi.advanceTimersByTime(3200);
-  });
-
-  expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  await waitFor(
+    () => {
+      expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    },
+    { timeout: 4500 },
+  );
 
   await userEvent.click(screen.getByRole("button", { name: "Achievements 1/10" }));
-  await userEvent.click(await screen.findByRole("button", { name: "Reset progress" }));
-
-  expect(screen.getByRole("button", { name: "Achievements 0/10" })).toBeInTheDocument();
+  const dialog = await screen.findByRole("dialog", { name: "Achievements" });
+  expect(within(dialog).queryByRole("button", { name: "Reset progress" })).not.toBeInTheDocument();
 });
