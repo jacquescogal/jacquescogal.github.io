@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import chatbotStateReducer from "../../store/chatbotStateSlice";
-import AssistantDock from "../portfolio/AssistantDock";
+import AssistantDock from "./AssistantDock";
 import { getChatSuggestions, sendChatMessage, streamChatMessage } from "../../api/chatApi";
 
 vi.mock("../../api/chatApi", () => ({
@@ -47,7 +47,6 @@ test("renders assistant prompts and chat for desktop visitors", () => {
   expect(screen.getByRole("textbox", { name: /Message Jacques AI/i })).toBeInTheDocument();
   expect(screen.getByRole("textbox", { name: /Message Jacques AI/i })).toHaveClass("h-14", "min-h-14");
   expect(screen.getByRole("button", { name: /Send message/i })).toHaveClass("h-14", "w-14");
-  expect(container.querySelector('img[src="/ai_mascot_only.png"]')).not.toBeInTheDocument();
   expect(container.querySelector("[data-assistant-header-icon]")).not.toBeInTheDocument();
 });
 

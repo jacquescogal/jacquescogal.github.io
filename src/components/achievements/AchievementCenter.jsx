@@ -48,7 +48,6 @@ export function AchievementCenter({
 
     return () => {
       window.clearTimeout(timeoutId);
-      toast.dismiss(toastId);
     };
   }, [clearLatestUnlock, latestUnlock]);
 

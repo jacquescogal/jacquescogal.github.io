@@ -6,13 +6,11 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 import chatbotStateReducer, { addChatMessage } from "./store/chatbotStateSlice";
-import modalStateReducer from "./store/modalStateSlice";
 
 const createTestStore = () =>
   configureStore({
     reducer: {
       chatbotState: chatbotStateReducer,
-      modalState: modalStateReducer,
     },
   });
 
