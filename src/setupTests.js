@@ -17,8 +17,26 @@ vi.mock('axios', () => ({
   ...mockAxios,
 }));
 
+const renderMarkdownInline = (value, components = {}) => {
+  const text = String(value ?? "");
+  const Strong = components.strong || "strong";
+  const parts = text.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+
+  return parts.map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return React.createElement(Strong, { key: index }, part.slice(2, -2));
+    }
+
+    return part;
+  });
+};
+
 vi.mock('react-markdown', () => ({
-  default: ({ children }) => React.createElement(React.Fragment, null, children),
+  default: ({ children, className, components }) => React.createElement(
+    "div",
+    { className },
+    renderMarkdownInline(children, components)
+  ),
 }));
 vi.mock('remark-gfm', () => ({ default: vi.fn() }));
 

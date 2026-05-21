@@ -1,6 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { setShowModal } from "../../store/modalStateSlice";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const Modal = () => {
   const showModal = useSelector((state) => state.modalState.showModal);
@@ -27,7 +29,9 @@ const Modal = () => {
           />
           <div className="absolute z-10 bg-alt w-[90%] h-[90%] bg-background-alt rounded-md p-4 text-left overflow-y-scroll overscroll-contain">
             <div className="prose text-primary-text prose-headings:text-white">
-              {content}
+              <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>
+                {content}
+              </ReactMarkdown>
             </div>
           </div>
         </div>

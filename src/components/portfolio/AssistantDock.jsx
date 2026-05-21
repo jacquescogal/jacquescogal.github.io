@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { useDispatch, useSelector } from "react-redux";
 import {
   IconArrowUp,
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import remarkGfm from "remark-gfm";
 import {
   addChatMessage,
   setAssistantPrompt,
@@ -41,6 +43,56 @@ const INITIAL_STREAM_STATE = {
   started: false,
   collapsed: false,
 };
+
+const markdownComponents = {
+  p: ({ ...props }) => (
+    <p className="m-0 whitespace-pre-wrap break-words [overflow-wrap:anywhere]" {...props} />
+  ),
+  strong: ({ ...props }) => <strong className="font-semibold" {...props} />,
+  em: ({ ...props }) => <em className="italic" {...props} />,
+  ul: ({ ...props }) => <ul className="my-1 list-disc space-y-1 pl-4" {...props} />,
+  ol: ({ ...props }) => <ol className="my-1 list-decimal space-y-1 pl-4" {...props} />,
+  li: ({ ...props }) => <li className="break-words [overflow-wrap:anywhere]" {...props} />,
+  a: ({ ...props }) => (
+    <a
+      className="font-medium underline underline-offset-2"
+      target="_blank"
+      rel="noreferrer"
+      {...props}
+    />
+  ),
+  code: ({ inline, ...props }) => (
+    <code
+      className={cn(
+        "break-words rounded bg-slate-100 px-1 py-0.5 text-[0.92em] [overflow-wrap:anywhere]",
+        !inline && "block whitespace-pre-wrap p-2"
+      )}
+      {...props}
+    />
+  ),
+  pre: ({ ...props }) => <pre className="my-2 overflow-x-auto rounded-md bg-slate-100 p-2" {...props} />,
+  blockquote: ({ ...props }) => (
+    <blockquote className="my-1 border-l-2 border-slate-300 pl-3 text-slate-600" {...props} />
+  ),
+};
+
+const MessageMarkdown = ({ children, className, tone = "default" }) => (
+  <div
+    className={cn(
+      "space-y-1 break-words [overflow-wrap:anywhere]",
+      tone === "inverse" && "[&_code]:bg-white/15 [&_a]:text-white",
+      className
+    )}
+  >
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      skipHtml
+      components={markdownComponents}
+    >
+      {children}
+    </ReactMarkdown>
+  </div>
+);
 
 const getStageKey = (stage) => {
   if (typeof stage === "string") return stage;
@@ -319,7 +371,7 @@ const AssistantPanel = ({ onNavigate }) => {
               <div
                 role="menu"
                 aria-label="Suggested questions"
-                className="absolute bottom-full left-0 z-20 mb-2 w-[min(22rem,calc(100vw-2rem))] space-y-2 rounded-xl border border-slate-300 bg-slate-50 p-3 text-sm shadow-xl ring-1 ring-slate-900/10"
+                className="absolute inset-x-0 bottom-full z-20 mb-2 max-w-full space-y-2 rounded-xl border border-slate-300 bg-slate-50 p-3 text-sm shadow-xl ring-1 ring-slate-900/10"
               >
                 <div className="flex items-center gap-2 text-sm font-medium text-slate-800">
                   <IconBulb className="size-4 text-amber-500" />
@@ -335,7 +387,7 @@ const AssistantPanel = ({ onNavigate }) => {
                         type="button"
                         role="menuitem"
                         variant="outline"
-                        className="h-auto w-full justify-start whitespace-normal text-left"
+                        className="h-auto w-full min-w-0 justify-start whitespace-normal break-words text-left [overflow-wrap:anywhere]"
                         onClick={() => deliverMessage(suggestion)}
                       >
                         {suggestion}
@@ -440,9 +492,9 @@ const AssistantStreamingMessage = ({ streamState }) => {
         </div>
       )}
       {streamState.message && (
-        <p className="mt-2 whitespace-pre-wrap break-words text-slate-700 [overflow-wrap:anywhere]">
+        <MessageMarkdown className="mt-2 text-slate-700">
           {streamState.message}
-        </p>
+        </MessageMarkdown>
       )}
     </div>
   );
@@ -452,7 +504,7 @@ const AssistantMessage = ({ chatMessage, onNavigate }) => {
   if (chatMessage.entity === "SYSTEM") {
     return (
       <div className="break-words rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 [overflow-wrap:anywhere]">
-        {chatMessage.message}
+        <MessageMarkdown>{chatMessage.message}</MessageMarkdown>
       </div>
     );
   }
@@ -460,14 +512,14 @@ const AssistantMessage = ({ chatMessage, onNavigate }) => {
   if (chatMessage.entity === "USER") {
     return (
       <div className="ml-auto max-w-[85%] break-words rounded-xl bg-slate-950 px-3 py-2 text-sm text-white [overflow-wrap:anywhere]">
-        {chatMessage.message}
+        <MessageMarkdown tone="inverse">{chatMessage.message}</MessageMarkdown>
       </div>
     );
   }
 
   return (
     <div className="mr-auto max-w-[88%] rounded-xl border bg-white px-3 py-2 text-sm leading-6 text-slate-700">
-      <p className="break-words [overflow-wrap:anywhere]">{chatMessage.message}</p>
+      <MessageMarkdown>{chatMessage.message}</MessageMarkdown>
       {chatMessage.links?.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2">
           {chatMessage.links.map((link, index) =>

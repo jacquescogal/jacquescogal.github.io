@@ -1,13 +1,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
-const initialState = {
-  showModal: false,
-  content: 
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {`# Brief
+export const DEFAULT_MODAL_CONTENT = `# Brief
 
 An app to aid users learn Chinese based on the HSK standard up to HSK 6
 
@@ -21,8 +15,11 @@ An app to aid users learn Chinese based on the HSK standard up to HSK 6
 2. Storybook
 3. Flashcards (spaced repetition with fsrs algorithm https://github.com/open-spaced-repetition)
 4. Quizzes
-`}
-        </ReactMarkdown>
+`;
+
+const initialState = {
+  showModal: false,
+  content: DEFAULT_MODAL_CONTENT,
 };
 
 const modalStateSlice = createSlice({

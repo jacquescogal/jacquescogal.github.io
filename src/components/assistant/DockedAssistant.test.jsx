@@ -91,6 +91,25 @@ test("renders completed streaming assistant response", async () => {
   });
 });
 
+test("renders markdown styling inside chat bubbles", async () => {
+  streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
+    handlers.onStage({ id: "crafting_response", label: "Crafting response" });
+    handlers.onDelta("Jacques writes **impactful code**.");
+    handlers.onComplete({ done: true });
+  });
+
+  renderWithStore(<AssistantDock onNavigate={() => {}} />);
+
+  await userEvent.type(screen.getByRole("textbox", { name: /Message Jacques AI/i }), "What does Jacques do?");
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
+  });
+
+  const boldText = await screen.findByText("impactful code");
+  expect(boldText.tagName).toBe("STRONG");
+  expect(boldText).toHaveClass("font-semibold");
+});
+
 test("breaks long unspaced assistant text inside message bubbles", async () => {
   streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
     handlers.onStage({ id: "crafting_response", label: "Crafting response" });
@@ -105,10 +124,9 @@ test("breaks long unspaced assistant text inside message bubbles", async () => {
     await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
   });
 
-  expect(await screen.findByText("https://github.com/jacquescogal/techfest24_100")).toHaveClass(
-    "break-words",
-    "[overflow-wrap:anywhere]"
-  );
+  expect(
+    (await screen.findByText("https://github.com/jacquescogal/techfest24_100")).closest(".break-words")
+  ).toHaveClass("break-words", "[overflow-wrap:anywhere]");
 });
 
 test("shows suggestions in a popup menu and caches until a new AI message arrives", async () => {
@@ -129,13 +147,19 @@ test("shows suggestions in a popup menu and caches until a new AI message arrive
 
   expect(await screen.findByRole("menu", { name: /Suggested questions/i })).toBeInTheDocument();
   expect(screen.getByRole("menu", { name: /Suggested questions/i })).toHaveClass(
+    "inset-x-0",
+    "max-w-full",
     "border-slate-300",
     "bg-slate-50",
     "shadow-xl",
     "ring-1",
     "ring-slate-900/10"
   );
-  expect(screen.getByRole("menuitem", { name: "What did Jacques build at UBS?" })).toBeInTheDocument();
+  expect(screen.getByRole("menuitem", { name: "What did Jacques build at UBS?" })).toHaveClass(
+    "min-w-0",
+    "break-words",
+    "[overflow-wrap:anywhere]"
+  );
   expect(screen.queryByText("No suggestions available.")).not.toBeInTheDocument();
   expect(getChatSuggestions).toHaveBeenCalledTimes(1);
 
