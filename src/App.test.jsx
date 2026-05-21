@@ -4,6 +4,7 @@ import React from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
+import { addChatMessage } from "./store/chatbotStateSlice";
 import { store } from "./store/store";
 
 async function renderApp() {
@@ -52,6 +53,30 @@ test("renders certifications and promotes a supporting certification", async () 
 
   const fundamentalsButton = screen.getByRole("button", { name: /Azure Fundamentals/i });
   await userEvent.click(fundamentalsButton);
+
+  const certificationsSection = screen.getByRole("region", { name: /Certifications/i });
+  expect(within(certificationsSection).getByText(/Credential ID: 4609/i)).toBeInTheDocument();
+});
+
+test("chat certification links select the matching certification", async () => {
+  store.dispatch(
+    addChatMessage({
+      entity: "AI",
+      message: "Relevant credential.",
+      links: [
+        {
+          type: "internal",
+          text: "Open certification",
+          where: "certifications",
+          certificationSlug: "azure-fundamentals",
+        },
+      ],
+    })
+  );
+
+  await renderApp();
+
+  await userEvent.click(await screen.findByRole("button", { name: /Open certification/i }));
 
   const certificationsSection = screen.getByRole("region", { name: /Certifications/i });
   expect(within(certificationsSection).getByText(/Credential ID: 4609/i)).toBeInTheDocument();

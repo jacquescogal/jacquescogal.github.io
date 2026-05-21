@@ -33,6 +33,21 @@ const extractLinks = (texts)=>{
       return;
     }
 
+    const certificationMatch = text.match(/^certification:(.+)$/i);
+    if (certificationMatch) {
+      const slug = certificationMatch[1].trim();
+      if (slug) {
+        links.push({
+          type: "internal",
+          text: "Open certification",
+          where: "certifications",
+          certificationSlug: slug,
+          certificationToken: slug,
+        });
+      }
+      return;
+    }
+
     switch(text.toLowerCase()){
       case "contact":
       links.push({type:"internal",text:"Contact me",where:"contact"})
@@ -49,6 +64,9 @@ const extractLinks = (texts)=>{
       case "project":
       links.push({type:"internal",text:"Projects",where:"projects"})
       break;
+      case "certifications":
+      links.push({type:"internal",text:"Certifications",where:"certifications"})
+      break;
       case "resume":
       links.push({type:"internal",text:"Resume",where:"resume"})
       break;
@@ -63,6 +81,7 @@ const extractLinks = (texts)=>{
     LeetCode: "leetcode",
     Projects: "project",
     Experience: "experience",
+    Certifications: "certifications",
     Resume: "resume",
   };
 
@@ -73,6 +92,12 @@ const extractLinks = (texts)=>{
       }
       if (l.type === "internal" && l.where === "experiences" && l.experienceToken) {
         return `%%experience:${l.experienceToken}%%`;
+      }
+      if (l.type === "internal" && l.where === "certifications" && l.certificationToken) {
+        return `%%certification:${l.certificationToken}%%`;
+      }
+      if (l.type === "internal" && l.where === "certifications") {
+        return "%%certifications%%";
       }
       return `%%${linkTokenMap[l.text] ?? l.where ?? l.text}%%`;
     }).join(' ')}`

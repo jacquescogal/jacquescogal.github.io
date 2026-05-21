@@ -16,6 +16,7 @@ const mockAxios = {
       return Promise.resolve({
         data: [
           {
+            slug: "azure-ai-engineer",
             title: "Azure AI Engineer Associate",
             issuer: "Microsoft",
             description: "Azure AI engineering.",
@@ -28,6 +29,7 @@ const mockAxios = {
             status: "active",
           },
           {
+            slug: "azure-fundamentals",
             title: "Azure Fundamentals",
             issuer: "Microsoft",
             description: "Azure fundamentals.",

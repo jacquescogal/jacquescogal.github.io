@@ -55,4 +55,28 @@ describe("chat link helpers", () => {
       " %%experience:work%% %%experience:education%% %%experience:hackathons%%"
     );
   });
+
+  test("parses certification section and specific certification links", () => {
+    const parsed = linkTextParser(
+      "See %%certifications%% and %%certification:azure-ai-engineer%%."
+    );
+
+    expect(parsed.links).toEqual([
+      {
+        type: "internal",
+        text: "Certifications",
+        where: "certifications",
+      },
+      {
+        type: "internal",
+        text: "Open certification",
+        where: "certifications",
+        certificationSlug: "azure-ai-engineer",
+        certificationToken: "azure-ai-engineer",
+      },
+    ]);
+    expect(linkToText(parsed.links)).toBe(
+      " %%certifications%% %%certification:azure-ai-engineer%%"
+    );
+  });
 });

@@ -537,7 +537,7 @@ const AssistantMessage = ({ chatMessage, onNavigate, onOpenProject }) => {
               </Button>
             ) : link.type === "internal" ? (
               <Button
-                key={`${link.where}-${link.experienceTab || "section"}-${index}`}
+                key={`${link.where}-${link.experienceTab || link.certificationSlug || "section"}-${index}`}
                 type="button"
                 variant="secondary"
                 size="sm"

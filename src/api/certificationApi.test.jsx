@@ -7,6 +7,7 @@ describe("certificationApi", () => {
     vi.spyOn(axios, "get").mockResolvedValueOnce({
       data: [
         {
+          slug: "azure-ai-engineer",
           title: "Azure AI Engineer Associate",
           issuer: "Microsoft",
           description: "Azure AI engineering",
@@ -25,6 +26,7 @@ describe("certificationApi", () => {
 
     expect(certifications).toEqual([
       {
+        slug: "azure-ai-engineer",
         title: "Azure AI Engineer Associate",
         issuer: "Microsoft",
         description: "Azure AI engineering",

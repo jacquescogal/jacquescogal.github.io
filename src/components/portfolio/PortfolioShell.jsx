@@ -341,6 +341,8 @@ const highlightTargetMap = {
   resume: "profile",
   experiences: "experience",
   experience: "experience",
+  certifications: "certifications",
+  certification: "certifications",
   projects: "projects",
   project: "projects",
   contact: "contact",
@@ -360,24 +362,35 @@ const normalizeNavigationTarget = (target) => {
     return {
       where: target.where,
       experienceTab: target.experienceTab || null,
+      certificationSlug: target.certificationSlug || null,
     };
   }
 
   if (typeof target === "string") {
+    const certificationMatch = target.match(/^certification:(.+)$/i);
+    if (certificationMatch) {
+      return {
+        where: "certifications",
+        experienceTab: null,
+        certificationSlug: certificationMatch[1].trim(),
+      };
+    }
+
     const experienceMatch = target.match(/^(?:experience|experiences):(.+)$/i);
     if (experienceMatch) {
       const experienceTab = experienceTabAliases[experienceMatch[1].toLowerCase()] || null;
-      return { where: "experiences", experienceTab };
+      return { where: "experiences", experienceTab, certificationSlug: null };
     }
-    return { where: target, experienceTab: null };
+    return { where: target, experienceTab: null, certificationSlug: null };
   }
 
-  return { where: null, experienceTab: null };
+  return { where: null, experienceTab: null, certificationSlug: null };
 };
 
 const PortfolioShell = () => {
   const profileRef = useRef(null);
   const experienceRef = useRef(null);
+  const certificationsRef = useRef(null);
   const projectRef = useRef(null);
   const contactRef = useRef(null);
   const highlightTimeoutRef = useRef(null);
@@ -407,6 +420,8 @@ const PortfolioShell = () => {
       resume: profileRef,
       experiences: experienceRef,
       experience: experienceRef,
+      certifications: certificationsRef,
+      certification: certificationsRef,
       projects: projectRef,
       project: projectRef,
       contact: contactRef,
@@ -571,11 +586,24 @@ const PortfolioShell = () => {
   };
 
   const scrollTo = (target) => {
-    const { where, experienceTab: targetExperienceTab } = normalizeNavigationTarget(target);
+    const {
+      where,
+      experienceTab: targetExperienceTab,
+      certificationSlug: targetCertificationSlug,
+    } = normalizeNavigationTarget(target);
     if (!where) return;
 
     if (targetExperienceTab) {
       setExperienceTab(targetExperienceTab);
+    }
+
+    if (targetCertificationSlug) {
+      const matchingCertification = certifications.find(
+        (certification) => certification.slug === targetCertificationSlug
+      );
+      if (matchingCertification) {
+        setSelectedCertificationTitle(matchingCertification.title);
+      }
     }
 
     if (where === "resume") {
@@ -791,7 +819,11 @@ const PortfolioShell = () => {
             </Tabs>
           </section>
 
-          <section aria-label="Certifications" className={getSectionClassName("certifications")}>
+          <section
+            ref={certificationsRef}
+            aria-label="Certifications"
+            className={getSectionClassName("certifications")}
+          >
             <SectionHeader
               eyebrow="Credentials"
               title="Certifications"

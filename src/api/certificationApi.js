@@ -17,6 +17,7 @@ const normalizeCertificationPayload = (payload) => {
 export const getCertifications = async () => {
   const response = await axios.get(CERTIFICATIONS_URL);
   return normalizeCertificationPayload(response.data).map((certification) => ({
+    slug: certification.slug || "",
     title: certification.title || "",
     issuer: certification.issuer || "",
     description: certification.description || "",
