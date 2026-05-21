@@ -354,7 +354,8 @@ const AssistantPanel = ({ onNavigate }) => {
 
 const AssistantStreamingMessage = ({ streamState }) => {
   const activeStageIndex = STREAM_STAGES.findIndex((stage) => stage.key === streamState.activeStage);
-  const activeStageLabel = STREAM_STAGES[activeStageIndex]?.label || "Message received";
+  const visibleStageIndex = activeStageIndex >= 0 ? activeStageIndex : 0;
+  const activeStageLabel = STREAM_STAGES[visibleStageIndex]?.label || "Message received";
 
   return (
     <div className="mr-auto max-w-[88%] rounded-xl border bg-white px-3 py-2 text-sm leading-6 text-slate-700">
@@ -365,7 +366,7 @@ const AssistantStreamingMessage = ({ streamState }) => {
         </div>
       ) : (
         <div className="space-y-1">
-          {STREAM_STAGES.slice(0, activeStageIndex + 1).map((stage) => (
+          {STREAM_STAGES.slice(0, visibleStageIndex + 1).map((stage) => (
             <div
               key={stage.key}
               className={cn(

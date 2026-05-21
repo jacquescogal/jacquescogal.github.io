@@ -3,6 +3,16 @@ import { linkToText } from "../utils/Links";
 
 const CHAT_URL = import.meta.env.VITE_CHAT_URL; // Read from .env
 
+const waitForBrowserPaint = () =>
+  new Promise((resolve) => {
+    if (typeof requestAnimationFrame === "function") {
+      requestAnimationFrame(() => resolve());
+      return;
+    }
+
+    setTimeout(resolve, 0);
+  });
+
 export const buildChatPayload = async (chat_history, user_message) => {
   const chat_history_payload = chat_history.map(({ links, ...rest }) => {
     rest.message += linkToText(links);
@@ -102,7 +112,7 @@ export const streamChatMessage = async (
         const parsed = parseSseChunk(buffer, decoder.decode(result.value, { stream: !done }));
         buffer = parsed.buffer;
 
-        parsed.events.forEach(({ event, data }) => {
+        for (const { event, data } of parsed.events) {
           if (event === "stage") {
             onStage?.(data);
           } else if (event === "delta") {
@@ -115,7 +125,11 @@ export const streamChatMessage = async (
             onErrorDispatched = true;
             onError?.(data);
           }
-        });
+
+          if (event === "stage" || event === "delta") {
+            await waitForBrowserPaint();
+          }
+        }
       }
     }
 
