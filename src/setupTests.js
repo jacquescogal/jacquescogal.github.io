@@ -12,6 +12,37 @@ const mockAxios = {
       return Promise.resolve({ data: { conversation_id: "test-conversation" } });
     }
 
+    if (String(url).includes("certifications")) {
+      return Promise.resolve({
+        data: [
+          {
+            title: "Azure AI Engineer Associate",
+            issuer: "Microsoft",
+            description: "Azure AI engineering.",
+            issued_on: "Feb 2026",
+            expires_on: "Feb 2027",
+            credential_id: "364C",
+            credential_url: "https://example.com/ai",
+            icon_url: "https://example.com/ms.svg",
+            display_order: 1,
+            status: "active",
+          },
+          {
+            title: "Azure Fundamentals",
+            issuer: "Microsoft",
+            description: "Azure fundamentals.",
+            issued_on: "Jan 2025",
+            expires_on: "",
+            credential_id: "4609",
+            credential_url: "https://example.com/fundamentals",
+            icon_url: "https://example.com/ms.svg",
+            display_order: 2,
+            status: "active",
+          },
+        ],
+      });
+    }
+
     return Promise.resolve({
       data: [
         {

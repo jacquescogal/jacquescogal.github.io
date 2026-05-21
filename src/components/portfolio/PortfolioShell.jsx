@@ -7,6 +7,7 @@ import {
   IconBriefcase,
   IconCode,
   IconDownload,
+  IconExternalLink,
   IconMail,
   IconSparkles,
 } from "@tabler/icons-react";
@@ -27,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import AssistantDock from "./AssistantDock";
 import { cn } from "@/lib/utils";
 import remarkGfm from "remark-gfm";
+import { getCertifications } from "../../api/certificationApi";
 import { getProjects } from "../../api/projectApi";
 
 const workExperience = [
@@ -386,6 +388,10 @@ const PortfolioShell = () => {
   const [projectsError, setProjectsError] = useState("");
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeProjectHeadingSlug, setActiveProjectHeadingSlug] = useState(null);
+  const [certifications, setCertifications] = useState([]);
+  const [certificationsLoading, setCertificationsLoading] = useState(true);
+  const [certificationsError, setCertificationsError] = useState("");
+  const [selectedCertificationTitle, setSelectedCertificationTitle] = useState(null);
   const [contactForm, setContactForm] = useState({
     name: "",
     subject: "",
@@ -491,6 +497,32 @@ const PortfolioShell = () => {
       })
       .finally(() => {
         if (!cancelled) setProjectsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    setCertificationsLoading(true);
+    getCertifications()
+      .then((nextCertifications) => {
+        if (cancelled) return;
+        setCertifications(nextCertifications);
+        setCertificationsError("");
+        const firstActive =
+          nextCertifications.find((certification) => certification.status !== "expired") ||
+          nextCertifications[0];
+        setSelectedCertificationTitle(firstActive?.title || null);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setCertifications([]);
+        setCertificationsError("Certifications are unavailable right now.");
+      })
+      .finally(() => {
+        if (!cancelled) setCertificationsLoading(false);
       });
     return () => {
       cancelled = true;
@@ -756,6 +788,22 @@ const PortfolioShell = () => {
             </Tabs>
           </section>
 
+          <section aria-label="Certifications" className={getSectionClassName("certifications")}>
+            <SectionHeader
+              eyebrow="Credentials"
+              title="Certifications"
+              description="Current and recent credentials across cloud, AI, and FinOps, with verification details where available."
+              icon={IconFileText}
+            />
+            <CertificationSection
+              certifications={certifications}
+              loading={certificationsLoading}
+              error={certificationsError}
+              selectedTitle={selectedCertificationTitle}
+              onSelect={setSelectedCertificationTitle}
+            />
+          </section>
+
           <section ref={projectRef} className={getSectionClassName("projects")}>
             <SectionHeader
               eyebrow="Projects"
@@ -987,6 +1035,129 @@ const ExperienceList = ({ items, className }) => (
     ))}
   </div>
 );
+
+const CertificationStatusBadge = ({ status }) => (
+  <Badge
+    variant="outline"
+    className={cn(
+      "h-auto min-h-6 w-fit whitespace-normal px-2 py-1 text-xs leading-4",
+      status === "expired"
+        ? "border-slate-200 bg-slate-50 text-slate-500"
+        : "border-emerald-200 bg-emerald-50 text-emerald-700"
+    )}
+  >
+    {status === "expired" ? "Expired" : "Active"}
+  </Badge>
+);
+
+const CertificationLogo = ({ src, issuer }) => (
+  <div className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white p-2">
+    {src ? (
+      <img src={src} alt={`${issuer} logo`} className="max-h-full max-w-full object-contain" />
+    ) : (
+      <span className="text-sm font-semibold text-slate-500">{issuer?.slice(0, 1) || "C"}</span>
+    )}
+  </div>
+);
+
+const CertificationSection = ({
+  certifications,
+  loading,
+  error,
+  selectedTitle,
+  onSelect,
+}) => {
+  const sortedCertifications = [...certifications].sort((first, second) => first.displayOrder - second.displayOrder);
+  const selected =
+    sortedCertifications.find((certification) => certification.title === selectedTitle) ||
+    sortedCertifications.find((certification) => certification.status !== "expired") ||
+    sortedCertifications[0];
+  const supporting = sortedCertifications.filter((certification) => certification.title !== selected?.title);
+
+  if (loading) {
+    return (
+      <Card className="mt-4 border-slate-200 bg-white shadow-sm">
+        <CardContent className="p-4 text-sm text-slate-500">Loading certifications...</CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="mt-4 border-amber-200 bg-amber-50 shadow-sm">
+        <CardContent className="p-4 text-sm text-amber-800">{error}</CardContent>
+      </Card>
+    );
+  }
+
+  if (!selected) {
+    return (
+      <Card className="mt-4 border-slate-200 bg-white shadow-sm">
+        <CardContent className="p-4 text-sm text-slate-500">Certifications will be added soon.</CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]">
+      <Card className="border-emerald-200 bg-white shadow-sm">
+        <CardContent className="space-y-4 p-4 sm:p-5">
+          <div className="flex items-start gap-3">
+            <CertificationLogo src={selected.iconUrl} issuer={selected.issuer} />
+            <div className="min-w-0 space-y-2">
+              <CertificationStatusBadge status={selected.status} />
+              <div>
+                <h3 className="text-base font-semibold leading-6 text-slate-950">{selected.title}</h3>
+                <p className="text-sm text-slate-500">{selected.issuer}</p>
+              </div>
+            </div>
+          </div>
+          <p className="text-sm leading-6 text-slate-700">{selected.description}</p>
+          <div className="grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
+            <div>Issued {selected.issuedOn || "not specified"}</div>
+            <div>{selected.expiresOn ? `Expires ${selected.expiresOn}` : "No expiry listed"}</div>
+          </div>
+          {selected.credentialId && (
+            <p className="text-xs text-slate-500">Credential ID: {selected.credentialId}</p>
+          )}
+          {selected.credentialUrl && (
+            <a
+              href={selected.credentialUrl}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1 text-slate-700")}
+            >
+              Show credential
+              <IconExternalLink className="size-3" />
+            </a>
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-2">
+        {supporting.map((certification) => (
+          <button
+            key={certification.title}
+            type="button"
+            className={cn(
+              "flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left shadow-sm transition-colors hover:border-emerald-200 hover:bg-emerald-50/40",
+              certification.status === "expired" && "opacity-70"
+            )}
+            onClick={() => onSelect(certification.title)}
+          >
+            <CertificationLogo src={certification.iconUrl} issuer={certification.issuer} />
+            <span className="min-w-0">
+              <span className="block text-sm font-medium leading-5 text-slate-950">{certification.title}</span>
+              <span className="mt-1 block text-xs text-slate-500">
+                {certification.issuer} · {certification.status === "expired" ? "Expired" : "Active"}
+              </span>
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const StatCard = ({ label, value }) => (
   <div className="rounded-xl border bg-slate-50 p-3">

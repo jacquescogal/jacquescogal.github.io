@@ -43,3 +43,16 @@ test("opens the shadcn markdown project archive", async () => {
   expect(within(archiveDialog).getByRole("heading", { name: /AI Portfolio Assistant/i })).toBeInTheDocument();
   expect(within(archiveDialog).getByText(/streaming responses/i)).toBeInTheDocument();
 });
+
+test("renders certifications and promotes a supporting certification", async () => {
+  await renderApp();
+
+  expect(await screen.findByRole("heading", { name: /Certifications/i })).toBeInTheDocument();
+  expect(screen.getByText(/Azure AI Engineer Associate/i)).toBeInTheDocument();
+
+  const fundamentalsButton = screen.getByRole("button", { name: /Azure Fundamentals/i });
+  await userEvent.click(fundamentalsButton);
+
+  const certificationsSection = screen.getByRole("region", { name: /Certifications/i });
+  expect(within(certificationsSection).getByText(/Credential ID: 4609/i)).toBeInTheDocument();
+});
