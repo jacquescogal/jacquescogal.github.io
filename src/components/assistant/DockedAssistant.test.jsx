@@ -1,5 +1,5 @@
 import React from "react";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
@@ -95,4 +95,25 @@ test("shows active streaming stages while response is in flight", async () => {
   expect(screen.getByText("Crafting response")).toBeInTheDocument();
   expect(screen.queryByText("Fetching related sources")).not.toBeInTheDocument();
   expect(screen.getByText("Starting answer")).toBeInTheDocument();
+});
+
+test("ignores repeated sends while a stream is already active", async () => {
+  streamChatMessage.mockImplementation(() => new Promise(() => {}));
+
+  const store = renderWithStore(<AssistantDock onNavigate={() => {}} />);
+  const textbox = screen.getByRole("textbox", { name: /Message Jacques AI/i });
+
+  await userEvent.type(textbox, "Tell me about UBS");
+  await act(async () => {
+    const form = textbox.closest("form");
+    fireEvent.submit(form);
+    fireEvent.submit(form);
+  });
+
+  expect(streamChatMessage).toHaveBeenCalledTimes(1);
+  expect(
+    store
+      .getState()
+      .chatbotState.chatHistory.filter((chatMessage) => chatMessage.entity === "USER")
+  ).toHaveLength(1);
 });

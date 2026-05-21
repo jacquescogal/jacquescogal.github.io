@@ -110,6 +110,7 @@ const AssistantPanel = ({ onNavigate }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [streamState, setStreamState] = useState(INITIAL_STREAM_STATE);
   const chatHistoryRef = useRef(null);
+  const isDeliveringRef = useRef(false);
   const streamedMessageRef = useRef("");
 
   useEffect(() => {
@@ -131,8 +132,9 @@ const AssistantPanel = ({ onNavigate }) => {
 
   const deliverMessage = async (nextMessage = message) => {
     const trimmed = nextMessage.trim();
-    if (!trimmed || isThinking) return;
+    if (!trimmed || isThinking || isDeliveringRef.current) return;
 
+    isDeliveringRef.current = true;
     dispatch(addChatMessage({ message: trimmed, entity: "USER", links: [] }));
     setMessage("");
     setSuggestions([]);
@@ -210,6 +212,7 @@ const AssistantPanel = ({ onNavigate }) => {
         })
       );
     } finally {
+      isDeliveringRef.current = false;
       dispatch(setThinking(false));
     }
   };
