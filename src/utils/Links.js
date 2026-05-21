@@ -12,6 +12,27 @@ const extractLinks = (texts)=>{
       return;
     }
 
+    const experienceMatch = text.match(/^experience(?::(.+))?$/i);
+    if (experienceMatch) {
+      const tabAlias = (experienceMatch[1] || "").toLowerCase();
+      const experienceTabMap = {
+        work: { value: "work", text: "Work experience", token: "work" },
+        education: { value: "education", text: "Education", token: "education" },
+        hackathon: { value: "achievements", text: "Hackathons", token: "hackathons" },
+        hackathons: { value: "achievements", text: "Hackathons", token: "hackathons" },
+        achievements: { value: "achievements", text: "Hackathons", token: "hackathons" },
+      };
+      const tab = experienceTabMap[tabAlias];
+      links.push({
+        type: "internal",
+        text: tab?.text || "Experience",
+        where: "experiences",
+        experienceTab: tab?.value || null,
+        experienceToken: tab?.token || null,
+      });
+      return;
+    }
+
     switch(text.toLowerCase()){
       case "contact":
       links.push({type:"internal",text:"Contact me",where:"contact"})
@@ -27,9 +48,6 @@ const extractLinks = (texts)=>{
       break;
       case "project":
       links.push({type:"internal",text:"Projects",where:"projects"})
-      break;
-      case "experience":
-      links.push({type:"internal",text:"Experience",where:"experiences"})
       break;
       case "resume":
       links.push({type:"internal",text:"Resume",where:"resume"})
@@ -52,6 +70,9 @@ const extractLinks = (texts)=>{
     return ` ${link.map(l => {
       if (l.type === "project" && l.repoUrl) {
         return `%%project:${l.repoUrl}${l.headingSlug ? `#${l.headingSlug}` : ""}%%`;
+      }
+      if (l.type === "internal" && l.where === "experiences" && l.experienceToken) {
+        return `%%experience:${l.experienceToken}%%`;
       }
       return `%%${linkTokenMap[l.text] ?? l.where ?? l.text}%%`;
     }).join(' ')}`

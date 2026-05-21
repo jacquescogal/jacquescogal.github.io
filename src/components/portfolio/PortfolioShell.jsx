@@ -342,6 +342,33 @@ const highlightTargetMap = {
 };
 
 const highlightDurationMs = 1800;
+const experienceTabAliases = {
+  work: "work",
+  education: "education",
+  hackathon: "achievements",
+  hackathons: "achievements",
+  achievements: "achievements",
+};
+
+const normalizeNavigationTarget = (target) => {
+  if (typeof target === "object" && target !== null) {
+    return {
+      where: target.where,
+      experienceTab: target.experienceTab || null,
+    };
+  }
+
+  if (typeof target === "string") {
+    const experienceMatch = target.match(/^(?:experience|experiences):(.+)$/i);
+    if (experienceMatch) {
+      const experienceTab = experienceTabAliases[experienceMatch[1].toLowerCase()] || null;
+      return { where: "experiences", experienceTab };
+    }
+    return { where: target, experienceTab: null };
+  }
+
+  return { where: null, experienceTab: null };
+};
 
 const PortfolioShell = () => {
   const profileRef = useRef(null);
@@ -509,12 +536,19 @@ const PortfolioShell = () => {
   };
 
   const scrollTo = (target) => {
-    if (target === "resume") {
+    const { where, experienceTab: targetExperienceTab } = normalizeNavigationTarget(target);
+    if (!where) return;
+
+    if (targetExperienceTab) {
+      setExperienceTab(targetExperienceTab);
+    }
+
+    if (where === "resume") {
       downloadResume();
     }
-    refs[target]?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    refs[where]?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
-    const sectionKey = highlightTargetMap[target];
+    const sectionKey = highlightTargetMap[where];
     if (!sectionKey) return;
 
     if (highlightTimeoutRef.current) {
@@ -663,8 +697,8 @@ const PortfolioShell = () => {
           <section ref={experienceRef} className={getSectionClassName("experience")}>
             <SectionHeader
               eyebrow="Experience"
-              title="Recent work, education, and wins"
-              description="A compact view of roles and achievements most relevant to software engineering teams."
+              title="Work, education, and selected wins"
+              description="A concise timeline of roles, training, and team projects that shaped how I build software."
             />
             <Tabs value={experienceTab} onValueChange={setExperienceTab} className="mt-4 flex-col gap-0">
               <div className="mb-4 flex justify-start overflow-x-auto overflow-y-hidden border-b border-slate-200">
@@ -725,8 +759,8 @@ const PortfolioShell = () => {
           <section ref={projectRef} className={getSectionClassName("projects")}>
             <SectionHeader
               eyebrow="Projects"
-              title="Proof of delivery"
-              description="Pinned GitHub projects, refreshed from Jacques' profile and enriched for quick scanning."
+              title="Selected proof of work"
+              description="My public pinned GitHub repositories, presented with short summaries, source links, and README context."
               icon={IconCode}
             />
             {projectsLoading ? (
@@ -784,8 +818,8 @@ const PortfolioShell = () => {
           <section ref={contactRef} className={getSectionClassName("contact")}>
             <SectionHeader
               eyebrow="Contact"
-              title="Send a focused note"
-              description="Use mailto for now; the assistant can help summarize fit before you reach out."
+              title="Start a conversation"
+              description="For roles, collaborations, or technical discussions, send a note and I will respond when I can."
               icon={IconMail}
             />
             <Card className="mt-4 border-slate-200 bg-white shadow-sm">
@@ -794,7 +828,7 @@ const PortfolioShell = () => {
                   <label className="text-sm font-medium" htmlFor="name">Name</label>
                   <Input
                     id="name"
-                    placeholder="Sam"
+                    placeholder="John Doe"
                     value={contactForm.name}
                     onChange={(event) =>
                       setContactForm((current) => ({ ...current, name: event.target.value }))
@@ -805,7 +839,7 @@ const PortfolioShell = () => {
                   <label className="text-sm font-medium" htmlFor="subject">Subject</label>
                   <Input
                     id="subject"
-                    placeholder="Work Opportunity"
+                    placeholder="Opportunity"
                     value={contactForm.subject}
                     onChange={(event) =>
                       setContactForm((current) => ({ ...current, subject: event.target.value }))
@@ -851,7 +885,7 @@ const PortfolioShell = () => {
           <DialogHeader className="shrink-0 border-b px-4 py-4 sm:px-5">
             <DialogTitle>{selectedProject?.title || "Project archive"}</DialogTitle>
             <DialogDescription>
-              {selectedProject?.description || "Pinned GitHub README rendered as markdown."}
+              {selectedProject?.description || "Project README and implementation notes."}
             </DialogDescription>
           </DialogHeader>
           <div

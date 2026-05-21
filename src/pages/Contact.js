@@ -44,9 +44,9 @@ const Contact = ({setContactRef,contactReveal,contactFade}) => {
     <form action="https://formsubmit.co/a1e93437966df7514f8b43e5b06685c5" method="POST">
     {/* <form onSubmit={(e)=>{console.log(e.currentTarget)}}> */}
     <label htmlFor="name">Name:</label>
-     <Input className='textbox-color' onChange={(e)=>{setName(e.currentTarget.value)}} type="text" name="name" placeholder='Sam' required/>
+     <Input className='textbox-color' onChange={(e)=>{setName(e.currentTarget.value)}} type="text" name="name" placeholder='John Doe' required/>
      <label  htmlFor="text">Subject:</label>
-     <Input className='textbox-color' onChange={(e)=>{setSubject(e.currentTarget.value)}} type="text" name="subject" placeholder='Work Opportunity' required/>
+     <Input className='textbox-color' onChange={(e)=>{setSubject(e.currentTarget.value)}} type="text" name="subject" placeholder='Opportunity' required/>
      <label htmlFor="message">Message:</label>
      <Textarea onChange={(e)=>{setMessage(e.currentTarget.value)}} id="message" name="message" rows="4" cols="50" placeholder="Hello..." />
      </form>

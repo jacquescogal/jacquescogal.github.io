@@ -22,4 +22,37 @@ describe("chat link helpers", () => {
     ]);
     expect(linkToText(parsed.links)).toBe(" %%project:https://github.com/jacquescogal/portfolio#setup%%");
   });
+
+  test("parses tab-specific experience links", () => {
+    const parsed = linkTextParser(
+      "See %%experience:work%%, %%experience:education%%, and %%experience:hackathons%%."
+    );
+
+    expect(parsed.links).toEqual([
+      {
+        type: "internal",
+        text: "Work experience",
+        where: "experiences",
+        experienceTab: "work",
+        experienceToken: "work",
+      },
+      {
+        type: "internal",
+        text: "Education",
+        where: "experiences",
+        experienceTab: "education",
+        experienceToken: "education",
+      },
+      {
+        type: "internal",
+        text: "Hackathons",
+        where: "experiences",
+        experienceTab: "achievements",
+        experienceToken: "hackathons",
+      },
+    ]);
+    expect(linkToText(parsed.links)).toBe(
+      " %%experience:work%% %%experience:education%% %%experience:hackathons%%"
+    );
+  });
 });
