@@ -245,7 +245,7 @@ const PortfolioShell = () => {
           <Button
             type="button"
             variant="secondary"
-            className="gap-2 border border-slate-200 bg-slate-100 text-slate-800 hover:bg-slate-200"
+            className="gap-2 border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
             onClick={downloadResume}
           >
             <IconDownload className="size-4" />
@@ -308,7 +308,7 @@ const PortfolioShell = () => {
                     <Button
                       type="button"
                       variant="secondary"
-                      className="gap-2 border border-slate-200 bg-slate-100 text-slate-800 hover:bg-slate-200"
+                      className="gap-2 border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                       onClick={downloadResume}
                     >
                       <IconDownload className="size-4" />

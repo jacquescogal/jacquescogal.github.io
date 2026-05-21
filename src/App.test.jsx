@@ -17,6 +17,9 @@ test("renders the portfolio profile section", async () => {
   await waitFor(() => {
     expect(screen.getAllByRole("button", { name: /Resume/i }).length).toBeGreaterThan(0);
   });
+  screen.getAllByRole("button", { name: /Resume/i }).forEach((button) => {
+    expect(button).toHaveClass("border-emerald-200", "bg-emerald-50", "text-emerald-700", "hover:bg-emerald-100");
+  });
   expect(screen.getByRole("complementary", { name: /Jacques AI workspace/i })).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: /Software Engineer/i })).toBeInTheDocument();
 });
