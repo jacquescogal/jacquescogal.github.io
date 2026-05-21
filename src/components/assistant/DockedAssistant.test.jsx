@@ -6,7 +6,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import chatbotStateReducer from "../../store/chatbotStateSlice";
 import AssistantDock from "../portfolio/AssistantDock";
-import { sendChatMessage, streamChatMessage } from "../../api/chatApi";
+import { getChatSuggestions, sendChatMessage, streamChatMessage } from "../../api/chatApi";
 
 vi.mock("../../api/chatApi", () => ({
   getChatSuggestions: vi.fn(),
@@ -15,6 +15,7 @@ vi.mock("../../api/chatApi", () => ({
 }));
 
 beforeEach(() => {
+  getChatSuggestions.mockReset();
   sendChatMessage.mockReset();
   streamChatMessage.mockReset();
   vi.useRealTimers();
@@ -108,6 +109,57 @@ test("breaks long unspaced assistant text inside message bubbles", async () => {
     "break-words",
     "[overflow-wrap:anywhere]"
   );
+});
+
+test("shows suggestions in a popup menu and caches until a new AI message arrives", async () => {
+  getChatSuggestions
+    .mockResolvedValueOnce(["What did Jacques build at UBS?"])
+    .mockResolvedValueOnce(["Which AI projects are strongest?"]);
+  streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
+    handlers.onStage({ id: "crafting_response", label: "Crafting response" });
+    handlers.onDelta("Jacques builds AI products.");
+    handlers.onComplete({ done: true });
+  });
+
+  renderWithStore(<AssistantDock onNavigate={() => {}} />);
+
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
+  });
+
+  expect(await screen.findByRole("menu", { name: /Suggested questions/i })).toBeInTheDocument();
+  expect(screen.getByRole("menu", { name: /Suggested questions/i })).toHaveClass(
+    "border-slate-300",
+    "bg-slate-50",
+    "shadow-xl",
+    "ring-1",
+    "ring-slate-900/10"
+  );
+  expect(screen.getByRole("menuitem", { name: "What did Jacques build at UBS?" })).toBeInTheDocument();
+  expect(screen.queryByText("No suggestions available.")).not.toBeInTheDocument();
+  expect(getChatSuggestions).toHaveBeenCalledTimes(1);
+
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
+  });
+  expect(screen.queryByRole("menu", { name: /Suggested questions/i })).not.toBeInTheDocument();
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
+  });
+  expect(screen.getByRole("menuitem", { name: "What did Jacques build at UBS?" })).toBeInTheDocument();
+  expect(getChatSuggestions).toHaveBeenCalledTimes(1);
+
+  await userEvent.type(screen.getByRole("textbox", { name: /Message Jacques AI/i }), "Tell me more");
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
+  });
+
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
+  });
+
+  expect(await screen.findByRole("menuitem", { name: "Which AI projects are strongest?" })).toBeInTheDocument();
+  expect(getChatSuggestions).toHaveBeenCalledTimes(2);
 });
 
 test("keeps streaming nodes visible briefly after crafting starts", async () => {

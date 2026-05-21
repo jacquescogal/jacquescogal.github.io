@@ -103,12 +103,14 @@ const AssistantPanel = ({ onNavigate }) => {
   const [message, setMessage] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestionsMenuOpen, setSuggestionsMenuOpen] = useState(false);
   const [streamState, setStreamState] = useState(INITIAL_STREAM_STATE);
   const chatHistoryRef = useRef(null);
   const isDeliveringRef = useRef(false);
+  const suggestionCacheRef = useRef({ aiMessageCount: null, suggestions: [] });
   const stageCollapseTimerRef = useRef(null);
   const streamedMessageRef = useRef("");
+  const aiMessageCount = chatHistory.filter((chatMessage) => chatMessage.entity === "AI").length;
 
   const clearStageCollapseTimer = () => {
     if (stageCollapseTimerRef.current) {
@@ -133,6 +135,16 @@ const AssistantPanel = ({ onNavigate }) => {
   }, []);
 
   useEffect(() => {
+    if (
+      suggestionCacheRef.current.aiMessageCount !== null &&
+      suggestionCacheRef.current.aiMessageCount !== aiMessageCount
+    ) {
+      suggestionCacheRef.current = { aiMessageCount: null, suggestions: [] };
+      setSuggestions([]);
+    }
+  }, [aiMessageCount]);
+
+  useEffect(() => {
     if (assistantPrompt) {
       setMessage(assistantPrompt);
       dispatch(setAssistantPrompt(""));
@@ -147,7 +159,7 @@ const AssistantPanel = ({ onNavigate }) => {
       top: chatHistoryElement.scrollHeight,
       behavior: "smooth",
     });
-  }, [chatHistory, isThinking, suggestions, showSuggestions, streamState]);
+  }, [chatHistory, isThinking, streamState]);
 
   const deliverMessage = async (nextMessage = message) => {
     const trimmed = nextMessage.trim();
@@ -156,8 +168,7 @@ const AssistantPanel = ({ onNavigate }) => {
     isDeliveringRef.current = true;
     dispatch(addChatMessage({ message: trimmed, entity: "USER", links: [] }));
     setMessage("");
-    setSuggestions([]);
-    setShowSuggestions(false);
+    setSuggestionsMenuOpen(false);
     dispatch(setThinking(true));
     streamedMessageRef.current = "";
     clearStageCollapseTimer();
@@ -229,11 +240,25 @@ const AssistantPanel = ({ onNavigate }) => {
   };
 
   const loadSuggestions = async () => {
+    if (suggestionsMenuOpen) {
+      setSuggestionsMenuOpen(false);
+      return;
+    }
+
+    setSuggestionsMenuOpen(true);
+    if (suggestionCacheRef.current.aiMessageCount === aiMessageCount) {
+      setSuggestions(suggestionCacheRef.current.suggestions);
+      return;
+    }
+
     setLoadingSuggestions(true);
-    setShowSuggestions(true);
     try {
       const nextSuggestions = await getChatSuggestions(chatHistory);
       setSuggestions(nextSuggestions);
+      suggestionCacheRef.current = {
+        aiMessageCount,
+        suggestions: nextSuggestions,
+      };
     } catch (error) {
       setSuggestions([]);
     } finally {
@@ -274,8 +299,28 @@ const AssistantPanel = ({ onNavigate }) => {
             {streamState.started && (
               <AssistantStreamingMessage streamState={streamState} />
             )}
-            {showSuggestions && (
-              <div className="space-y-2 rounded-xl border bg-white p-3">
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="relative flex items-center justify-between">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="gap-2 text-slate-600"
+              disabled={loadingSuggestions || isThinking}
+              onClick={loadSuggestions}
+            >
+              <IconBulb className="size-4" />
+              Suggestions
+            </Button>
+            {suggestionsMenuOpen && (
+              <div
+                role="menu"
+                aria-label="Suggested questions"
+                className="absolute bottom-full left-0 z-20 mb-2 w-[min(22rem,calc(100vw-2rem))] space-y-2 rounded-xl border border-slate-300 bg-slate-50 p-3 text-sm shadow-xl ring-1 ring-slate-900/10"
+              >
                 <div className="flex items-center gap-2 text-sm font-medium text-slate-800">
                   <IconBulb className="size-4 text-amber-500" />
                   Suggested questions
@@ -288,6 +333,7 @@ const AssistantPanel = ({ onNavigate }) => {
                       <Button
                         key={suggestion}
                         type="button"
+                        role="menuitem"
                         variant="outline"
                         className="h-auto w-full justify-start whitespace-normal text-left"
                         onClick={() => deliverMessage(suggestion)}
@@ -301,22 +347,6 @@ const AssistantPanel = ({ onNavigate }) => {
                 )}
               </div>
             )}
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="gap-2 text-slate-600"
-              disabled={loadingSuggestions || isThinking}
-              onClick={loadSuggestions}
-            >
-              <IconBulb className="size-4" />
-              Suggestions
-            </Button>
           </div>
           <Separator />
           <form
