@@ -116,6 +116,52 @@ const slugifyHeading = (value) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "") || "section";
 
+const createHeadingSlugFactory = () => {
+  const counts = new Map();
+
+  return (value) => {
+    const baseSlug = slugifyHeading(value);
+    const count = counts.get(baseSlug) || 0;
+    counts.set(baseSlug, count + 1);
+    return count === 0 ? baseSlug : `${baseSlug}-${count + 1}`;
+  };
+};
+
+const cleanMarkdownHeading = (value) =>
+  value
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[`*_~]/g, "")
+    .trim();
+
+const extractMarkdownHeadings = (markdown = "") => {
+  const makeSlug = createHeadingSlugFactory();
+  const headings = [];
+  const headingPattern = /^(#{1,6})\s+(.+?)\s*#*\s*$/gm;
+  let match;
+
+  while ((match = headingPattern.exec(markdown)) !== null) {
+    const depth = match[1].length;
+    const text = cleanMarkdownHeading(match[2]);
+    if (!text) continue;
+
+    headings.push({
+      depth,
+      text,
+      slug: makeSlug(text),
+    });
+  }
+
+  return headings;
+};
+
+const normalizeRepoUrl = (value = "") =>
+  String(value)
+    .trim()
+    .replace(/\.git$/i, "")
+    .replace(/\/+$/g, "")
+    .toLowerCase();
+
 const textFromMarkdownChildren = (children) =>
   React.Children.toArray(children)
     .map((child) => {
@@ -136,28 +182,154 @@ const GithubButtonMark = () => (
   </span>
 );
 
-const createArchiveMarkdownComponents = (activeHeadingSlug) => ({
-  h2: ({ ...props }) => (
-    <h2
-      id={`project-archive-${slugifyHeading(textFromMarkdownChildren(props.children))}`}
+const MarkdownHeading = ({
+  as: Component,
+  children,
+  activeHeadingSlug,
+  makeSlug,
+  onHeadingRef,
+  className,
+  ...props
+}) => {
+  const headingText = textFromMarkdownChildren(children);
+  const slug = makeSlug(headingText);
+  const baseSlug = slugifyHeading(headingText);
+
+  return (
+    <Component
+      id={`project-archive-${slug}`}
+      ref={(node) => onHeadingRef?.(slug, node)}
+      data-project-heading-slug={slug}
+      data-project-heading-base-slug={baseSlug}
       className={cn(
-        "scroll-mt-4 rounded-lg px-2 py-1 text-base font-semibold tracking-normal text-slate-950 first:mt-0",
-        activeHeadingSlug === slugifyHeading(textFromMarkdownChildren(props.children)) && "bg-emerald-50 text-emerald-800"
+        "scroll-mt-5 rounded-md tracking-normal text-slate-950 transition-colors",
+        (activeHeadingSlug === slug || activeHeadingSlug === baseSlug) && "bg-emerald-50 px-2 py-1 text-emerald-800",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </Component>
+  );
+};
+
+const createArchiveMarkdownComponents = (activeHeadingSlug, onHeadingRef) => {
+  const makeSlug = createHeadingSlugFactory();
+
+  return {
+  h1: ({ children, ...props }) => (
+    <MarkdownHeading
+      as="h1"
+      activeHeadingSlug={activeHeadingSlug}
+      makeSlug={makeSlug}
+      onHeadingRef={onHeadingRef}
+      className="mt-0 border-b border-slate-200 pb-3 text-2xl font-semibold leading-tight"
+      {...props}
+    >
+      {children}
+    </MarkdownHeading>
+  ),
+  h2: ({ children, ...props }) => (
+    <MarkdownHeading
+      as="h2"
+      activeHeadingSlug={activeHeadingSlug}
+      makeSlug={makeSlug}
+      onHeadingRef={onHeadingRef}
+      className="mt-8 border-b border-slate-200 pb-2 text-xl font-semibold leading-snug first:mt-0"
+      {...props}
+    >
+      {children}
+    </MarkdownHeading>
+  ),
+  h3: ({ children, ...props }) => (
+    <MarkdownHeading
+      as="h3"
+      activeHeadingSlug={activeHeadingSlug}
+      makeSlug={makeSlug}
+      onHeadingRef={onHeadingRef}
+      className="mt-6 text-base font-semibold leading-6"
+      {...props}
+    >
+      {children}
+    </MarkdownHeading>
+  ),
+  h4: ({ children, ...props }) => (
+    <MarkdownHeading
+      as="h4"
+      activeHeadingSlug={activeHeadingSlug}
+      makeSlug={makeSlug}
+      onHeadingRef={onHeadingRef}
+      className="mt-5 text-sm font-semibold leading-6"
+      {...props}
+    >
+      {children}
+    </MarkdownHeading>
+  ),
+  h5: ({ children, ...props }) => (
+    <MarkdownHeading
+      as="h5"
+      activeHeadingSlug={activeHeadingSlug}
+      makeSlug={makeSlug}
+      onHeadingRef={onHeadingRef}
+      className="mt-5 text-sm font-semibold leading-6"
+      {...props}
+    >
+      {children}
+    </MarkdownHeading>
+  ),
+  h6: ({ children, ...props }) => (
+    <MarkdownHeading
+      as="h6"
+      activeHeadingSlug={activeHeadingSlug}
+      makeSlug={makeSlug}
+      onHeadingRef={onHeadingRef}
+      className="mt-5 text-xs font-semibold uppercase leading-6 text-slate-600"
+      {...props}
+    >
+      {children}
+    </MarkdownHeading>
+  ),
+  p: ({ ...props }) => <p className="mt-3 text-sm leading-7 text-slate-700 first:mt-0" {...props} />,
+  ul: ({ ...props }) => <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-7 text-slate-700" {...props} />,
+  ol: ({ ...props }) => <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-sm leading-7 text-slate-700" {...props} />,
+  li: ({ ...props }) => <li className="pl-1 marker:text-slate-400" {...props} />,
+  strong: ({ ...props }) => <strong className="font-semibold text-slate-950" {...props} />,
+  em: ({ ...props }) => <em className="text-slate-700" {...props} />,
+  a: ({ ...props }) => (
+    <a className="font-medium text-emerald-700 underline underline-offset-4 hover:text-emerald-800" target="_blank" rel="noreferrer" {...props} />
+  ),
+  blockquote: ({ ...props }) => (
+    <blockquote className="mt-4 border-l-2 border-emerald-300 bg-emerald-50/60 px-4 py-2 text-sm leading-7 text-slate-700" {...props} />
+  ),
+  code: ({ className, ...props }) => (
+    <code
+      className={cn(
+        "rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.86em] text-slate-900",
+        className
       )}
       {...props}
     />
   ),
-  p: ({ ...props }) => <p className="mt-2 text-sm leading-6 text-slate-600" {...props} />,
-  ul: ({ ...props }) => <ul className="mt-3 space-y-2" {...props} />,
-  li: ({ ...props }) => (
-    <li className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-5 text-slate-700" {...props} />
+  pre: ({ ...props }) => (
+    <pre className="mt-4 overflow-x-auto rounded-lg border border-slate-200 bg-slate-950 p-4 text-xs leading-6 text-slate-50 shadow-sm [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-inherit" {...props} />
   ),
-  strong: ({ ...props }) => <strong className="font-semibold text-slate-950" {...props} />,
-  a: ({ ...props }) => (
-    <a className="font-medium text-emerald-700 underline underline-offset-2" target="_blank" rel="noreferrer" {...props} />
+  table: ({ ...props }) => (
+    <div className="mt-4 overflow-x-auto rounded-lg border border-slate-200">
+      <table className="w-full min-w-max border-collapse text-sm" {...props} />
+    </div>
   ),
-  code: ({ ...props }) => <code className="rounded bg-slate-100 px-1 py-0.5 text-[0.92em]" {...props} />,
-});
+  th: ({ ...props }) => <th className="border-b border-slate-200 bg-slate-50 px-3 py-2 text-left font-semibold text-slate-900" {...props} />,
+  td: ({ ...props }) => <td className="border-b border-slate-100 px-3 py-2 align-top text-slate-700 last:border-b-0" {...props} />,
+  img: ({ ...props }) => (
+    <img
+      className="mt-4 max-h-[28rem] w-auto max-w-full rounded-lg border border-slate-200 object-contain shadow-sm"
+      loading="lazy"
+      {...props}
+    />
+  ),
+  hr: ({ ...props }) => <hr className="my-6 border-slate-200" {...props} />,
+  };
+};
 
 const highlightTargetMap = {
   profile: "profile",
@@ -178,6 +350,7 @@ const PortfolioShell = () => {
   const contactRef = useRef(null);
   const highlightTimeoutRef = useRef(null);
   const projectArchiveBodyRef = useRef(null);
+  const projectArchiveHeadingRefs = useRef(new Map());
   const [highlightedSection, setHighlightedSection] = useState(null);
   const [experienceTab, setExperienceTab] = useState("work");
   const [projectArchiveOpen, setProjectArchiveOpen] = useState(false);
@@ -204,6 +377,64 @@ const PortfolioShell = () => {
     }),
     []
   );
+
+  const projectArchiveHeadings = useMemo(
+    () => extractMarkdownHeadings(selectedProject?.readmeContent),
+    [selectedProject?.readmeContent]
+  );
+
+  const registerProjectArchiveHeading = (slug, node) => {
+    if (node) {
+      projectArchiveHeadingRefs.current.set(slug, node);
+    } else {
+      projectArchiveHeadingRefs.current.delete(slug);
+    }
+  };
+
+  const resolveProjectHeadingSlug = (slug) => {
+    if (!slug) return null;
+    const normalizedSlug = slugifyHeading(slug);
+    if (normalizedSlug === "overview") return "overview";
+
+    const matchingHeading = projectArchiveHeadings.find(
+      (heading) => heading.slug === normalizedSlug || slugifyHeading(heading.text) === normalizedSlug
+    );
+
+    return matchingHeading?.slug || normalizedSlug;
+  };
+
+  const scrollProjectArchiveToSlug = (slug) => {
+    const scrollContainer = projectArchiveBodyRef.current;
+    const resolvedSlug = resolveProjectHeadingSlug(slug);
+    if (!scrollContainer || !resolvedSlug) return;
+
+    if (resolvedSlug === "overview") {
+      scrollContainer.scrollTop = 0;
+      return;
+    }
+
+    const heading =
+      projectArchiveHeadingRefs.current.get(resolvedSlug) ||
+      document.getElementById(`project-archive-${resolvedSlug}`) ||
+      scrollContainer.querySelector(`[data-project-heading-base-slug="${resolvedSlug}"]`);
+    if (!scrollContainer || !heading) return;
+
+    const targetTop = Math.max(
+      scrollContainer.scrollTop +
+        heading.getBoundingClientRect().top -
+        scrollContainer.getBoundingClientRect().top -
+        20,
+      0
+    );
+
+    scrollContainer.scrollTop = targetTop;
+  };
+
+  const scrollToProjectHeading = (slug) => {
+    const resolvedSlug = resolveProjectHeadingSlug(slug);
+    setActiveProjectHeadingSlug(resolvedSlug);
+    scrollProjectArchiveToSlug(resolvedSlug);
+  };
 
   useEffect(
     () => () => {
@@ -241,21 +472,23 @@ const PortfolioShell = () => {
 
   useEffect(() => {
     if (!projectArchiveOpen || !activeProjectHeadingSlug) return;
-    window.setTimeout(() => {
-      projectArchiveBodyRef.current
-        ?.querySelector(`#project-archive-${activeProjectHeadingSlug}`)
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 0);
+    window.requestAnimationFrame(() => {
+      scrollProjectArchiveToSlug(activeProjectHeadingSlug);
+    });
   }, [projectArchiveOpen, activeProjectHeadingSlug, selectedProject]);
 
   const openProjectArchive = (project, headingSlug = null) => {
+    projectArchiveHeadingRefs.current.clear();
     setSelectedProject(project);
     setActiveProjectHeadingSlug(headingSlug);
     setProjectArchiveOpen(true);
   };
 
   const openProjectFromLink = ({ repoUrl, headingSlug } = {}) => {
-    const linkedProject = projects.find((project) => project.url === repoUrl) || projects[0];
+    const normalizedRepoUrl = normalizeRepoUrl(repoUrl);
+    const linkedProject =
+      projects.find((project) => normalizeRepoUrl(project.url) === normalizedRepoUrl) ||
+      projects[0];
     if (linkedProject) {
       openProjectArchive(linkedProject, headingSlug);
       return;
@@ -606,24 +839,62 @@ const PortfolioShell = () => {
           </section>
         </main>
 
-        <AssistantDock onNavigate={scrollTo} onOpenProject={openProjectFromLink} />
+        <AssistantDock
+          hideMobileTrigger={projectArchiveOpen}
+          onNavigate={scrollTo}
+          onOpenProject={openProjectFromLink}
+        />
       </div>
 
       <Dialog open={projectArchiveOpen} onOpenChange={setProjectArchiveOpen}>
-        <DialogContent className="grid max-h-[min(44rem,calc(100vh-2rem))] grid-rows-[auto_minmax(0,1fr)] overflow-hidden p-0 sm:max-w-2xl">
+        <DialogContent className="grid max-h-[min(46rem,calc(100vh-2rem))] grid-rows-[auto_minmax(0,1fr)] overflow-hidden p-0 sm:max-w-5xl">
           <DialogHeader className="shrink-0 border-b px-4 py-4 sm:px-5">
             <DialogTitle>{selectedProject?.title || "Project archive"}</DialogTitle>
             <DialogDescription>
               {selectedProject?.description || "Pinned GitHub README rendered as markdown."}
             </DialogDescription>
           </DialogHeader>
-          <div ref={projectArchiveBodyRef} className="min-h-0 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5">
-            <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <div
+            className={cn(
+              "grid min-h-0",
+              projectArchiveHeadings.length > 0 &&
+                "grid-rows-[auto_minmax(0,1fr)] lg:grid-cols-[13rem_minmax(0,1fr)] lg:grid-rows-1"
+            )}
+          >
+            {projectArchiveHeadings.length > 0 && (
+              <nav
+                aria-label="README sections"
+                className="min-w-0 border-b border-slate-200 px-4 py-3 sm:px-6 lg:min-h-0 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-4 lg:py-5"
+              >
+                  <div className="mb-2 text-xs font-medium uppercase tracking-normal text-slate-400">Contents</div>
+                  <div className="flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
+                    {projectArchiveHeadings.map((heading) => (
+                      <button
+                        key={heading.slug}
+                        type="button"
+                        className={cn(
+                          "shrink-0 rounded-md px-2 py-1.5 text-left text-xs leading-5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:shrink lg:whitespace-normal",
+                          heading.depth === 2 && "lg:pl-4",
+                          heading.depth === 3 && "lg:pl-6",
+                          activeProjectHeadingSlug === heading.slug && "bg-emerald-50 text-emerald-700"
+                        )}
+                        onClick={() => scrollToProjectHeading(heading.slug)}
+                      >
+                        {heading.text}
+                      </button>
+                    ))}
+                  </div>
+              </nav>
+            )}
+            <div ref={projectArchiveBodyRef} className="relative min-h-0 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6">
               {selectedProject?.readmeContent ? (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   skipHtml
-                  components={createArchiveMarkdownComponents(activeProjectHeadingSlug)}
+                  components={createArchiveMarkdownComponents(
+                    activeProjectHeadingSlug,
+                    registerProjectArchiveHeading
+                  )}
                 >
                   {selectedProject.readmeContent}
                 </ReactMarkdown>

@@ -99,7 +99,7 @@ const getStageKey = (stage) => {
   return stage?.stage || stage?.id || null;
 };
 
-const AssistantDock = ({ onNavigate, onOpenProject }) => {
+const AssistantDock = ({ hideMobileTrigger = false, onNavigate, onOpenProject }) => {
   const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
@@ -112,7 +112,7 @@ const AssistantDock = ({ onNavigate, onOpenProject }) => {
       </aside>
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        {!sheetOpen && (
+        {!sheetOpen && !hideMobileTrigger && (
           <SheetTrigger
             className={cn(
               buttonVariants(),
