@@ -39,6 +39,7 @@ test("renders assistant prompts and chat for desktop visitors", () => {
   const { container } = renderWithStore(<AssistantDock onNavigate={() => {}} />);
 
   expect(screen.getByRole("complementary", { name: /Jacques AI workspace/i })).toBeInTheDocument();
+  expect(screen.getByRole("complementary", { name: /Jacques AI workspace/i })).toHaveClass("lg:block");
   expect(screen.queryByRole("button", { name: /Role fit/i })).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /Project proof/i })).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /Experience summary/i })).not.toBeInTheDocument();
@@ -50,7 +51,7 @@ test("renders assistant prompts and chat for desktop visitors", () => {
 test("offers a mobile assistant entry point", () => {
   renderWithStore(<AssistantDock onNavigate={() => {}} />);
 
-  expect(screen.getByRole("button", { name: /Ask Jacques AI/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Ask Jacques AI/i })).toHaveClass("lg:hidden");
 });
 
 test("hides the mobile assistant trigger while the dock is open", async () => {

@@ -54,7 +54,7 @@ const AssistantDock = ({ onNavigate }) => {
     <>
       <aside
         aria-label="Jacques AI workspace"
-        className="sticky top-20 hidden h-[calc(100vh-6rem)] min-h-0 xl:block"
+        className="sticky top-20 hidden h-[calc(100vh-6rem)] min-h-0 lg:block"
       >
         <AssistantPanel onNavigate={onNavigate} />
       </aside>
@@ -64,7 +64,7 @@ const AssistantDock = ({ onNavigate }) => {
           <SheetTrigger
             className={cn(
               buttonVariants(),
-              "fixed bottom-4 right-4 z-[1200] gap-2 rounded-full bg-slate-950 text-white shadow-lg hover:bg-slate-800 sm:bottom-5 sm:right-5 xl:hidden"
+              "fixed bottom-4 right-4 z-[1200] gap-2 rounded-full bg-slate-950 text-white shadow-lg hover:bg-slate-800 sm:bottom-5 sm:right-5 lg:hidden"
             )}
             onClick={() => setSheetOpen(true)}
           >
