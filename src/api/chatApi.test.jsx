@@ -123,4 +123,30 @@ describe("chat streaming API", () => {
     expect(handlers.onComplete).toHaveBeenCalledWith({ message: "done" });
     expect(handlers.onError).not.toHaveBeenCalled();
   });
+
+  test("streams chat error events to onError", async () => {
+    sessionStorage.setItem("conversation_id", "conversation-1");
+    const encoder = new TextEncoder();
+    const body = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode('event: error\ndata: {"message":"Unable to complete response."}\n\n'));
+        controller.close();
+      },
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      body,
+    }));
+
+    const handlers = {
+      onStage: vi.fn(),
+      onDelta: vi.fn(),
+      onComplete: vi.fn(),
+      onError: vi.fn(),
+    };
+
+    await streamChatMessage([], "Hello", handlers);
+
+    expect(handlers.onError).toHaveBeenCalledWith({ message: "Unable to complete response." });
+  });
 });
