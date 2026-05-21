@@ -43,7 +43,7 @@ const INITIAL_STREAM_STATE = {
 
 const getStageKey = (stage) => {
   if (typeof stage === "string") return stage;
-  return stage?.stage || null;
+  return stage?.stage || stage?.id || null;
 };
 
 const AssistantDock = ({ onNavigate }) => {

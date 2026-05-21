@@ -45,10 +45,10 @@ test("offers a mobile assistant entry point", () => {
 
 test("renders completed streaming assistant response", async () => {
   streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
-    handlers.onStage("message_received");
-    handlers.onStage("fetching_related_sources");
+    handlers.onStage({ id: "message_received", label: "Message received" });
+    handlers.onStage({ id: "fetching_related_sources", label: "Fetching related sources" });
     await Promise.resolve();
-    handlers.onStage("crafting_response");
+    handlers.onStage({ id: "crafting_response", label: "Crafting response" });
     handlers.onDelta("Jacques builds ");
     handlers.onDelta("AI products.");
     handlers.onComplete({ done: true });
@@ -72,8 +72,8 @@ test("shows active streaming stages while response is in flight", async () => {
   let streamHandlers;
   streamChatMessage.mockImplementation((_history, _message, handlers) => {
     streamHandlers = handlers;
-    handlers.onStage("message_received");
-    handlers.onStage("fetching_related_sources");
+    handlers.onStage({ id: "message_received", label: "Message received" });
+    handlers.onStage({ id: "fetching_related_sources", label: "Fetching related sources" });
     return new Promise(() => {});
   });
 
@@ -88,7 +88,7 @@ test("shows active streaming stages while response is in flight", async () => {
   expect(screen.getByText("Fetching related sources")).toBeInTheDocument();
 
   await act(async () => {
-    streamHandlers.onStage("crafting_response");
+    streamHandlers.onStage({ id: "crafting_response", label: "Crafting response" });
     streamHandlers.onDelta("Starting answer");
   });
 

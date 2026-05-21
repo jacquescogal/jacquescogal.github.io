@@ -8,13 +8,13 @@ describe("chat streaming API", () => {
   });
 
   test("parses a complete SSE stage event", () => {
-    const result = parseSseChunk("", 'event: stage\ndata: {"stage":"message_received","label":"Message received"}\n\n');
+    const result = parseSseChunk("", 'event: stage\ndata: {"id":"message_received","label":"Message received"}\n\n');
 
     expect(result).toEqual({
       events: [
         {
           event: "stage",
-          data: { stage: "message_received", label: "Message received" },
+          data: { id: "message_received", label: "Message received" },
         },
       ],
       buffer: "",
@@ -64,16 +64,13 @@ describe("chat streaming API", () => {
       buffer: "event: stage\r",
     });
 
-    const second = parseSseChunk(
-      first.buffer,
-      '\ndata: {"stage":"message_received","label":"Message received"}\r\n\r\n',
-    );
+    const second = parseSseChunk(first.buffer, '\ndata: {"id":"message_received","label":"Message received"}\r\n\r\n');
 
     expect(second).toEqual({
       events: [
         {
           event: "stage",
-          data: { stage: "message_received", label: "Message received" },
+          data: { id: "message_received", label: "Message received" },
         },
       ],
       buffer: "",
@@ -85,7 +82,7 @@ describe("chat streaming API", () => {
     const encoder = new TextEncoder();
     const body = new ReadableStream({
       start(controller) {
-        controller.enqueue(encoder.encode('event: stage\ndata: {"stage":"message_received","label":"Message received"}\n\n'));
+        controller.enqueue(encoder.encode('event: stage\ndata: {"id":"message_received","label":"Message received"}\n\n'));
         controller.enqueue(encoder.encode('event: delta\ndata: {"text":"Hi"}\n\n'));
         controller.enqueue(encoder.encode('event: complete\ndata: {"message":"done"}\n\n'));
         controller.close();
@@ -118,7 +115,7 @@ describe("chat streaming API", () => {
         conversation_id: "conversation-1",
       }),
     });
-    expect(handlers.onStage).toHaveBeenCalledWith({ stage: "message_received", label: "Message received" });
+    expect(handlers.onStage).toHaveBeenCalledWith({ id: "message_received", label: "Message received" });
     expect(handlers.onDelta).toHaveBeenCalledWith("Hi");
     expect(handlers.onComplete).toHaveBeenCalledWith({ message: "done" });
     expect(handlers.onError).not.toHaveBeenCalled();
