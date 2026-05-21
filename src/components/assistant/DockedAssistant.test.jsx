@@ -3,10 +3,10 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { beforeEach, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import chatbotStateReducer from "../../store/chatbotStateSlice";
 import AssistantDock from "../portfolio/AssistantDock";
-import { streamChatMessage } from "../../api/chatApi";
+import { sendChatMessage, streamChatMessage } from "../../api/chatApi";
 
 vi.mock("../../api/chatApi", () => ({
   getChatSuggestions: vi.fn(),
@@ -15,7 +15,13 @@ vi.mock("../../api/chatApi", () => ({
 }));
 
 beforeEach(() => {
+  sendChatMessage.mockReset();
   streamChatMessage.mockReset();
+  vi.useRealTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 function renderWithStore(ui) {
@@ -23,24 +29,37 @@ function renderWithStore(ui) {
     reducer: { chatbotState: chatbotStateReducer },
   });
 
-  render(<Provider store={store}>{ui}</Provider>);
-  return store;
+  return {
+    store,
+    ...render(<Provider store={store}>{ui}</Provider>),
+  };
 }
 
 test("renders assistant prompts and chat for desktop visitors", () => {
-  renderWithStore(<AssistantDock onNavigate={() => {}} />);
+  const { container } = renderWithStore(<AssistantDock onNavigate={() => {}} />);
 
   expect(screen.getByRole("complementary", { name: /Jacques AI workspace/i })).toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /Role fit/i })).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /Project proof/i })).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /Experience summary/i })).not.toBeInTheDocument();
   expect(screen.getByRole("textbox", { name: /Message Jacques AI/i })).toBeInTheDocument();
+  expect(container.querySelector('img[src="/ai_mascot_only.png"]')).not.toBeInTheDocument();
+  expect(container.querySelector("[data-assistant-header-icon]")).not.toBeInTheDocument();
 });
 
 test("offers a mobile assistant entry point", () => {
   renderWithStore(<AssistantDock onNavigate={() => {}} />);
 
   expect(screen.getByRole("button", { name: /Ask Jacques AI/i })).toBeInTheDocument();
+});
+
+test("hides the mobile assistant trigger while the dock is open", async () => {
+  renderWithStore(<AssistantDock onNavigate={() => {}} />);
+
+  await userEvent.click(screen.getByRole("button", { name: /Ask Jacques AI/i }));
+
+  expect(screen.queryByRole("button", { name: /Ask Jacques AI/i })).not.toBeInTheDocument();
+  expect(screen.getByRole("complementary", { name: /Jacques AI workspace/i })).toBeInTheDocument();
 });
 
 test("renders completed streaming assistant response", async () => {
@@ -68,7 +87,28 @@ test("renders completed streaming assistant response", async () => {
   });
 });
 
-test("shows active streaming stages while response is in flight", async () => {
+test("breaks long unspaced assistant text inside message bubbles", async () => {
+  streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
+    handlers.onStage({ id: "crafting_response", label: "Crafting response" });
+    handlers.onDelta("https://github.com/jacquescogal/techfest24_100");
+    handlers.onComplete({ done: true });
+  });
+
+  renderWithStore(<AssistantDock onNavigate={() => {}} />);
+
+  await userEvent.type(screen.getByRole("textbox", { name: /Message Jacques AI/i }), "Show repo");
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
+  });
+
+  expect(await screen.findByText("https://github.com/jacquescogal/techfest24_100")).toHaveClass(
+    "break-words",
+    "[overflow-wrap:anywhere]"
+  );
+});
+
+test("keeps streaming nodes visible briefly after crafting starts", async () => {
+  vi.useFakeTimers();
   let streamHandlers;
   streamChatMessage.mockImplementation((_history, _message, handlers) => {
     streamHandlers = handlers;
@@ -93,8 +133,38 @@ test("shows active streaming stages while response is in flight", async () => {
   });
 
   expect(screen.getByText("Crafting response")).toBeInTheDocument();
-  expect(screen.queryByText("Fetching related sources")).not.toBeInTheDocument();
+  expect(screen.getByText("Fetching related sources")).toBeInTheDocument();
   expect(screen.getByText("Starting answer")).toBeInTheDocument();
+  expect(document.querySelectorAll("[data-stream-stage-dot]")).toHaveLength(3);
+  document.querySelectorAll("[data-stream-stage-dot]").forEach((dot) => {
+    expect(dot).toHaveClass("h-2.5", "w-2.5");
+    expect(dot).not.toHaveClass("size-2");
+  });
+
+  await act(async () => {
+    vi.advanceTimersByTime(900);
+  });
+
+  expect(screen.getByText("Crafting response")).toBeInTheDocument();
+  expect(screen.queryByText("Fetching related sources")).not.toBeInTheDocument();
+  expect(document.querySelector("[data-stream-collapsed-stage]")).toHaveClass("rounded-full");
+  expect(document.querySelector("[data-stream-stage-dot]")).toHaveClass("h-2", "w-2");
+});
+
+test("does not silently fall back when the stream endpoint fails before opening", async () => {
+  streamChatMessage.mockRejectedValue(new Error("Chat stream request failed: 404 Not Found"));
+  sendChatMessage.mockResolvedValue({ ai_message: "Fallback answer" });
+
+  renderWithStore(<AssistantDock onNavigate={() => {}} />);
+
+  await userEvent.type(screen.getByRole("textbox", { name: /Message Jacques AI/i }), "Tell me about UBS");
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
+  });
+
+  expect(await screen.findByText(/error: Error: Chat stream request failed: 404 Not Found/i)).toBeInTheDocument();
+  expect(screen.queryByText("Fallback answer")).not.toBeInTheDocument();
+  expect(sendChatMessage).not.toHaveBeenCalled();
 });
 
 test("shows the first node while waiting for the first stream event", async () => {
@@ -136,7 +206,7 @@ test("shows a system error and clears pending UI when an opened stream fails", a
 test("ignores repeated sends while a stream is already active", async () => {
   streamChatMessage.mockImplementation(() => new Promise(() => {}));
 
-  const store = renderWithStore(<AssistantDock onNavigate={() => {}} />);
+  const { store } = renderWithStore(<AssistantDock onNavigate={() => {}} />);
   const textbox = screen.getByRole("textbox", { name: /Message Jacques AI/i });
 
   await userEvent.type(textbox, "Tell me about UBS");

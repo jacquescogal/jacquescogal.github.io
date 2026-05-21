@@ -25,7 +25,7 @@ import {
   setAssistantPrompt,
   setThinking,
 } from "../../store/chatbotStateSlice";
-import { getChatSuggestions, sendChatMessage, streamChatMessage } from "../../api/chatApi";
+import { getChatSuggestions, streamChatMessage } from "../../api/chatApi";
 import { linkTextParser } from "../../utils/Links";
 
 const STREAM_STAGES = [
@@ -33,6 +33,7 @@ const STREAM_STAGES = [
   { key: "fetching_related_sources", label: "Fetching related sources" },
   { key: "crafting_response", label: "Crafting response" },
 ];
+const STREAM_STAGE_COLLAPSE_DELAY_MS = 900;
 
 const INITIAL_STREAM_STATE = {
   activeStage: null,
@@ -59,23 +60,18 @@ const AssistantDock = ({ onNavigate }) => {
       </aside>
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetTrigger
-          className={cn(
-            buttonVariants(),
-            "fixed bottom-4 right-4 z-[1200] gap-2 rounded-full bg-slate-950 text-white shadow-lg hover:bg-slate-800 sm:bottom-5 sm:right-5 xl:hidden"
-          )}
-          onClick={() => setSheetOpen(true)}
-        >
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
-            <img
-              src="/ai_mascot_only.png"
-              alt=""
-              className="block object-cover"
-              style={{ width: 28, height: 28, maxWidth: 28, maxHeight: 28 }}
-            />
-          </span>
-          Ask Jacques AI
-        </SheetTrigger>
+        {!sheetOpen && (
+          <SheetTrigger
+            className={cn(
+              buttonVariants(),
+              "fixed bottom-4 right-4 z-[1200] gap-2 rounded-full bg-slate-950 text-white shadow-lg hover:bg-slate-800 sm:bottom-5 sm:right-5 xl:hidden"
+            )}
+            onClick={() => setSheetOpen(true)}
+          >
+            <IconSparkles className="size-4" />
+            Ask Jacques AI
+          </SheetTrigger>
+        )}
         <SheetContent className="w-full p-0 sm:max-w-md" side="right">
           <SheetHeader className="sr-only">
             <SheetTitle>Jacques AI workspace</SheetTitle>
@@ -111,7 +107,30 @@ const AssistantPanel = ({ onNavigate }) => {
   const [streamState, setStreamState] = useState(INITIAL_STREAM_STATE);
   const chatHistoryRef = useRef(null);
   const isDeliveringRef = useRef(false);
+  const stageCollapseTimerRef = useRef(null);
   const streamedMessageRef = useRef("");
+
+  const clearStageCollapseTimer = () => {
+    if (stageCollapseTimerRef.current) {
+      clearTimeout(stageCollapseTimerRef.current);
+      stageCollapseTimerRef.current = null;
+    }
+  };
+
+  const scheduleStageCollapse = () => {
+    clearStageCollapseTimer();
+    stageCollapseTimerRef.current = setTimeout(() => {
+      setStreamState((current) => (
+        current.started
+          ? { ...current, collapsed: true }
+          : current
+      ));
+    }, STREAM_STAGE_COLLAPSE_DELAY_MS);
+  };
+
+  useEffect(() => () => {
+    clearStageCollapseTimer();
+  }, []);
 
   useEffect(() => {
     if (assistantPrompt) {
@@ -141,6 +160,7 @@ const AssistantPanel = ({ onNavigate }) => {
     setShowSuggestions(false);
     dispatch(setThinking(true));
     streamedMessageRef.current = "";
+    clearStageCollapseTimer();
     setStreamState({
       ...INITIAL_STREAM_STATE,
       started: true,
@@ -157,8 +177,13 @@ const AssistantPanel = ({ onNavigate }) => {
             ...current,
             activeStage: stageKey,
             started: true,
-            collapsed: stageKey === "crafting_response" || current.collapsed,
+            collapsed: false,
           }));
+          if (stageKey === "crafting_response") {
+            scheduleStageCollapse();
+          } else {
+            clearStageCollapseTimer();
+          }
         },
         onDelta: (delta) => {
           streamOpened = true;
@@ -167,11 +192,12 @@ const AssistantPanel = ({ onNavigate }) => {
             ...current,
             message: streamedMessageRef.current,
             started: true,
-            collapsed: true,
+            collapsed: current.collapsed,
           }));
         },
         onComplete: () => {
           streamOpened = true;
+          clearStageCollapseTimer();
           const parsedMessage = linkTextParser(streamedMessageRef.current);
           dispatch(
             addChatMessage({
@@ -187,22 +213,7 @@ const AssistantPanel = ({ onNavigate }) => {
         },
       });
     } catch (error) {
-      if (!streamOpened) {
-        try {
-          const response = await sendChatMessage(chatHistory, trimmed);
-          dispatch(
-            addChatMessage({
-              entity: "AI",
-              ...linkTextParser(response.ai_message),
-            })
-          );
-          setStreamState(INITIAL_STREAM_STATE);
-          return;
-        } catch (fallbackError) {
-          error = fallbackError;
-        }
-      }
-
+      clearStageCollapseTimer();
       setStreamState(INITIAL_STREAM_STATE);
       dispatch(
         addChatMessage({
@@ -233,21 +244,13 @@ const AssistantPanel = ({ onNavigate }) => {
   return (
     <Card className="h-full min-h-0 gap-3 border-slate-200 bg-white/95 py-0 shadow-sm">
       <CardHeader className="gap-3 border-b px-3 py-3 sm:px-4 sm:py-4">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
           <div className="min-w-0">
             <Badge variant="secondary" className="mb-2 gap-1 bg-emerald-50 text-emerald-700">
               <IconSparkles className="size-3" />
               Portfolio AI
             </Badge>
             <CardTitle className="text-base">Jacques AI workspace</CardTitle>
-          </div>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-slate-100">
-            <img
-              src="/ai_mascot_only.png"
-              alt=""
-              className="block object-cover"
-              style={{ width: 44, height: 44, maxWidth: 44, maxHeight: 44 }}
-            />
           </div>
         </div>
         <p className="text-sm leading-5 text-slate-600">
@@ -356,38 +359,60 @@ const AssistantStreamingMessage = ({ streamState }) => {
   const activeStageIndex = STREAM_STAGES.findIndex((stage) => stage.key === streamState.activeStage);
   const visibleStageIndex = activeStageIndex >= 0 ? activeStageIndex : 0;
   const activeStageLabel = STREAM_STAGES[visibleStageIndex]?.label || "Message received";
+  const visibleStages = STREAM_STAGES.slice(0, visibleStageIndex + 1);
 
   return (
-    <div className="mr-auto max-w-[88%] rounded-xl border bg-white px-3 py-2 text-sm leading-6 text-slate-700">
+    <div className="mr-auto max-w-[88%] rounded-xl border bg-white px-3 py-2.5 text-sm leading-6 text-slate-700 shadow-sm">
       {streamState.collapsed ? (
-        <div className="flex items-center gap-2 text-xs font-medium text-emerald-700">
-          <span className="size-2 rounded-full bg-emerald-500" aria-hidden="true" />
-          {activeStageLabel}
+        <div
+          data-stream-collapsed-stage
+          className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700"
+        >
+          <span
+            data-stream-stage-dot
+            className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.14)]"
+            aria-hidden="true"
+          />
+          <span>{activeStageLabel}</span>
         </div>
       ) : (
-        <div className="space-y-1">
-          {STREAM_STAGES.slice(0, visibleStageIndex + 1).map((stage) => (
-            <div
-              key={stage.key}
-              className={cn(
-                "flex items-center gap-2 text-xs font-medium",
-                stage.key === streamState.activeStage ? "text-emerald-700" : "text-slate-500"
-              )}
-            >
-              <span
+        <div className="space-y-0.5">
+          {visibleStages.map((stage, index) => {
+            const isActive = stage.key === streamState.activeStage;
+            const isLast = index === visibleStages.length - 1;
+
+            return (
+              <div
+                key={stage.key}
                 className={cn(
-                  "size-2 rounded-full",
-                  stage.key === streamState.activeStage ? "bg-emerald-500" : "bg-slate-300"
+                  "grid grid-cols-[14px_minmax(0,1fr)] gap-2 text-xs font-medium",
+                  isActive ? "text-emerald-700" : "text-slate-500"
                 )}
-                aria-hidden="true"
-              />
-              {stage.label}
-            </div>
-          ))}
+              >
+                <span className="relative flex justify-center pt-1.5" aria-hidden="true">
+                  <span
+                    data-stream-stage-dot
+                    className={cn(
+                      "relative z-10 h-2.5 w-2.5 rounded-full border-2 border-white",
+                      isActive
+                        ? "bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.16)]"
+                        : "bg-slate-300"
+                    )}
+                  />
+                  {!isLast && (
+                    <span className="absolute top-4 h-[calc(100%+0.25rem)] w-px bg-slate-200" />
+                  )}
+                </span>
+                <span className="min-w-0">{stage.label}</span>
+              </div>
+            );
+          })}
         </div>
       )}
       {streamState.message && (
-        <p className="mt-2 whitespace-pre-wrap text-slate-700">{streamState.message}</p>
+        <p className="mt-2 whitespace-pre-wrap break-words text-slate-700 [overflow-wrap:anywhere]">
+          {streamState.message}
+        </p>
       )}
     </div>
   );
@@ -396,7 +421,7 @@ const AssistantStreamingMessage = ({ streamState }) => {
 const AssistantMessage = ({ chatMessage, onNavigate }) => {
   if (chatMessage.entity === "SYSTEM") {
     return (
-      <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+      <div className="break-words rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 [overflow-wrap:anywhere]">
         {chatMessage.message}
       </div>
     );
@@ -404,7 +429,7 @@ const AssistantMessage = ({ chatMessage, onNavigate }) => {
 
   if (chatMessage.entity === "USER") {
     return (
-      <div className="ml-auto max-w-[85%] rounded-xl bg-slate-950 px-3 py-2 text-sm text-white">
+      <div className="ml-auto max-w-[85%] break-words rounded-xl bg-slate-950 px-3 py-2 text-sm text-white [overflow-wrap:anywhere]">
         {chatMessage.message}
       </div>
     );
@@ -412,7 +437,7 @@ const AssistantMessage = ({ chatMessage, onNavigate }) => {
 
   return (
     <div className="mr-auto max-w-[88%] rounded-xl border bg-white px-3 py-2 text-sm leading-6 text-slate-700">
-      <p>{chatMessage.message}</p>
+      <p className="break-words [overflow-wrap:anywhere]">{chatMessage.message}</p>
       {chatMessage.links?.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2">
           {chatMessage.links.map((link, index) =>
