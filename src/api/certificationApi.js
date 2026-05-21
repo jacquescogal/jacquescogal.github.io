@@ -24,7 +24,7 @@ export const getCertifications = async () => {
     expiresOn: certification.expires_on || certification.expiresOn || "",
     credentialId: certification.credential_id || certification.credentialId || "",
     credentialUrl: certification.credential_url || certification.credentialUrl || "",
-    iconUrl: certification.icon_url || certification.iconUrl || "",
+    iconName: certification.icon_name || certification.iconName || "",
     displayOrder: Number(certification.display_order ?? certification.displayOrder ?? 0),
     status: certification.status || "active",
   }));

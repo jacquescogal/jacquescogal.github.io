@@ -48,7 +48,7 @@ test("renders certifications and promotes a supporting certification", async () 
   await renderApp();
 
   expect(await screen.findByRole("heading", { name: /Certifications/i })).toBeInTheDocument();
-  expect(screen.getByText(/Azure AI Engineer Associate/i)).toBeInTheDocument();
+  expect(screen.getAllByText(/Azure AI Engineer Associate/i).length).toBeGreaterThan(0);
 
   const fundamentalsButton = screen.getByRole("button", { name: /Azure Fundamentals/i });
   await userEvent.click(fundamentalsButton);

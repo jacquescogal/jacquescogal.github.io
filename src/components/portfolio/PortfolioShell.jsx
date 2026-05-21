@@ -1,5 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { FaAws } from "@react-icons/all-files/fa/FaAws";
+import { FaMicrosoft } from "@react-icons/all-files/fa/FaMicrosoft";
+import { SiLinuxfoundation } from "@react-icons/all-files/si/SiLinuxfoundation";
 import {
   IconBrandGithubFilled,
   IconBrandLinkedin,
@@ -792,7 +795,7 @@ const PortfolioShell = () => {
             <SectionHeader
               eyebrow="Credentials"
               title="Certifications"
-              description="Current and recent credentials across cloud, AI, and FinOps, with verification details where available."
+              description="My certifications across cloud and AI, with verification details where available."
               icon={IconFileText}
             />
             <CertificationSection
@@ -1050,15 +1053,31 @@ const CertificationStatusBadge = ({ status }) => (
   </Badge>
 );
 
-const CertificationLogo = ({ src, issuer }) => (
-  <div className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white p-2">
-    {src ? (
-      <img src={src} alt={`${issuer} logo`} className="max-h-full max-w-full object-contain" />
-    ) : (
-      <span className="text-sm font-semibold text-slate-500">{issuer?.slice(0, 1) || "C"}</span>
-    )}
-  </div>
+const certificationIconMap = {
+  FaAws,
+  FaMicrosoft,
+  SiLinuxfoundation,
+};
+
+const CertificationFallbackMark = ({ issuer }) => (
+  <span aria-hidden="true" className="text-base font-semibold text-slate-500">
+    {issuer?.slice(0, 1) || "C"}
+  </span>
 );
+
+const CertificationLogo = ({ issuer, iconName }) => {
+  const Icon = certificationIconMap[iconName];
+
+  return (
+    <div className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white p-2">
+      {Icon ? (
+        <Icon aria-label={`${issuer} logo`} className="size-7 text-slate-950" />
+      ) : (
+        <CertificationFallbackMark issuer={issuer} />
+      )}
+    </div>
+  );
+};
 
 const CertificationSection = ({
   certifications,
@@ -1072,7 +1091,6 @@ const CertificationSection = ({
     sortedCertifications.find((certification) => certification.title === selectedTitle) ||
     sortedCertifications.find((certification) => certification.status !== "expired") ||
     sortedCertifications[0];
-  const supporting = sortedCertifications.filter((certification) => certification.title !== selected?.title);
 
   if (loading) {
     return (
@@ -1099,27 +1117,31 @@ const CertificationSection = ({
   }
 
   return (
-    <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]">
-      <Card className="border-emerald-200 bg-white shadow-sm">
-        <CardContent className="space-y-4 p-4 sm:p-5">
+    <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(17rem,0.8fr)] lg:items-start">
+      <Card className="h-[20rem] border-emerald-200 bg-white shadow-sm">
+        <CardContent className="flex h-full flex-col gap-4 p-4 sm:p-5">
           <div className="flex items-start gap-3">
-            <CertificationLogo src={selected.iconUrl} issuer={selected.issuer} />
+            <CertificationLogo issuer={selected.issuer} iconName={selected.iconName} />
             <div className="min-w-0 space-y-2">
               <CertificationStatusBadge status={selected.status} />
               <div>
-                <h3 className="text-base font-semibold leading-6 text-slate-950">{selected.title}</h3>
+                <h3 className="truncate text-base font-semibold leading-6 text-slate-950" title={selected.title}>
+                  {selected.title}
+                </h3>
                 <p className="text-sm text-slate-500">{selected.issuer}</p>
               </div>
             </div>
           </div>
-          <p className="text-sm leading-6 text-slate-700">{selected.description}</p>
-          <div className="grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
-            <div>Issued {selected.issuedOn || "not specified"}</div>
-            <div>{selected.expiresOn ? `Expires ${selected.expiresOn}` : "No expiry listed"}</div>
+          <div className="min-h-0 flex-1 space-y-3">
+            <p className="text-sm leading-6 text-slate-700">{selected.description}</p>
+            <div className="grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
+              <div>Issued {selected.issuedOn || "not specified"}</div>
+              <div>{selected.expiresOn ? `Expires ${selected.expiresOn}` : "No expiry listed"}</div>
+            </div>
+            {selected.credentialId && (
+              <p className="text-xs text-slate-500">Credential ID: {selected.credentialId}</p>
+            )}
           </div>
-          {selected.credentialId && (
-            <p className="text-xs text-slate-500">Credential ID: {selected.credentialId}</p>
-          )}
           {selected.credentialUrl && (
             <a
               href={selected.credentialUrl}
@@ -1134,27 +1156,39 @@ const CertificationSection = ({
         </CardContent>
       </Card>
 
-      <div className="grid gap-2">
-        {supporting.map((certification) => (
-          <button
-            key={certification.title}
-            type="button"
-            className={cn(
-              "flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left shadow-sm transition-colors hover:border-emerald-200 hover:bg-emerald-50/40",
-              certification.status === "expired" && "opacity-70"
-            )}
-            onClick={() => onSelect(certification.title)}
-          >
-            <CertificationLogo src={certification.iconUrl} issuer={certification.issuer} />
-            <span className="min-w-0">
-              <span className="block text-sm font-medium leading-5 text-slate-950">{certification.title}</span>
-              <span className="mt-1 block text-xs text-slate-500">
-                {certification.issuer} · {certification.status === "expired" ? "Expired" : "Active"}
-              </span>
-            </span>
-          </button>
-        ))}
-      </div>
+      <Card className="h-[20rem] border-slate-200 bg-white shadow-sm">
+        <CardContent className="h-full p-2">
+          <div className="h-full space-y-2 overflow-y-auto overscroll-contain pr-1">
+            {sortedCertifications.map((certification) => (
+              <button
+                key={certification.title}
+                type="button"
+                aria-pressed={certification.title === selected.title}
+                className={cn(
+                  "flex w-full items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left transition-colors hover:border-emerald-200 hover:bg-emerald-50/40",
+                  certification.title === selected.title &&
+                    "border-emerald-300 bg-emerald-50/70 shadow-[0_0_0_1px_rgba(16,185,129,0.18)]",
+                  certification.status === "expired" && certification.title !== selected.title && "opacity-70"
+                )}
+                onClick={() => onSelect(certification.title)}
+              >
+                <CertificationLogo
+                  issuer={certification.issuer}
+                  iconName={certification.iconName}
+                />
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-medium leading-5 text-slate-950" title={certification.title}>
+                    {certification.title}
+                  </span>
+                  <span className="mt-1 block text-xs text-slate-500">
+                    {certification.issuer} · {certification.status === "expired" ? "Expired" : "Active"}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
