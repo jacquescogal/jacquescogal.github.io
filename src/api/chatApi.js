@@ -71,6 +71,8 @@ export const streamChatMessage = async (
   user_message,
   { onStage, onDelta, onComplete, onError } = {},
 ) => {
+  let onErrorDispatched = false;
+
   try {
     const payload = await buildChatPayload(chat_history, user_message);
     const response = await fetch(`${CHAT_URL}/stream`, {
@@ -90,6 +92,7 @@ export const streamChatMessage = async (
     const decoder = new TextDecoder();
     let buffer = "";
     let done = false;
+    let receivedTerminalEvent = false;
 
     while (!done) {
       const result = await reader.read();
@@ -105,15 +108,25 @@ export const streamChatMessage = async (
           } else if (event === "delta") {
             onDelta?.(data.text || "");
           } else if (event === "complete") {
+            receivedTerminalEvent = true;
             onComplete?.(data);
           } else if (event === "error") {
+            receivedTerminalEvent = true;
+            onErrorDispatched = true;
             onError?.(data);
           }
         });
       }
     }
+
+    if (!receivedTerminalEvent) {
+      throw new Error("Chat stream ended before completion");
+    }
   } catch (error) {
-    onError?.(error);
+    if (!onErrorDispatched) {
+      onErrorDispatched = true;
+      onError?.(error);
+    }
     throw error;
   }
 };

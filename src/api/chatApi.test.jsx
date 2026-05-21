@@ -146,4 +146,66 @@ describe("chat streaming API", () => {
 
     expect(handlers.onError).toHaveBeenCalledWith({ message: "Unable to complete response." });
   });
+
+  test("does not dispatch onError twice when an error event handler throws", async () => {
+    sessionStorage.setItem("conversation_id", "conversation-1");
+    const encoder = new TextEncoder();
+    const body = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode('event: error\ndata: {"message":"Unable to complete response."}\n\n'));
+        controller.close();
+      },
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      body,
+    }));
+
+    const handlerError = new Error("Handler failed");
+    const handlers = {
+      onStage: vi.fn(),
+      onDelta: vi.fn(),
+      onComplete: vi.fn(),
+      onError: vi.fn(() => {
+        throw handlerError;
+      }),
+    };
+
+    await expect(streamChatMessage([], "Hello", handlers)).rejects.toThrow("Handler failed");
+
+    expect(handlers.onError).toHaveBeenCalledTimes(1);
+    expect(handlers.onError).toHaveBeenCalledWith({ message: "Unable to complete response." });
+  });
+
+  test("rejects when a stream ends before a terminal event", async () => {
+    sessionStorage.setItem("conversation_id", "conversation-1");
+    const encoder = new TextEncoder();
+    const body = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode('event: stage\ndata: {"id":"message_received","label":"Message received"}\n\n'));
+        controller.enqueue(encoder.encode('event: delta\ndata: {"text":"Partial"}\n\n'));
+        controller.close();
+      },
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      body,
+    }));
+
+    const handlers = {
+      onStage: vi.fn(),
+      onDelta: vi.fn(),
+      onComplete: vi.fn(),
+      onError: vi.fn(),
+    };
+
+    await expect(streamChatMessage([], "Hello", handlers)).rejects.toThrow("Chat stream ended before completion");
+
+    expect(handlers.onStage).toHaveBeenCalledWith({ id: "message_received", label: "Message received" });
+    expect(handlers.onDelta).toHaveBeenCalledWith("Partial");
+    expect(handlers.onComplete).not.toHaveBeenCalled();
+    expect(handlers.onError).toHaveBeenCalledTimes(1);
+    expect(handlers.onError.mock.calls[0][0]).toBeInstanceOf(Error);
+    expect(handlers.onError.mock.calls[0][0].message).toBe("Chat stream ended before completion");
+  });
 });

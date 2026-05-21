@@ -97,6 +97,28 @@ test("shows active streaming stages while response is in flight", async () => {
   expect(screen.getByText("Starting answer")).toBeInTheDocument();
 });
 
+test("shows a system error and clears pending UI when an opened stream fails", async () => {
+  streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
+    handlers.onStage({ id: "message_received", label: "Message received" });
+    handlers.onDelta("Partial answer");
+    handlers.onError(new Error("Chat stream ended before completion"));
+  });
+
+  renderWithStore(<AssistantDock onNavigate={() => {}} />);
+
+  await userEvent.type(screen.getByRole("textbox", { name: /Message Jacques AI/i }), "Tell me about UBS");
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
+  });
+
+  expect(await screen.findByText(/error: Error: Chat stream ended before completion/i)).toBeInTheDocument();
+  expect(screen.queryByText("Partial answer")).not.toBeInTheDocument();
+  expect(screen.queryByText("Message received")).not.toBeInTheDocument();
+
+  await userEvent.type(screen.getByRole("textbox", { name: /Message Jacques AI/i }), "Again");
+  expect(screen.getByRole("button", { name: /Send message/i })).toBeEnabled();
+});
+
 test("ignores repeated sends while a stream is already active", async () => {
   streamChatMessage.mockImplementation(() => new Promise(() => {}));
 
