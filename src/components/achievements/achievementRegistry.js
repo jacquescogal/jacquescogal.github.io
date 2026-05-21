@@ -89,10 +89,10 @@ const achievementDefinitions = [
     id: "direct-line",
     order: 8,
     name: "Direct Line",
-    flavourText: "Clicked the send email button.",
-    description: "Reached out from the contact form.",
+    flavourText: "Started a path to a real conversation.",
+    description: "Started a path to a real conversation.",
     hidden: false,
-    lockedHint: "Use the contact form send button.",
+    lockedHint: "Start a conversation from the contact section.",
     icon: IconMail,
   },
   {
