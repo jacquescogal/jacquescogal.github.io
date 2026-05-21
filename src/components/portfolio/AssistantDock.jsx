@@ -99,7 +99,16 @@ const getStageKey = (stage) => {
   return stage?.stage || stage?.id || null;
 };
 
-const AssistantDock = ({ hideMobileTrigger = false, onNavigate, onOpenProject }) => {
+const isGitHubUrl = (url) => {
+  try {
+    const hostname = new URL(url).hostname.toLowerCase();
+    return hostname === "github.com" || hostname.endsWith(".github.com");
+  } catch {
+    return false;
+  }
+};
+
+const AssistantDock = ({ hideMobileTrigger = false, onNavigate, onOpenProject, onAchievement }) => {
   const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
@@ -108,7 +117,11 @@ const AssistantDock = ({ hideMobileTrigger = false, onNavigate, onOpenProject })
         aria-label="Jacques AI workspace"
         className="sticky top-20 hidden h-[calc(100vh-6rem)] min-h-0 lg:block"
       >
-        <AssistantPanel onNavigate={onNavigate} onOpenProject={onOpenProject} />
+        <AssistantPanel
+          onNavigate={onNavigate}
+          onOpenProject={onOpenProject}
+          onAchievement={onAchievement}
+        />
       </aside>
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -136,6 +149,7 @@ const AssistantDock = ({ hideMobileTrigger = false, onNavigate, onOpenProject })
           >
             <AssistantPanel
               onOpenProject={onOpenProject}
+              onAchievement={onAchievement}
               onNavigate={(target) => {
                 onNavigate?.(target);
                 setSheetOpen(false);
@@ -148,7 +162,7 @@ const AssistantDock = ({ hideMobileTrigger = false, onNavigate, onOpenProject })
   );
 };
 
-const AssistantPanel = ({ onNavigate, onOpenProject }) => {
+const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
   const dispatch = useDispatch();
   const chatHistory = useSelector((state) => state.chatbotState.chatHistory);
   const isThinking = useSelector((state) => state.chatbotState.isThinking);
@@ -219,6 +233,7 @@ const AssistantPanel = ({ onNavigate, onOpenProject }) => {
     if (!trimmed || isThinking || isDeliveringRef.current) return;
 
     isDeliveringRef.current = true;
+    onAchievement?.("first-contact");
     dispatch(addChatMessage({ message: trimmed, entity: "USER", links: [] }));
     setMessage("");
     setSuggestionsMenuOpen(false);
@@ -263,6 +278,9 @@ const AssistantPanel = ({ onNavigate, onOpenProject }) => {
           streamOpened = true;
           clearStageCollapseTimer();
           const parsedMessage = linkTextParser(streamedMessageRef.current);
+          if (/swim/i.test(parsedMessage.message)) {
+            onAchievement?.("outside-the-code");
+          }
           dispatch(
             addChatMessage({
               entity: "AI",
@@ -299,6 +317,7 @@ const AssistantPanel = ({ onNavigate, onOpenProject }) => {
     }
 
     setSuggestionsMenuOpen(true);
+    onAchievement?.("prompted-path");
     if (suggestionCacheRef.current.aiMessageCount === aiMessageCount) {
       setSuggestions(suggestionCacheRef.current.suggestions);
       return;
@@ -348,6 +367,7 @@ const AssistantPanel = ({ onNavigate, onOpenProject }) => {
                 chatMessage={chatMessage}
                 onNavigate={onNavigate}
                 onOpenProject={onOpenProject}
+                onAchievement={onAchievement}
               />
             ))}
             {streamState.started && (
@@ -502,7 +522,7 @@ const AssistantStreamingMessage = ({ streamState }) => {
   );
 };
 
-const AssistantMessage = ({ chatMessage, onNavigate, onOpenProject }) => {
+const AssistantMessage = ({ chatMessage, onNavigate, onOpenProject, onAchievement }) => {
   if (chatMessage.entity === "SYSTEM") {
     return (
       <div className="break-words rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 [overflow-wrap:anywhere]">
@@ -531,7 +551,13 @@ const AssistantMessage = ({ chatMessage, onNavigate, onOpenProject }) => {
                 type="button"
                 variant="secondary"
                 size="sm"
-                onClick={() => onOpenProject?.(link)}
+                onClick={() => {
+                  onAchievement?.("follow-thread");
+                  if (link.headingSlug) {
+                    onAchievement?.("deep-link");
+                  }
+                  onOpenProject?.(link);
+                }}
               >
                 {link.text}
               </Button>
@@ -541,7 +567,10 @@ const AssistantMessage = ({ chatMessage, onNavigate, onOpenProject }) => {
                 type="button"
                 variant="secondary"
                 size="sm"
-                onClick={() => onNavigate?.(link)}
+                onClick={() => {
+                  onAchievement?.("follow-thread");
+                  onNavigate?.(link);
+                }}
               >
                 {link.text}
               </Button>
@@ -552,6 +581,12 @@ const AssistantMessage = ({ chatMessage, onNavigate, onOpenProject }) => {
                 target="_blank"
                 rel="noreferrer"
                 className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1")}
+                onClick={() => {
+                  onAchievement?.("follow-thread");
+                  if (isGitHubUrl(link.where)) {
+                    onAchievement?.("source-curious");
+                  }
+                }}
               >
                 {link.text}
                 <IconExternalLink className="size-3" />

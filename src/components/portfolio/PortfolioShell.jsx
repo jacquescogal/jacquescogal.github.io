@@ -28,6 +28,8 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { AchievementCenter } from "../achievements/AchievementCenter";
+import { useAchievements } from "../achievements/useAchievements";
 import AssistantDock from "./AssistantDock";
 import { cn } from "@/lib/utils";
 import remarkGfm from "remark-gfm";
@@ -388,6 +390,8 @@ const normalizeNavigationTarget = (target) => {
 };
 
 const PortfolioShell = () => {
+  const achievementsState = useAchievements();
+  const { unlockAchievement } = achievementsState;
   const profileRef = useRef(null);
   const experienceRef = useRef(null);
   const certificationsRef = useRef(null);
@@ -555,6 +559,7 @@ const PortfolioShell = () => {
   }, [projectArchiveOpen, activeProjectHeadingSlug, selectedProject]);
 
   const openProjectArchive = (project, headingSlug = null) => {
+    unlockAchievement("proof-reader");
     projectArchiveHeadingRefs.current.clear();
     setSelectedProject(project);
     setActiveProjectHeadingSlug(headingSlug);
@@ -574,6 +579,7 @@ const PortfolioShell = () => {
   };
 
   const downloadResume = () => {
+    unlockAchievement("kept-on-file");
     fetch("/resume_Jacques.pdf").then((response) => {
       response.blob().then((blob) => {
         const fileURL = window.URL.createObjectURL(blob);
@@ -664,15 +670,18 @@ const PortfolioShell = () => {
               </Button>
             ))}
           </nav>
-          <Button
-            type="button"
-            variant="secondary"
-            className="gap-2 border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-            onClick={downloadResume}
-          >
-            <IconDownload className="size-4" />
-            Resume
-          </Button>
+          <div className="flex min-w-0 shrink-0 items-center justify-end gap-1.5 sm:gap-2">
+            <AchievementCenter {...achievementsState} />
+            <Button
+              type="button"
+              variant="secondary"
+              className="gap-1.5 border border-emerald-200 bg-emerald-50 px-2.5 text-emerald-700 hover:bg-emerald-100 sm:gap-2 sm:px-3"
+              onClick={downloadResume}
+            >
+              <IconDownload className="size-4" />
+              Resume
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -693,6 +702,7 @@ const PortfolioShell = () => {
                       target="_blank"
                       rel="noreferrer"
                       className={cn(buttonVariants({ variant: "outline" }), "gap-2 text-slate-700")}
+                      onClick={() => unlockAchievement("source-curious")}
                     >
                       <GithubButtonMark />
                       GitHub
@@ -836,6 +846,7 @@ const PortfolioShell = () => {
               error={certificationsError}
               selectedTitle={selectedCertificationTitle}
               onSelect={setSelectedCertificationTitle}
+              onCredentialOpen={() => unlockAchievement("credential-check")}
             />
           </section>
 
@@ -886,6 +897,7 @@ const PortfolioShell = () => {
                           target="_blank"
                           rel="noreferrer"
                           className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-2 text-slate-700")}
+                          onClick={() => unlockAchievement("source-curious")}
                         >
                           <GithubButtonMark />
                           GitHub
@@ -960,6 +972,7 @@ const PortfolioShell = () => {
           hideMobileTrigger={projectArchiveOpen}
           onNavigate={scrollTo}
           onOpenProject={openProjectFromLink}
+          onAchievement={unlockAchievement}
         />
       </div>
 
@@ -1117,6 +1130,7 @@ const CertificationSection = ({
   error,
   selectedTitle,
   onSelect,
+  onCredentialOpen,
 }) => {
   const sortedCertifications = [...certifications].sort((first, second) => first.displayOrder - second.displayOrder);
   const selected =
@@ -1180,6 +1194,7 @@ const CertificationSection = ({
               target="_blank"
               rel="noreferrer"
               className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1 text-slate-700")}
+              onClick={onCredentialOpen}
             >
               Show credential
               <IconExternalLink className="size-3" />

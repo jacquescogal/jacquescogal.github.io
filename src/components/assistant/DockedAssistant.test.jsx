@@ -91,6 +91,30 @@ test("renders completed streaming assistant response", async () => {
   });
 });
 
+test("assistant send and swim AI response unlock first-contact and outside-the-code", async () => {
+  const onAchievement = vi.fn();
+  streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
+    handlers.onStage({ id: "crafting_response", label: "Crafting response" });
+    handlers.onDelta("Jacques likes to swim between builds.");
+    handlers.onComplete({ done: true });
+  });
+
+  renderWithStore(<AssistantDock onNavigate={() => {}} onAchievement={onAchievement} />);
+
+  await userEvent.type(screen.getByRole("textbox", { name: /Message Jacques AI/i }), "Say hello");
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
+  });
+
+  expect(await screen.findByText("Jacques likes to swim between builds.")).toBeInTheDocument();
+  expect(onAchievement).toHaveBeenCalledWith("first-contact");
+  expect(onAchievement).toHaveBeenCalledWith("outside-the-code");
+  expect(onAchievement.mock.calls.map(([achievement]) => achievement)).toEqual([
+    "first-contact",
+    "outside-the-code",
+  ]);
+});
+
 test("renders markdown styling inside chat bubbles", async () => {
   streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
     handlers.onStage({ id: "crafting_response", label: "Crafting response" });
@@ -184,6 +208,137 @@ test("shows suggestions in a popup menu and caches until a new AI message arrive
 
   expect(await screen.findByRole("menuitem", { name: "Which AI projects are strongest?" })).toBeInTheDocument();
   expect(getChatSuggestions).toHaveBeenCalledTimes(2);
+});
+
+test("opening suggestions unlocks prompted-path and closing does not double count", async () => {
+  const onAchievement = vi.fn();
+  getChatSuggestions.mockResolvedValue(["What did Jacques build at UBS?"]);
+
+  renderWithStore(<AssistantDock onNavigate={() => {}} onAchievement={onAchievement} />);
+
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
+  });
+
+  expect(await screen.findByRole("menu", { name: /Suggested questions/i })).toBeInTheDocument();
+  expect(onAchievement).toHaveBeenCalledTimes(1);
+  expect(onAchievement).toHaveBeenCalledWith("prompted-path");
+
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
+  });
+
+  expect(screen.queryByRole("menu", { name: /Suggested questions/i })).not.toBeInTheDocument();
+  expect(onAchievement).toHaveBeenCalledTimes(1);
+});
+
+test("clicking a suggestion unlocks prompted-path and sends the suggestion", async () => {
+  const onAchievement = vi.fn();
+  getChatSuggestions.mockResolvedValue(["What did Jacques build at UBS?"]);
+  streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
+    handlers.onStage({ id: "crafting_response", label: "Crafting response" });
+    handlers.onDelta("Jacques built AI products at UBS.");
+    handlers.onComplete({ done: true });
+  });
+
+  renderWithStore(<AssistantDock onNavigate={() => {}} onAchievement={onAchievement} />);
+
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
+  });
+  await act(async () => {
+    await userEvent.click(await screen.findByRole("menuitem", { name: "What did Jacques build at UBS?" }));
+  });
+
+  expect(streamChatMessage).toHaveBeenCalledWith(
+    expect.any(Array),
+    "What did Jacques build at UBS?",
+    expect.any(Object)
+  );
+  expect(await screen.findByText("Jacques built AI products at UBS.")).toBeInTheDocument();
+  expect(onAchievement.mock.calls.map(([achievement]) => achievement)).toEqual([
+    "prompted-path",
+    "first-contact",
+  ]);
+});
+
+test("clicking project section link unlocks follow-thread and deep-link and opens project link", async () => {
+  const onAchievement = vi.fn();
+  const onOpenProject = vi.fn();
+  streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
+    handlers.onStage({ id: "crafting_response", label: "Crafting response" });
+    handlers.onDelta("Review the project notes %%project:https://github.com/jacquescogal/demo#architecture%%");
+    handlers.onComplete({ done: true });
+  });
+
+  renderWithStore(
+    <AssistantDock
+      onNavigate={() => {}}
+      onOpenProject={onOpenProject}
+      onAchievement={onAchievement}
+    />
+  );
+
+  await userEvent.type(screen.getByRole("textbox", { name: /Message Jacques AI/i }), "Show project");
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
+  });
+  await userEvent.click(await screen.findByRole("button", { name: "Open project README" }));
+
+  const expectedLink = {
+    type: "project",
+    text: "Open project README",
+    repoUrl: "https://github.com/jacquescogal/demo",
+    headingSlug: "architecture",
+  };
+  expect(onOpenProject).toHaveBeenCalledWith(expectedLink);
+  expect(onAchievement).toHaveBeenCalledWith("follow-thread");
+  expect(onAchievement).toHaveBeenCalledWith("deep-link");
+});
+
+test("clicking internal assistant link unlocks follow-thread and navigates", async () => {
+  const onAchievement = vi.fn();
+  const onNavigate = vi.fn();
+  streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
+    handlers.onStage({ id: "crafting_response", label: "Crafting response" });
+    handlers.onDelta("Reach out here %%contact%%");
+    handlers.onComplete({ done: true });
+  });
+
+  renderWithStore(<AssistantDock onNavigate={onNavigate} onAchievement={onAchievement} />);
+
+  await userEvent.type(screen.getByRole("textbox", { name: /Message Jacques AI/i }), "How do I contact Jacques?");
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
+  });
+  await userEvent.click(await screen.findByRole("button", { name: "Contact me" }));
+
+  expect(onNavigate).toHaveBeenCalledWith({
+    type: "internal",
+    text: "Contact me",
+    where: "contact",
+  });
+  expect(onAchievement).toHaveBeenCalledWith("follow-thread");
+});
+
+test("clicking external GitHub assistant link unlocks follow-thread and source-curious", async () => {
+  const onAchievement = vi.fn();
+  streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
+    handlers.onStage({ id: "crafting_response", label: "Crafting response" });
+    handlers.onDelta("See GitHub %%github%%");
+    handlers.onComplete({ done: true });
+  });
+
+  renderWithStore(<AssistantDock onNavigate={() => {}} onAchievement={onAchievement} />);
+
+  await userEvent.type(screen.getByRole("textbox", { name: /Message Jacques AI/i }), "Show GitHub");
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
+  });
+  await userEvent.click(await screen.findByRole("link", { name: /GitHub/i }));
+
+  expect(onAchievement).toHaveBeenCalledWith("follow-thread");
+  expect(onAchievement).toHaveBeenCalledWith("source-curious");
 });
 
 test("keeps streaming nodes visible briefly after crafting starts", async () => {
