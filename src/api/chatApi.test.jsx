@@ -56,6 +56,30 @@ describe("chat streaming API", () => {
     });
   });
 
+  test("preserves split CRLF line endings across chunks", () => {
+    const first = parseSseChunk("", "event: stage\r");
+
+    expect(first).toEqual({
+      events: [],
+      buffer: "event: stage\r",
+    });
+
+    const second = parseSseChunk(
+      first.buffer,
+      '\ndata: {"stage":"message_received","label":"Message received"}\r\n\r\n',
+    );
+
+    expect(second).toEqual({
+      events: [
+        {
+          event: "stage",
+          data: { stage: "message_received", label: "Message received" },
+        },
+      ],
+      buffer: "",
+    });
+  });
+
   test("streams chat messages and dispatches stage, delta, and complete events", async () => {
     sessionStorage.setItem("conversation_id", "conversation-1");
     const encoder = new TextEncoder();

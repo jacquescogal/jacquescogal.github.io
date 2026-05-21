@@ -30,9 +30,12 @@ export const sendChatMessage = async (chat_history, user_message) => {
 };
 
 export const parseSseChunk = (buffer, chunk) => {
-  const combined = (buffer + chunk).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const rawCombined = buffer + chunk;
+  const pendingCarriageReturn = rawCombined.endsWith("\r");
+  const parseableContent = pendingCarriageReturn ? rawCombined.slice(0, -1) : rawCombined;
+  const combined = parseableContent.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
   const parts = combined.split("\n\n");
-  const nextBuffer = parts.pop();
+  const nextBuffer = `${parts.pop()}${pendingCarriageReturn ? "\r" : ""}`;
   const events = parts.flatMap((part) => {
     if (part.trim() === "") {
       return [];
