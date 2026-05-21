@@ -18,6 +18,7 @@ const createTestStore = () =>
 
 beforeEach(() => {
   window.localStorage.clear();
+  window.open = vi.fn();
   window.URL.createObjectURL = vi.fn(() => "blob:resume");
   window.HTMLAnchorElement.prototype.click = vi.fn();
   global.fetch = vi.fn(() =>
@@ -44,10 +45,10 @@ async function renderApp() {
   return { store };
 }
 
-test("shows achievement progress in the header initially at 0/9", async () => {
+test("shows achievement progress in the header initially at 0/10", async () => {
   await renderApp();
 
-  const achievementProgress = await screen.findByRole("button", { name: "Achievements 0/9" });
+  const achievementProgress = await screen.findByRole("button", { name: "Achievements 0/10" });
   expect(achievementProgress).toBeInTheDocument();
   expect(achievementProgress).toHaveClass("h-8", "overflow-hidden");
 });
@@ -83,7 +84,7 @@ test("resume download unlocks Kept on File and updates achievement progress", as
   expect(downloadedAnchor.href).toBe("blob:resume");
   expect(downloadedAnchor.download).toBe("Resume_CogalJacques.pdf");
   expect(await screen.findByText("Kept on File")).toBeInTheDocument();
-  expect(await screen.findByRole("button", { name: "Achievements 1/9" })).toBeInTheDocument();
+  expect(await screen.findByRole("button", { name: "Achievements 1/10" })).toBeInTheDocument();
 });
 
 test("opens the shadcn markdown project archive", async () => {
@@ -124,7 +125,17 @@ test("clicking a credential URL unlocks Credential Check", async () => {
   await userEvent.click(await screen.findByRole("link", { name: /Show credential/i }));
 
   expect(await screen.findByText("Credential Check")).toBeInTheDocument();
-  expect(await screen.findByRole("button", { name: "Achievements 1/9" })).toBeInTheDocument();
+  expect(await screen.findByRole("button", { name: "Achievements 1/10" })).toBeInTheDocument();
+});
+
+test("send email unlocks Direct Line", async () => {
+  await renderApp();
+
+  await userEvent.click(await screen.findByRole("button", { name: /Send E-mail/i }));
+
+  expect(window.open).toHaveBeenCalledWith(expect.stringMatching(/^mailto:jacques\.tracy@gmail\.com/));
+  expect(await screen.findByText("Direct Line")).toBeInTheDocument();
+  expect(await screen.findByRole("button", { name: "Achievements 1/10" })).toBeInTheDocument();
 });
 
 test("chat certification links select the matching certification", async () => {

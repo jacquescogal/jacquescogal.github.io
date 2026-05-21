@@ -638,6 +638,7 @@ const PortfolioShell = () => {
     );
 
   const sendEmail = () => {
+    unlockAchievement("direct-line");
     const subject = encodeURIComponent(contactForm.subject || "Work Opportunity");
     const body = encodeURIComponent(
       `Hi Jacques,\n\n${contactForm.message}\n\nRegards,\n${contactForm.name}`

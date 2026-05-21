@@ -47,8 +47,8 @@ afterEach(() => {
 test("progress button and hidden clues render", async () => {
   renderAchievementCenter();
 
-  const trigger = screen.getByRole("button", { name: "Achievements 0/9" });
-  expect(trigger).toHaveTextContent("0/9");
+  const trigger = screen.getByRole("button", { name: "Achievements 0/10" });
+  expect(trigger).toHaveTextContent("0/10");
   expect(trigger.querySelector("[data-achievement-progress-line]")).toHaveClass("bg-emerald-500");
 
   await userEvent.click(trigger);
@@ -60,17 +60,17 @@ test("progress button and hidden clues render", async () => {
   expect(
     within(dialog).getByText("Let the assistant point to a specific part of a project."),
   ).toBeInTheDocument();
-  expect(within(dialog).getByText("Find something outside the code.")).toBeInTheDocument();
+  expect(within(dialog).getByText("Ask about life beyond the code.")).toBeInTheDocument();
 });
 
 test("locked hidden achievement real name is not shown before unlock", async () => {
   renderAchievementCenter();
 
-  await userEvent.click(screen.getByRole("button", { name: "Achievements 0/9" }));
+  await userEvent.click(screen.getByRole("button", { name: "Achievements 0/10" }));
 
   const dialog = await screen.findByRole("dialog", { name: "Achievements" });
   expect(within(dialog).queryByText("Deep Link")).not.toBeInTheDocument();
-  expect(within(dialog).queryByText("Outside the Code")).not.toBeInTheDocument();
+  expect(within(dialog).queryByText("Off the Clock")).not.toBeInTheDocument();
 });
 
 test("toast appears after unlocking and reset works", async () => {
@@ -84,7 +84,7 @@ test("toast appears after unlocking and reset works", async () => {
   expect(toast).toHaveTextContent("Achievement unlocked");
   expect(toast).toHaveTextContent("First Contact");
   expect(toast).toHaveTextContent("Sent a message to Jacques AI.");
-  expect(screen.getByRole("button", { name: "Achievements 1/9" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Achievements 1/10" })).toBeInTheDocument();
 
   await act(async () => {
     vi.advanceTimersByTime(3200);
@@ -92,8 +92,8 @@ test("toast appears after unlocking and reset works", async () => {
 
   expect(screen.queryByRole("status")).not.toBeInTheDocument();
 
-  await userEvent.click(screen.getByRole("button", { name: "Achievements 1/9" }));
+  await userEvent.click(screen.getByRole("button", { name: "Achievements 1/10" }));
   await userEvent.click(await screen.findByRole("button", { name: "Reset progress" }));
 
-  expect(screen.getByRole("button", { name: "Achievements 0/9" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Achievements 0/10" })).toBeInTheDocument();
 });
