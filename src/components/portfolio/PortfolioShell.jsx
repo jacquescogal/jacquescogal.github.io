@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import {
-  IconBrandGithub,
+  IconBrandGithubFilled,
   IconBrandLinkedin,
+  IconFileText,
   IconBriefcase,
   IconCode,
   IconDownload,
@@ -123,6 +124,17 @@ const textFromMarkdownChildren = (children) =>
       return "";
     })
     .join("");
+
+const GithubButtonMark = () => (
+  <span className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-full border-0 bg-slate-950 text-white shadow-none outline-0 outline-transparent ring-0 ring-transparent">
+    <IconBrandGithubFilled
+      aria-hidden="true"
+      color="currentColor"
+      size={17}
+      className="size-[17px] translate-y-[3px] stroke-none"
+    />
+  </span>
+);
 
 const createArchiveMarkdownComponents = (activeHeadingSlug) => ({
   h2: ({ ...props }) => (
@@ -352,7 +364,7 @@ const PortfolioShell = () => {
                       rel="noreferrer"
                       className={cn(buttonVariants({ variant: "outline" }), "gap-2 text-slate-700")}
                     >
-                      <IconBrandGithub className="size-4" />
+                      <GithubButtonMark />
                       GitHub
                     </a>
                     <a
@@ -495,12 +507,12 @@ const PortfolioShell = () => {
             ) : (
               <div className="mt-4 grid gap-3 sm:gap-4 md:grid-cols-3">
                 {projects.map((project) => (
-                  <Card key={project.url} className="border-slate-200 bg-white shadow-sm">
+                  <Card key={project.url} className="flex h-full flex-col border-slate-200 bg-white shadow-sm">
                     <CardHeader>
                       <CardTitle>{project.title}</CardTitle>
                       <CardDescription>{project.description || "Pinned GitHub repository."}</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex flex-col gap-3">
+                    <CardContent className="flex flex-1 flex-col gap-3">
                       <div className="flex flex-wrap gap-2">
                         {project.tags.map((tag) => (
                           <Badge key={tag} variant="outline">
@@ -508,22 +520,24 @@ const PortfolioShell = () => {
                           </Badge>
                         ))}
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="mt-auto flex flex-wrap gap-2 pt-1">
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="secondary"
                           size="sm"
-                          className="text-slate-700"
+                          className="gap-1.5 border border-emerald-200 bg-emerald-50 px-3 text-emerald-700 shadow-sm hover:bg-emerald-100"
                           onClick={() => openProjectArchive(project)}
                         >
+                          <IconFileText className="size-3.5" />
                           Open README
                         </Button>
                         <a
                           href={project.url}
                           target="_blank"
                           rel="noreferrer"
-                          className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-slate-600")}
+                          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-2 text-slate-700")}
                         >
+                          <GithubButtonMark />
                           GitHub
                         </a>
                       </div>
