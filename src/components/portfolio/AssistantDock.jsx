@@ -328,7 +328,7 @@ const AssistantPanel = ({ onNavigate }) => {
           >
             <Textarea
               aria-label="Message Jacques AI"
-              className="h-12 min-h-12 min-w-0 flex-1 resize-none bg-white"
+              className="h-14 min-h-14 min-w-0 flex-1 resize-none bg-white py-3"
               placeholder="Ask about experience, projects, or fit..."
               value={message}
               onChange={(event) => setMessage(event.target.value)}
@@ -342,10 +342,10 @@ const AssistantPanel = ({ onNavigate }) => {
             <Button
               type="submit"
               size="icon"
-              className="size-12 shrink-0 bg-slate-950 text-white hover:bg-slate-800"
+              className="h-14 w-14 shrink-0 rounded-xl bg-slate-950 text-white hover:bg-slate-800"
               disabled={!message.trim() || isThinking}
             >
-              <IconArrowUp className="size-4" />
+              <IconArrowUp className="size-5" />
               <span className="sr-only">Send message</span>
             </Button>
           </form>

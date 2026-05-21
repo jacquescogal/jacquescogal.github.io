@@ -44,6 +44,8 @@ test("renders assistant prompts and chat for desktop visitors", () => {
   expect(screen.queryByRole("button", { name: /Project proof/i })).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /Experience summary/i })).not.toBeInTheDocument();
   expect(screen.getByRole("textbox", { name: /Message Jacques AI/i })).toBeInTheDocument();
+  expect(screen.getByRole("textbox", { name: /Message Jacques AI/i })).toHaveClass("h-14", "min-h-14");
+  expect(screen.getByRole("button", { name: /Send message/i })).toHaveClass("h-14", "w-14");
   expect(container.querySelector('img[src="/ai_mascot_only.png"]')).not.toBeInTheDocument();
   expect(container.querySelector("[data-assistant-header-icon]")).not.toBeInTheDocument();
 });
