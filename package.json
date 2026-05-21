@@ -36,11 +36,12 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "predeploy": "npm run build",
+    "predeploy": "npm run build:deploy",
     "deploy": "gh-pages -d build",
-    "start": "vite",
-    "dev": "vite",
+    "start": "vite --mode development",
+    "dev": "vite --mode development",
     "build": "vite build",
+    "build:deploy": "vite build --mode production",
     "test": "vitest run",
     "preview": "vite preview"
   },
