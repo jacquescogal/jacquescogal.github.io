@@ -25,8 +25,26 @@ import {
   setAssistantPrompt,
   setThinking,
 } from "../../store/chatbotStateSlice";
-import { getChatSuggestions, sendChatMessage } from "../../api/chatApi";
+import { getChatSuggestions, sendChatMessage, streamChatMessage } from "../../api/chatApi";
 import { linkTextParser } from "../../utils/Links";
+
+const STREAM_STAGES = [
+  { key: "message_received", label: "Message received" },
+  { key: "fetching_related_sources", label: "Fetching related sources" },
+  { key: "crafting_response", label: "Crafting response" },
+];
+
+const INITIAL_STREAM_STATE = {
+  activeStage: null,
+  message: "",
+  started: false,
+  collapsed: false,
+};
+
+const getStageKey = (stage) => {
+  if (typeof stage === "string") return stage;
+  return stage?.stage || null;
+};
 
 const AssistantDock = ({ onNavigate }) => {
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -90,7 +108,9 @@ const AssistantPanel = ({ onNavigate }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [streamState, setStreamState] = useState(INITIAL_STREAM_STATE);
   const chatHistoryRef = useRef(null);
+  const streamedMessageRef = useRef("");
 
   useEffect(() => {
     if (assistantPrompt) {
@@ -107,7 +127,7 @@ const AssistantPanel = ({ onNavigate }) => {
       top: chatHistoryElement.scrollHeight,
       behavior: "smooth",
     });
-  }, [chatHistory, isThinking, suggestions, showSuggestions]);
+  }, [chatHistory, isThinking, suggestions, showSuggestions, streamState]);
 
   const deliverMessage = async (nextMessage = message) => {
     const trimmed = nextMessage.trim();
@@ -118,16 +138,70 @@ const AssistantPanel = ({ onNavigate }) => {
     setSuggestions([]);
     setShowSuggestions(false);
     dispatch(setThinking(true));
+    streamedMessageRef.current = "";
+    setStreamState({
+      ...INITIAL_STREAM_STATE,
+      started: true,
+    });
+
+    let streamOpened = false;
 
     try {
-      const response = await sendChatMessage(chatHistory, trimmed);
-      dispatch(
-        addChatMessage({
-          entity: "AI",
-          ...linkTextParser(response.ai_message),
-        })
-      );
+      await streamChatMessage(chatHistory, trimmed, {
+        onStage: (stage) => {
+          const stageKey = getStageKey(stage);
+          streamOpened = true;
+          setStreamState((current) => ({
+            ...current,
+            activeStage: stageKey,
+            started: true,
+            collapsed: stageKey === "crafting_response" || current.collapsed,
+          }));
+        },
+        onDelta: (delta) => {
+          streamOpened = true;
+          streamedMessageRef.current += delta;
+          setStreamState((current) => ({
+            ...current,
+            message: streamedMessageRef.current,
+            started: true,
+            collapsed: true,
+          }));
+        },
+        onComplete: () => {
+          streamOpened = true;
+          const parsedMessage = linkTextParser(streamedMessageRef.current);
+          dispatch(
+            addChatMessage({
+              entity: "AI",
+              ...parsedMessage,
+            })
+          );
+          streamedMessageRef.current = "";
+          setStreamState(INITIAL_STREAM_STATE);
+        },
+        onError: (error) => {
+          throw new Error(error?.message || error?.error || "Assistant stream failed");
+        },
+      });
     } catch (error) {
+      if (!streamOpened) {
+        try {
+          const response = await sendChatMessage(chatHistory, trimmed);
+          dispatch(
+            addChatMessage({
+              entity: "AI",
+              ...linkTextParser(response.ai_message),
+            })
+          );
+          setStreamState(INITIAL_STREAM_STATE);
+          return;
+        } catch (fallbackError) {
+          error = fallbackError;
+        }
+      }
+
+      setStreamState(INITIAL_STREAM_STATE);
       dispatch(
         addChatMessage({
           entity: "SYSTEM",
@@ -191,10 +265,8 @@ const AssistantPanel = ({ onNavigate }) => {
                 onNavigate={onNavigate}
               />
             ))}
-            {isThinking && (
-              <div className="w-fit rounded-xl border bg-white px-3 py-2 text-sm text-slate-600">
-                Thinking...
-              </div>
+            {streamState.started && (
+              <AssistantStreamingMessage streamState={streamState} />
             )}
             {showSuggestions && (
               <div className="space-y-2 rounded-xl border bg-white p-3">
@@ -274,6 +346,46 @@ const AssistantPanel = ({ onNavigate }) => {
         </div>
       </CardContent>
     </Card>
+  );
+};
+
+const AssistantStreamingMessage = ({ streamState }) => {
+  const activeStageIndex = STREAM_STAGES.findIndex((stage) => stage.key === streamState.activeStage);
+  const activeStageLabel = STREAM_STAGES[activeStageIndex]?.label || "Message received";
+
+  return (
+    <div className="mr-auto max-w-[88%] rounded-xl border bg-white px-3 py-2 text-sm leading-6 text-slate-700">
+      {streamState.collapsed ? (
+        <div className="flex items-center gap-2 text-xs font-medium text-emerald-700">
+          <span className="size-2 rounded-full bg-emerald-500" aria-hidden="true" />
+          {activeStageLabel}
+        </div>
+      ) : (
+        <div className="space-y-1">
+          {STREAM_STAGES.slice(0, activeStageIndex + 1).map((stage) => (
+            <div
+              key={stage.key}
+              className={cn(
+                "flex items-center gap-2 text-xs font-medium",
+                stage.key === streamState.activeStage ? "text-emerald-700" : "text-slate-500"
+              )}
+            >
+              <span
+                className={cn(
+                  "size-2 rounded-full",
+                  stage.key === streamState.activeStage ? "bg-emerald-500" : "bg-slate-300"
+                )}
+                aria-hidden="true"
+              />
+              {stage.label}
+            </div>
+          ))}
+        </div>
+      )}
+      {streamState.message && (
+        <p className="mt-2 whitespace-pre-wrap text-slate-700">{streamState.message}</p>
+      )}
+    </div>
   );
 };
 
