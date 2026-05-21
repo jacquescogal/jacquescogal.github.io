@@ -30,7 +30,7 @@ export const sendChatMessage = async (chat_history, user_message) => {
 };
 
 export const parseSseChunk = (buffer, chunk) => {
-  const combined = buffer + chunk;
+  const combined = (buffer + chunk).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
   const parts = combined.split("\n\n");
   const nextBuffer = parts.pop();
   const events = parts.flatMap((part) => {
@@ -80,7 +80,7 @@ export const streamChatMessage = async (
     });
 
     if (!response.ok || !response.body) {
-      throw new Error("Chat stream request failed");
+      throw new Error(`Chat stream request failed: ${response.status ?? "unknown"} ${response.statusText ?? ""}`.trim());
     }
 
     const reader = response.body.getReader();

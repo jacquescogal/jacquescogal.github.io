@@ -42,6 +42,20 @@ describe("chat streaming API", () => {
     });
   });
 
+  test("parses CRLF-framed SSE events", () => {
+    const result = parseSseChunk("", 'event: stage\r\ndata: {"stage":"thinking","label":"Thinking"}\r\n\r\n');
+
+    expect(result).toEqual({
+      events: [
+        {
+          event: "stage",
+          data: { stage: "thinking", label: "Thinking" },
+        },
+      ],
+      buffer: "",
+    });
+  });
+
   test("streams chat messages and dispatches stage, delta, and complete events", async () => {
     sessionStorage.setItem("conversation_id", "conversation-1");
     const encoder = new TextEncoder();
