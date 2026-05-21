@@ -7,7 +7,25 @@ import React from 'react';
 import { vi } from 'vitest';
 
 const mockAxios = {
-  get: vi.fn(() => Promise.resolve({ data: { body: '[]' } })),
+  get: vi.fn((url = "") => {
+    if (String(url).includes("/id")) {
+      return Promise.resolve({ data: { conversation_id: "test-conversation" } });
+    }
+
+    return Promise.resolve({
+      data: [
+        {
+          title: "AI Portfolio Assistant",
+          url_link: "https://github.com/jacquescogal/portfolio",
+          description: "Streaming portfolio assistant.",
+          tags: ["React", "SSE"],
+          readme_content: "## AI Portfolio Assistant\n\nUses streaming responses from pinned README content.",
+          readme_sha: "abc123",
+          readme_updated_at: "2026-05-21T00:00:00Z",
+        },
+      ],
+    });
+  }),
   post: vi.fn(() => Promise.resolve({ data: { ai_message: 'Hello!' } })),
 };
 

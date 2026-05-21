@@ -99,7 +99,7 @@ const getStageKey = (stage) => {
   return stage?.stage || stage?.id || null;
 };
 
-const AssistantDock = ({ onNavigate }) => {
+const AssistantDock = ({ onNavigate, onOpenProject }) => {
   const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
@@ -108,7 +108,7 @@ const AssistantDock = ({ onNavigate }) => {
         aria-label="Jacques AI workspace"
         className="sticky top-20 hidden h-[calc(100vh-6rem)] min-h-0 lg:block"
       >
-        <AssistantPanel onNavigate={onNavigate} />
+        <AssistantPanel onNavigate={onNavigate} onOpenProject={onOpenProject} />
       </aside>
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -135,6 +135,7 @@ const AssistantDock = ({ onNavigate }) => {
             className="h-full min-h-0 p-2 sm:p-3"
           >
             <AssistantPanel
+              onOpenProject={onOpenProject}
               onNavigate={(target) => {
                 onNavigate?.(target);
                 setSheetOpen(false);
@@ -147,7 +148,7 @@ const AssistantDock = ({ onNavigate }) => {
   );
 };
 
-const AssistantPanel = ({ onNavigate }) => {
+const AssistantPanel = ({ onNavigate, onOpenProject }) => {
   const dispatch = useDispatch();
   const chatHistory = useSelector((state) => state.chatbotState.chatHistory);
   const isThinking = useSelector((state) => state.chatbotState.isThinking);
@@ -346,6 +347,7 @@ const AssistantPanel = ({ onNavigate }) => {
                 key={`${chatMessage.entity}-${index}`}
                 chatMessage={chatMessage}
                 onNavigate={onNavigate}
+                onOpenProject={onOpenProject}
               />
             ))}
             {streamState.started && (
@@ -500,7 +502,7 @@ const AssistantStreamingMessage = ({ streamState }) => {
   );
 };
 
-const AssistantMessage = ({ chatMessage, onNavigate }) => {
+const AssistantMessage = ({ chatMessage, onNavigate, onOpenProject }) => {
   if (chatMessage.entity === "SYSTEM") {
     return (
       <div className="break-words rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 [overflow-wrap:anywhere]">
@@ -523,7 +525,17 @@ const AssistantMessage = ({ chatMessage, onNavigate }) => {
       {chatMessage.links?.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2">
           {chatMessage.links.map((link, index) =>
-            link.type === "internal" ? (
+            link.type === "project" ? (
+              <Button
+                key={`${link.repoUrl}-${link.headingSlug}-${index}`}
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => onOpenProject?.(link)}
+              >
+                {link.text}
+              </Button>
+            ) : link.type === "internal" ? (
               <Button
                 key={`${link.where}-${index}`}
                 type="button"

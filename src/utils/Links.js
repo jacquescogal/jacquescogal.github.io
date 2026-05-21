@@ -1,6 +1,17 @@
 const extractLinks = (texts)=>{
     const links=[]
     texts.forEach(text=>{
+    const projectMatch = text.match(/^project:(.+?)(?:#(.+))?$/i);
+    if (projectMatch) {
+      links.push({
+        type: "project",
+        text: "Open project README",
+        repoUrl: projectMatch[1],
+        headingSlug: projectMatch[2] || null,
+      });
+      return;
+    }
+
     switch(text.toLowerCase()){
       case "contact":
       links.push({type:"internal",text:"Contact me",where:"contact"})
@@ -38,7 +49,12 @@ const extractLinks = (texts)=>{
   };
 
   export const linkToText = (link)=>{
-    return ` ${link.map(l => `%%${linkTokenMap[l.text] ?? l.where ?? l.text}%%`).join(' ')}`
+    return ` ${link.map(l => {
+      if (l.type === "project" && l.repoUrl) {
+        return `%%project:${l.repoUrl}${l.headingSlug ? `#${l.headingSlug}` : ""}%%`;
+      }
+      return `%%${linkTokenMap[l.text] ?? l.where ?? l.text}%%`;
+    }).join(' ')}`
   }
   
   export const linkTextParser = (text) => {

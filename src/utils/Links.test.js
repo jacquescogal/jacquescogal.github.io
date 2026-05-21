@@ -7,4 +7,19 @@ describe("chat link helpers", () => {
 
     expect(linkToText(parsed.links)).toBe(" %%contact%% %%project%%");
   });
+
+  test("parses project README links with heading slugs", () => {
+    const parsed = linkTextParser("See this %%project:https://github.com/jacquescogal/portfolio#setup%%.");
+
+    expect(parsed.message).toBe("See this .");
+    expect(parsed.links).toEqual([
+      {
+        type: "project",
+        text: "Open project README",
+        repoUrl: "https://github.com/jacquescogal/portfolio",
+        headingSlug: "setup",
+      },
+    ]);
+    expect(linkToText(parsed.links)).toBe(" %%project:https://github.com/jacquescogal/portfolio#setup%%");
+  });
 });

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import ReactMarkdown from "react-markdown";
 import {
   IconBrandGithub,
   IconBrandLinkedin,
@@ -12,14 +12,21 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import Modal from "../../components/modal/Modal";
-import { setShowModal } from "../../store/modalStateSlice";
 import AssistantDock from "./AssistantDock";
 import { cn } from "@/lib/utils";
+import remarkGfm from "remark-gfm";
+import { getProjects } from "../../api/projectApi";
 
 const workExperience = [
   {
@@ -102,26 +109,43 @@ const achievements = [
   },
 ];
 
-const projects = [
-  {
-    title: "AI Portfolio Assistant",
-    description:
-      "Redux-backed portfolio assistant with prompt shortcuts, chat history, suggestions, and link-aware navigation.",
-    tags: ["React", "LLM", "UX"],
-  },
-  {
-    title: "Internal Search Optimisation",
-    description:
-      "Search relevance and index creation improvements for customer-facing internal search workflows.",
-    tags: ["Retrieval", "Azure", "Data"],
-  },
-  {
-    title: "Analytics + GenAI App",
-    description:
-      "Hackathon-winning analytics app using generative AI and retrieval augmented generation patterns.",
-    tags: ["AWS", "RAG", "Full-stack"],
-  },
-];
+const slugifyHeading = (value) =>
+  String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || "section";
+
+const textFromMarkdownChildren = (children) =>
+  React.Children.toArray(children)
+    .map((child) => {
+      if (typeof child === "string" || typeof child === "number") return child;
+      if (React.isValidElement(child)) return textFromMarkdownChildren(child.props.children);
+      return "";
+    })
+    .join("");
+
+const createArchiveMarkdownComponents = (activeHeadingSlug) => ({
+  h2: ({ ...props }) => (
+    <h2
+      id={`project-archive-${slugifyHeading(textFromMarkdownChildren(props.children))}`}
+      className={cn(
+        "scroll-mt-4 rounded-lg px-2 py-1 text-base font-semibold tracking-normal text-slate-950 first:mt-0",
+        activeHeadingSlug === slugifyHeading(textFromMarkdownChildren(props.children)) && "bg-emerald-50 text-emerald-800"
+      )}
+      {...props}
+    />
+  ),
+  p: ({ ...props }) => <p className="mt-2 text-sm leading-6 text-slate-600" {...props} />,
+  ul: ({ ...props }) => <ul className="mt-3 space-y-2" {...props} />,
+  li: ({ ...props }) => (
+    <li className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-5 text-slate-700" {...props} />
+  ),
+  strong: ({ ...props }) => <strong className="font-semibold text-slate-950" {...props} />,
+  a: ({ ...props }) => (
+    <a className="font-medium text-emerald-700 underline underline-offset-2" target="_blank" rel="noreferrer" {...props} />
+  ),
+  code: ({ ...props }) => <code className="rounded bg-slate-100 px-1 py-0.5 text-[0.92em]" {...props} />,
+});
 
 const highlightTargetMap = {
   profile: "profile",
@@ -136,14 +160,20 @@ const highlightTargetMap = {
 const highlightDurationMs = 1800;
 
 const PortfolioShell = () => {
-  const dispatch = useDispatch();
   const profileRef = useRef(null);
   const experienceRef = useRef(null);
   const projectRef = useRef(null);
   const contactRef = useRef(null);
   const highlightTimeoutRef = useRef(null);
+  const projectArchiveBodyRef = useRef(null);
   const [highlightedSection, setHighlightedSection] = useState(null);
   const [experienceTab, setExperienceTab] = useState("work");
+  const [projectArchiveOpen, setProjectArchiveOpen] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [projectsError, setProjectsError] = useState("");
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [activeProjectHeadingSlug, setActiveProjectHeadingSlug] = useState(null);
   const [contactForm, setContactForm] = useState({
     name: "",
     subject: "",
@@ -171,6 +201,55 @@ const PortfolioShell = () => {
     },
     []
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    setProjectsLoading(true);
+    getProjects()
+      .then((nextProjects) => {
+        if (cancelled) return;
+        setProjects(nextProjects);
+        setProjectsError("");
+        if (!selectedProject && nextProjects.length > 0) {
+          setSelectedProject(nextProjects[0]);
+        }
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setProjects([]);
+        setProjectsError("Unable to load pinned GitHub projects.");
+      })
+      .finally(() => {
+        if (!cancelled) setProjectsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!projectArchiveOpen || !activeProjectHeadingSlug) return;
+    window.setTimeout(() => {
+      projectArchiveBodyRef.current
+        ?.querySelector(`#project-archive-${activeProjectHeadingSlug}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  }, [projectArchiveOpen, activeProjectHeadingSlug, selectedProject]);
+
+  const openProjectArchive = (project, headingSlug = null) => {
+    setSelectedProject(project);
+    setActiveProjectHeadingSlug(headingSlug);
+    setProjectArchiveOpen(true);
+  };
+
+  const openProjectFromLink = ({ repoUrl, headingSlug } = {}) => {
+    const linkedProject = projects.find((project) => project.url === repoUrl) || projects[0];
+    if (linkedProject) {
+      openProjectArchive(linkedProject, headingSlug);
+      return;
+    }
+    scrollTo("projects");
+  };
 
   const downloadResume = () => {
     fetch("/resume_Jacques.pdf").then((response) => {
@@ -402,42 +481,57 @@ const PortfolioShell = () => {
             <SectionHeader
               eyebrow="Projects"
               title="Proof of delivery"
-              description="Selected examples that show product, backend, retrieval, and AI delivery."
+              description="Pinned GitHub projects, refreshed from Jacques' profile and enriched for quick scanning."
               icon={IconCode}
             />
-            <div className="mt-4 grid gap-3 sm:gap-4 md:grid-cols-3">
-              {projects.map((project) => (
-                <Card key={project.title} className="border-slate-200 bg-white shadow-sm">
-                  <CardHeader>
-                    <CardTitle>{project.title}</CardTitle>
-                    <CardDescription>{project.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <Badge key={tag} variant="outline">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-            <Card className="mt-3 border-slate-200 bg-white shadow-sm sm:mt-4">
-              <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <div className="font-medium">Project archive</div>
-                  <p className="text-sm text-slate-500">Open the existing project modal for more notes.</p>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="text-slate-700"
-                  onClick={() => dispatch(setShowModal(true))}
-                >
-                  Constructing
-                </Button>
-              </CardContent>
-            </Card>
+            {projectsLoading ? (
+              <Card className="mt-4 border-slate-200 bg-white shadow-sm">
+                <CardContent className="p-4 text-sm text-slate-500">Loading pinned GitHub projects...</CardContent>
+              </Card>
+            ) : projectsError ? (
+              <Card className="mt-4 border-amber-200 bg-amber-50 shadow-sm">
+                <CardContent className="p-4 text-sm text-amber-800">{projectsError}</CardContent>
+              </Card>
+            ) : (
+              <div className="mt-4 grid gap-3 sm:gap-4 md:grid-cols-3">
+                {projects.map((project) => (
+                  <Card key={project.url} className="border-slate-200 bg-white shadow-sm">
+                    <CardHeader>
+                      <CardTitle>{project.title}</CardTitle>
+                      <CardDescription>{project.description || "Pinned GitHub repository."}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-3">
+                      <div className="flex flex-wrap gap-2">
+                        {project.tags.map((tag) => (
+                          <Badge key={tag} variant="outline">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-slate-700"
+                          onClick={() => openProjectArchive(project)}
+                        >
+                          Open README
+                        </Button>
+                        <a
+                          href={project.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-slate-600")}
+                        >
+                          GitHub
+                        </a>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </section>
 
           <section ref={contactRef} className={getSectionClassName("contact")}>
@@ -498,10 +592,36 @@ const PortfolioShell = () => {
           </section>
         </main>
 
-        <AssistantDock onNavigate={scrollTo} />
+        <AssistantDock onNavigate={scrollTo} onOpenProject={openProjectFromLink} />
       </div>
 
-      <Modal />
+      <Dialog open={projectArchiveOpen} onOpenChange={setProjectArchiveOpen}>
+        <DialogContent className="grid max-h-[min(44rem,calc(100vh-2rem))] grid-rows-[auto_minmax(0,1fr)] overflow-hidden p-0 sm:max-w-2xl">
+          <DialogHeader className="shrink-0 border-b px-4 py-4 sm:px-5">
+            <DialogTitle>{selectedProject?.title || "Project archive"}</DialogTitle>
+            <DialogDescription>
+              {selectedProject?.description || "Pinned GitHub README rendered as markdown."}
+            </DialogDescription>
+          </DialogHeader>
+          <div ref={projectArchiveBodyRef} className="min-h-0 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5">
+            <div className="rounded-xl border border-slate-200 bg-white p-4">
+              {selectedProject?.readmeContent ? (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  skipHtml
+                  components={createArchiveMarkdownComponents(activeProjectHeadingSlug)}
+                >
+                  {selectedProject.readmeContent}
+                </ReactMarkdown>
+              ) : (
+                <p className="text-sm leading-6 text-slate-600">
+                  This pinned repository does not have a README.md available yet.
+                </p>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
