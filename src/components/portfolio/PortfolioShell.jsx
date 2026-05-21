@@ -143,6 +143,7 @@ const PortfolioShell = () => {
   const contactRef = useRef(null);
   const highlightTimeoutRef = useRef(null);
   const [highlightedSection, setHighlightedSection] = useState(null);
+  const [experienceTab, setExperienceTab] = useState("work");
   const [contactForm, setContactForm] = useState({
     name: "",
     subject: "",
@@ -341,29 +342,47 @@ const PortfolioShell = () => {
               title="Recent work, education, and wins"
               description="A compact view of roles and achievements most relevant to software engineering teams."
             />
-            <Tabs defaultValue="work" className="mt-4 flex-col gap-0">
-              <div className="mb-4 flex justify-start overflow-x-auto border-b border-slate-200">
+            <Tabs value={experienceTab} onValueChange={setExperienceTab} className="mt-4 flex-col gap-0">
+              <div className="mb-4 flex justify-start overflow-x-auto overflow-y-hidden border-b border-slate-200">
                 <TabsList
                   variant="line"
                   className="h-9 min-w-max justify-start rounded-none p-0"
                 >
                   <TabsTrigger
-                    className="h-9 flex-none px-3 data-[state=active]:text-emerald-700 data-[state=active]:after:bg-emerald-600"
+                    className={cn(
+                      "relative h-9 flex-none rounded-none px-3 after:hidden",
+                      experienceTab === "work" && "text-emerald-700"
+                    )}
                     value="work"
                   >
                     Work
+                    {experienceTab === "work" && (
+                      <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-emerald-600" />
+                    )}
                   </TabsTrigger>
                   <TabsTrigger
-                    className="h-9 flex-none px-3 data-[state=active]:text-emerald-700 data-[state=active]:after:bg-emerald-600"
+                    className={cn(
+                      "relative h-9 flex-none rounded-none px-3 after:hidden",
+                      experienceTab === "education" && "text-emerald-700"
+                    )}
                     value="education"
                   >
                     Education
+                    {experienceTab === "education" && (
+                      <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-emerald-600" />
+                    )}
                   </TabsTrigger>
                   <TabsTrigger
-                    className="h-9 flex-none px-3 data-[state=active]:text-emerald-700 data-[state=active]:after:bg-emerald-600"
+                    className={cn(
+                      "relative h-9 flex-none rounded-none px-3 after:hidden",
+                      experienceTab === "achievements" && "text-emerald-700"
+                    )}
                     value="achievements"
                   >
                     Hackathons
+                    {experienceTab === "achievements" && (
+                      <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-emerald-600" />
+                    )}
                   </TabsTrigger>
                 </TabsList>
               </div>
