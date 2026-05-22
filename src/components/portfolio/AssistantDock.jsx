@@ -36,6 +36,7 @@ const STREAM_STAGES = [
   { key: "crafting_response", label: "Crafting response" },
 ];
 const STREAM_STAGE_COLLAPSE_DELAY_MS = 900;
+const MAX_CHAT_MESSAGE_LENGTH = 500;
 
 const INITIAL_STREAM_STATE = {
   activeStage: null,
@@ -43,6 +44,8 @@ const INITIAL_STREAM_STATE = {
   started: false,
   collapsed: false,
 };
+
+const clampChatMessage = (value) => String(value || "").slice(0, MAX_CHAT_MESSAGE_LENGTH);
 
 const markdownComponents = {
   p: ({ ...props }) => (
@@ -213,7 +216,7 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
 
   useEffect(() => {
     if (assistantPrompt) {
-      setMessage(assistantPrompt);
+      setMessage(clampChatMessage(assistantPrompt));
       dispatch(setAssistantPrompt(""));
     }
   }, [assistantPrompt, dispatch]);
@@ -229,7 +232,7 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
   }, [chatHistory, isThinking, streamState]);
 
   const deliverMessage = async (nextMessage = message) => {
-    const trimmed = nextMessage.trim();
+    const trimmed = clampChatMessage(nextMessage).trim();
     if (!trimmed || isThinking || isDeliveringRef.current) return;
 
     isDeliveringRef.current = true;
@@ -389,6 +392,9 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
               <IconBulb className="size-4" />
               Suggestions
             </Button>
+            <span className="text-xs tabular-nums text-slate-400">
+              {message.length}/{MAX_CHAT_MESSAGE_LENGTH}
+            </span>
             {suggestionsMenuOpen && (
               <div
                 role="menu"
@@ -434,8 +440,9 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
               aria-label="Message Jacques AI"
               className="h-14 min-h-14 min-w-0 flex-1 resize-none bg-white py-3"
               placeholder="Ask about experience, projects, or fit..."
+              maxLength={MAX_CHAT_MESSAGE_LENGTH}
               value={message}
-              onChange={(event) => setMessage(event.target.value)}
+              onChange={(event) => setMessage(clampChatMessage(event.target.value))}
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey) {
                   event.preventDefault();

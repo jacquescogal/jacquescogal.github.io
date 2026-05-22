@@ -50,6 +50,17 @@ test("renders assistant prompts and chat for desktop visitors", () => {
   expect(container.querySelector("[data-assistant-header-icon]")).not.toBeInTheDocument();
 });
 
+test("limits typed chat messages to 500 characters and shows the count", async () => {
+  renderWithStore(<AssistantDock onNavigate={() => {}} />);
+
+  const textbox = screen.getByRole("textbox", { name: /Message Jacques AI/i });
+  await userEvent.type(textbox, "a".repeat(501));
+
+  expect(textbox).toHaveAttribute("maxLength", "500");
+  expect(textbox).toHaveValue("a".repeat(500));
+  expect(screen.getByText("500/500")).toBeInTheDocument();
+});
+
 test("offers a mobile assistant entry point", () => {
   renderWithStore(<AssistantDock onNavigate={() => {}} />);
 
@@ -259,6 +270,31 @@ test("clicking a suggestion unlocks prompted-path and sends the suggestion", asy
     "prompted-path",
     "first-contact",
   ]);
+});
+
+test("clamps long suggestion messages before sending", async () => {
+  const longSuggestion = "a".repeat(520);
+  getChatSuggestions.mockResolvedValue([longSuggestion]);
+  streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
+    handlers.onStage({ id: "crafting_response", label: "Crafting response" });
+    handlers.onDelta("Short response.");
+    handlers.onComplete({ done: true });
+  });
+
+  renderWithStore(<AssistantDock onNavigate={() => {}} />);
+
+  await act(async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
+  });
+  await act(async () => {
+    await userEvent.click(await screen.findByRole("menuitem", { name: longSuggestion }));
+  });
+
+  expect(streamChatMessage).toHaveBeenCalledWith(
+    expect.any(Array),
+    "a".repeat(500),
+    expect.any(Object)
+  );
 });
 
 test("clicking project section link unlocks follow-thread and deep-link and opens project link", async () => {
