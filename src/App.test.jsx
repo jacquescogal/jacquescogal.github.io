@@ -320,6 +320,10 @@ test("clicking a credential URL unlocks Credential Check", async () => {
 test("send email unlocks Direct Line", async () => {
   await renderApp();
 
+  const toField = screen.getByLabelText("To");
+  expect(toField).toHaveValue("Jacques");
+  expect(toField).toHaveAttribute("readOnly");
+
   await userEvent.click(await screen.findByRole("button", { name: /Send E-mail/i }));
 
   expect(window.open).toHaveBeenCalledWith(expect.stringMatching(/^mailto:jacques\.tracy@gmail\.com/));

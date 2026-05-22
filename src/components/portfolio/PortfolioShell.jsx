@@ -873,6 +873,15 @@ const PortfolioShell = () => {
             />
             <Card className="mt-4 border-slate-200 bg-white shadow-sm">
               <CardContent className="grid gap-4 p-4 sm:grid-cols-2">
+                <div className="space-y-2 sm:col-span-2">
+                  <label className="text-sm font-medium" htmlFor="contact-to">To</label>
+                  <Input
+                    id="contact-to"
+                    value="Jacques"
+                    readOnly
+                    className="bg-slate-50 text-slate-600"
+                  />
+                </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium" htmlFor="name">Name</label>
                   <Input
