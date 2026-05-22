@@ -56,9 +56,46 @@ const certificationPayload = [
   },
 ];
 
+const experiencePayload = {
+  work: [
+    {
+      type: "work",
+      slug: "backend-work-co",
+      company: "Backend Work Co",
+      role: "Platform Engineer",
+      date: "Jan 2026 - Present",
+      summary: "Built backend-fed portfolio work cards.",
+      skills: ["CSV", "React"],
+    },
+  ],
+  education: [
+    {
+      type: "education",
+      slug: "backend-university",
+      company: "Backend University",
+      role: "Computer Science",
+      date: "Aug 2020 - May 2024",
+      summary: "Education loaded from the experience endpoint.",
+      skills: ["Systems", "Data"],
+    },
+  ],
+  hackathons: [
+    {
+      type: "hackathon",
+      slug: "backend-hackathon",
+      company: "Backend Hackathon",
+      role: "Winner",
+      date: "Sep 2025",
+      summary: "Hackathon loaded into the existing achievements tab.",
+      skills: ["AI", "Delivery"],
+    },
+  ],
+};
+
 const mockPortfolioData = ({
   projectHandler = () => Promise.resolve({ data: projectPayload }),
   certificationHandler = () => Promise.resolve({ data: certificationPayload }),
+  experienceHandler = () => Promise.resolve({ data: experiencePayload }),
 } = {}) => {
   axios.get.mockImplementation((url = "") => {
     const requestUrl = String(url);
@@ -67,6 +104,9 @@ const mockPortfolioData = ({
     }
     if (requestUrl.includes("certifications")) {
       return certificationHandler(url);
+    }
+    if (requestUrl.includes("experiences")) {
+      return experienceHandler(url);
     }
     return projectHandler(url);
   });
@@ -177,6 +217,21 @@ test("renders certifications and promotes a supporting certification", async () 
   expect(within(certificationsSection).getByText(/Credential ID: 4609/i)).toBeInTheDocument();
 });
 
+test("renders work, education, and hackathon cards from the experience endpoint", async () => {
+  await renderApp();
+
+  expect(await screen.findByText("Backend Work Co")).toBeInTheDocument();
+  expect(screen.getByText("Built backend-fed portfolio work cards.")).toBeInTheDocument();
+
+  await userEvent.click(screen.getByRole("tab", { name: /Education/i }));
+  expect(await screen.findByText("Backend University")).toBeInTheDocument();
+  expect(screen.getByText("Education loaded from the experience endpoint.")).toBeInTheDocument();
+
+  await userEvent.click(screen.getByRole("tab", { name: /Hackathons/i }));
+  expect(await screen.findByText("Backend Hackathon")).toBeInTheDocument();
+  expect(screen.getByText("Hackathon loaded into the existing achievements tab.")).toBeInTheDocument();
+});
+
 test("retries pinned project loading up to three attempts before rendering", async () => {
   let projectAttempts = 0;
   mockPortfolioData({
@@ -235,6 +290,22 @@ test("shows a certification retry button after automatic attempts are exhausted"
   const retryButton = await screen.findByRole("button", { name: /Retry certifications/i });
   expect(retryButton).toBeInTheDocument();
   expect(certificationAttempts).toBe(3);
+});
+
+test("shows an experience retry button after automatic attempts are exhausted", async () => {
+  let experienceAttempts = 0;
+  mockPortfolioData({
+    experienceHandler: () => {
+      experienceAttempts += 1;
+      return Promise.reject(new Error("experience service unavailable"));
+    },
+  });
+
+  await renderApp();
+
+  const retryButton = await screen.findByRole("button", { name: /Retry experience/i });
+  expect(retryButton).toBeInTheDocument();
+  expect(experienceAttempts).toBe(3);
 });
 
 test("clicking a credential URL unlocks Credential Check", async () => {

@@ -36,89 +36,15 @@ import AssistantDock from "./AssistantDock";
 import { cn } from "@/lib/utils";
 import remarkGfm from "remark-gfm";
 import { getCertifications } from "../../api/certificationApi";
+import { getExperiences } from "../../api/experienceApi";
 import { getProjects } from "../../api/projectApi";
 import { useRetryableRequest } from "../../hooks/useRetryableRequest";
 
-const workExperience = [
-  {
-    company: "UBS",
-    role: "Software Engineer / AI Engineer",
-    date: "Feb 2025 - Present",
-    summary:
-      "Group Operations and Technology Office Graduate Talent Program, rotating into the Agentic Products Crew.",
-    skills: ["Software engineering", "AI engineering", "Agentic products"],
-  },
-  {
-    company: "Shopee",
-    role: "Software Engineer",
-    date: "Jun 2024 - Feb 2025",
-    summary: "Marketplace core team with production backend ownership.",
-    skills: ["Golang", "Marketplace", "Backend"],
-  },
-  {
-    company: "CPF Board",
-    role: "Software Engineer Intern",
-    date: "Dec 2023 - May 2024",
-    summary:
-      "Built LLM and data engineering workflows, improving internal search relevance by up to 10%.",
-    skills: ["LLM", "Retrieval", "Azure Functions"],
-  },
-  {
-    company: "J.P. Morgan",
-    role: "Software Engineer Intern",
-    date: "Jun 2023 - Aug 2023",
-    summary: "Financial Crimes engineering team.",
-    skills: ["Engineering", "Financial systems"],
-  },
-];
-
-const education = [
-  {
-    company: "Nanyang Technological University",
-    role: "Business and Computing Double Degree",
-    date: "Aug 2020 - May 2024",
-    summary: "Graduated with Honours (Distinction). Dean's List (BUS) AY2022/2023.",
-    skills: ["React", "Python", "Java", "MySQL"],
-  },
-  {
-    company: "Temasek Polytechnic",
-    role: "Accounting and Finance Diploma",
-    date: "Apr 2015 - Apr 2018",
-    summary: "Diploma plus with merit and a CGPA of 3.92/4.00.",
-    skills: ["Finance", "Accounting"],
-  },
-];
-
-const achievements = [
-  {
-    company: "UBS Global Hackathon",
-    role: "Champion",
-    date: "Jul 2025",
-    summary: "Led team to victory implementing an AI workflow for a regulatory oversight case challenge.",
-    skills: ["AI workflow", "Regulatory oversight", "Team leadership"],
-  },
-  {
-    company: "GIC Code To Impact",
-    role: "Champion",
-    date: "Sep 2023",
-    summary: "Led full-stack, DevOps, and GenAI delivery for an analytics application.",
-    skills: ["AWS", "RAG", "GenAI"],
-  },
-  {
-    company: "J.P. Morgan Global Hackathon",
-    role: "Singapore Champion",
-    date: "Jun 2023",
-    summary: "Led delivery of an internal proof of concept.",
-    skills: ["Leadership", "Prototype", "API"],
-  },
-  {
-    company: "J.P. Morgan Code For Good",
-    role: "Champion",
-    date: "Oct 2022",
-    summary: "Built and demonstrated a system to address client query-processing bottlenecks.",
-    skills: ["React", "Node.js", "Team delivery"],
-  },
-];
+const emptyExperiences = {
+  work: [],
+  education: [],
+  hackathons: [],
+};
 
 const slugifyHeading = (value) =>
   String(value)
@@ -434,6 +360,16 @@ const PortfolioShell = () => {
     load: getCertifications,
     initialData: [],
   });
+  const {
+    data: experiences,
+    loading: experiencesLoading,
+    error: experiencesError,
+    attempt: experiencesAttempt,
+    retry: retryExperiences,
+  } = useRetryableRequest({
+    load: getExperiences,
+    initialData: emptyExperiences,
+  });
 
   const refs = useMemo(
     () => ({
@@ -626,6 +562,29 @@ const PortfolioShell = () => {
         "bg-emerald-50/60 shadow-[0_0_0_3px_rgba(16,185,129,0.28)]"
     );
 
+  const renderExperienceContent = (items) => {
+    if (experiencesLoading) {
+      return (
+        <LoadingStateCard
+          label="Loading experience"
+          message={experiencesAttempt > 1 ? "Retrying experience..." : "Loading experience..."}
+        />
+      );
+    }
+
+    if (experiencesError) {
+      return (
+        <ErrorStateCard
+          message="Experience is unavailable right now."
+          retryLabel="Retry experience"
+          onRetry={retryExperiences}
+        />
+      );
+    }
+
+    return <ExperienceList items={items} />;
+  };
+
   const sendEmail = () => {
     unlockAchievement("direct-line");
     const subject = encodeURIComponent(contactForm.subject || "Work Opportunity");
@@ -808,13 +767,13 @@ const PortfolioShell = () => {
                 </TabsList>
               </div>
               <TabsContent value="work" className="mt-3 sm:mt-4">
-                <ExperienceList items={workExperience} />
+                {renderExperienceContent(experiences.work)}
               </TabsContent>
               <TabsContent value="education" className="mt-3 sm:mt-4">
-                <ExperienceList items={education} />
+                {renderExperienceContent(experiences.education)}
               </TabsContent>
               <TabsContent value="achievements" className="mt-3 sm:mt-4">
-                <ExperienceList items={achievements} />
+                {renderExperienceContent(experiences.hackathons)}
               </TabsContent>
             </Tabs>
           </section>
