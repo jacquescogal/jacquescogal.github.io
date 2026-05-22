@@ -11,7 +11,9 @@ import {
   IconCode,
   IconDownload,
   IconExternalLink,
+  IconLoader2,
   IconMail,
+  IconRefresh,
   IconSparkles,
 } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +37,7 @@ import { cn } from "@/lib/utils";
 import remarkGfm from "remark-gfm";
 import { getCertifications } from "../../api/certificationApi";
 import { getProjects } from "../../api/projectApi";
+import { useRetryableRequest } from "../../hooks/useRetryableRequest";
 
 const workExperience = [
   {
@@ -403,19 +406,33 @@ const PortfolioShell = () => {
   const [highlightedSection, setHighlightedSection] = useState(null);
   const [experienceTab, setExperienceTab] = useState("work");
   const [projectArchiveOpen, setProjectArchiveOpen] = useState(false);
-  const [projects, setProjects] = useState([]);
-  const [projectsLoading, setProjectsLoading] = useState(true);
-  const [projectsError, setProjectsError] = useState("");
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeProjectHeadingSlug, setActiveProjectHeadingSlug] = useState(null);
-  const [certifications, setCertifications] = useState([]);
-  const [certificationsLoading, setCertificationsLoading] = useState(true);
-  const [certificationsError, setCertificationsError] = useState("");
   const [selectedCertificationTitle, setSelectedCertificationTitle] = useState(null);
   const [contactForm, setContactForm] = useState({
     name: "",
     subject: "",
     message: "",
+  });
+  const {
+    data: projects,
+    loading: projectsLoading,
+    error: projectsError,
+    attempt: projectsAttempt,
+    retry: retryProjects,
+  } = useRetryableRequest({
+    load: getProjects,
+    initialData: [],
+  });
+  const {
+    data: certifications,
+    loading: certificationsLoading,
+    error: certificationsError,
+    attempt: certificationsAttempt,
+    retry: retryCertifications,
+  } = useRetryableRequest({
+    load: getCertifications,
+    initialData: [],
   });
 
   const refs = useMemo(
@@ -501,55 +518,27 @@ const PortfolioShell = () => {
   );
 
   useEffect(() => {
-    let cancelled = false;
-    setProjectsLoading(true);
-    getProjects()
-      .then((nextProjects) => {
-        if (cancelled) return;
-        setProjects(nextProjects);
-        setProjectsError("");
-        if (!selectedProject && nextProjects.length > 0) {
-          setSelectedProject(nextProjects[0]);
-        }
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setProjects([]);
-        setProjectsError("Unable to load pinned GitHub projects.");
-      })
-      .finally(() => {
-        if (!cancelled) setProjectsLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    if (!projects.length) return;
+    const selectedProjectStillExists = projects.some(
+      (project) => normalizeRepoUrl(project.url) === normalizeRepoUrl(selectedProject?.url)
+    );
+    if (!selectedProjectStillExists) {
+      setSelectedProject(projects[0]);
+    }
+  }, [projects, selectedProject]);
 
   useEffect(() => {
-    let cancelled = false;
-    setCertificationsLoading(true);
-    getCertifications()
-      .then((nextCertifications) => {
-        if (cancelled) return;
-        setCertifications(nextCertifications);
-        setCertificationsError("");
-        const firstActive =
-          nextCertifications.find((certification) => certification.status !== "expired") ||
-          nextCertifications[0];
-        setSelectedCertificationTitle(firstActive?.title || null);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setCertifications([]);
-        setCertificationsError("Certifications are unavailable right now.");
-      })
-      .finally(() => {
-        if (!cancelled) setCertificationsLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    if (!certifications.length) return;
+    const selectedCertificationStillExists = certifications.some(
+      (certification) => certification.title === selectedCertificationTitle
+    );
+    if (!selectedCertificationStillExists) {
+      const firstActive =
+        certifications.find((certification) => certification.status !== "expired") ||
+        certifications[0];
+      setSelectedCertificationTitle(firstActive?.title || null);
+    }
+  }, [certifications, selectedCertificationTitle]);
 
   useEffect(() => {
     if (!projectArchiveOpen || !activeProjectHeadingSlug) return;
@@ -845,6 +834,8 @@ const PortfolioShell = () => {
               certifications={certifications}
               loading={certificationsLoading}
               error={certificationsError}
+              attempt={certificationsAttempt}
+              onRetry={retryCertifications}
               selectedTitle={selectedCertificationTitle}
               onSelect={setSelectedCertificationTitle}
               onCredentialOpen={() => unlockAchievement("credential-check")}
@@ -859,13 +850,16 @@ const PortfolioShell = () => {
               icon={IconCode}
             />
             {projectsLoading ? (
-              <Card className="mt-4 border-slate-200 bg-white shadow-sm">
-                <CardContent className="p-4 text-sm text-slate-500">Loading pinned GitHub projects...</CardContent>
-              </Card>
+              <LoadingStateCard
+                label="Loading pinned GitHub projects"
+                message={projectsAttempt > 1 ? "Retrying pinned GitHub projects..." : "Loading pinned GitHub projects..."}
+              />
             ) : projectsError ? (
-              <Card className="mt-4 border-amber-200 bg-amber-50 shadow-sm">
-                <CardContent className="p-4 text-sm text-amber-800">{projectsError}</CardContent>
-              </Card>
+              <ErrorStateCard
+                message="Unable to load pinned GitHub projects."
+                retryLabel="Retry projects"
+                onRetry={retryProjects}
+              />
             ) : (
               <div className="mt-4 grid gap-3 sm:gap-4 md:grid-cols-3">
                 {projects.map((project) => (
@@ -1085,6 +1079,37 @@ const ExperienceList = ({ items, className }) => (
   </div>
 );
 
+const LoadingStateCard = ({ label, message }) => (
+  <Card className="mt-4 border-slate-200 bg-white shadow-sm">
+    <CardContent
+      role="status"
+      aria-label={label}
+      className="flex items-center gap-2 p-4 text-sm text-slate-500"
+    >
+      <IconLoader2 className="size-4 animate-spin text-emerald-600" aria-hidden="true" />
+      {message}
+    </CardContent>
+  </Card>
+);
+
+const ErrorStateCard = ({ message, retryLabel, onRetry }) => (
+  <Card className="mt-4 border-amber-200 bg-amber-50 shadow-sm">
+    <CardContent className="flex flex-col gap-3 p-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+      <span>{message}</span>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="w-full gap-1.5 border-amber-300 bg-white text-amber-900 hover:bg-amber-100 sm:w-auto"
+        onClick={onRetry}
+      >
+        <IconRefresh className="size-3.5" aria-hidden="true" />
+        {retryLabel}
+      </Button>
+    </CardContent>
+  </Card>
+);
+
 const CertificationStatusBadge = ({ status }) => (
   <Badge
     variant="outline"
@@ -1129,6 +1154,8 @@ const CertificationSection = ({
   certifications,
   loading,
   error,
+  attempt,
+  onRetry,
   selectedTitle,
   onSelect,
   onCredentialOpen,
@@ -1141,17 +1168,20 @@ const CertificationSection = ({
 
   if (loading) {
     return (
-      <Card className="mt-4 border-slate-200 bg-white shadow-sm">
-        <CardContent className="p-4 text-sm text-slate-500">Loading certifications...</CardContent>
-      </Card>
+      <LoadingStateCard
+        label="Loading certifications"
+        message={attempt > 1 ? "Retrying certifications..." : "Loading certifications..."}
+      />
     );
   }
 
   if (error) {
     return (
-      <Card className="mt-4 border-amber-200 bg-amber-50 shadow-sm">
-        <CardContent className="p-4 text-sm text-amber-800">{error}</CardContent>
-      </Card>
+      <ErrorStateCard
+        message="Certifications are unavailable right now."
+        retryLabel="Retry certifications"
+        onRetry={onRetry}
+      />
     );
   }
 

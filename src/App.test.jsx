@@ -1,6 +1,7 @@
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { configureStore } from "@reduxjs/toolkit";
+import axios from "axios";
 import React from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -14,7 +15,66 @@ const createTestStore = () =>
     },
   });
 
+const projectPayload = [
+  {
+    title: "AI Portfolio Assistant",
+    url_link: "https://github.com/jacquescogal/portfolio",
+    description: "Streaming portfolio assistant.",
+    tags: ["React", "SSE"],
+    readme_content: "## AI Portfolio Assistant\n\nUses streaming responses from pinned README content.",
+    readme_sha: "abc123",
+    readme_updated_at: "2026-05-21T00:00:00Z",
+  },
+];
+
+const certificationPayload = [
+  {
+    slug: "azure-ai-engineer",
+    title: "Azure AI Engineer Associate",
+    issuer: "Microsoft",
+    description: "Azure AI engineering.",
+    issued_on: "Feb 2026",
+    expires_on: "Feb 2027",
+    credential_id: "364C",
+    credential_url: "https://example.com/ai",
+    icon_name: "FaMicrosoft",
+    display_order: 1,
+    status: "active",
+  },
+  {
+    slug: "azure-fundamentals",
+    title: "Azure Fundamentals",
+    issuer: "Microsoft",
+    description: "Azure fundamentals.",
+    issued_on: "Jan 2025",
+    expires_on: "",
+    credential_id: "4609",
+    credential_url: "https://example.com/fundamentals",
+    icon_name: "FaMicrosoft",
+    display_order: 2,
+    status: "active",
+  },
+];
+
+const mockPortfolioData = ({
+  projectHandler = () => Promise.resolve({ data: projectPayload }),
+  certificationHandler = () => Promise.resolve({ data: certificationPayload }),
+} = {}) => {
+  axios.get.mockImplementation((url = "") => {
+    const requestUrl = String(url);
+    if (requestUrl.includes("/id")) {
+      return Promise.resolve({ data: { conversation_id: "test-conversation" } });
+    }
+    if (requestUrl.includes("certifications")) {
+      return certificationHandler(url);
+    }
+    return projectHandler(url);
+  });
+};
+
 beforeEach(() => {
+  axios.get.mockClear();
+  mockPortfolioData();
   window.localStorage.clear();
   window.open = vi.fn();
   window.URL.createObjectURL = vi.fn(() => "blob:resume");
@@ -115,6 +175,66 @@ test("renders certifications and promotes a supporting certification", async () 
 
   const certificationsSection = screen.getByRole("region", { name: /Certifications/i });
   expect(within(certificationsSection).getByText(/Credential ID: 4609/i)).toBeInTheDocument();
+});
+
+test("retries pinned project loading up to three attempts before rendering", async () => {
+  let projectAttempts = 0;
+  mockPortfolioData({
+    projectHandler: () => {
+      projectAttempts += 1;
+      if (projectAttempts < 3) {
+        return Promise.reject(new Error("temporary project failure"));
+      }
+      return Promise.resolve({ data: projectPayload });
+    },
+  });
+
+  await renderApp();
+
+  expect(await screen.findByRole("status", { name: /Loading pinned GitHub projects/i })).toBeInTheDocument();
+  expect(await screen.findByRole("button", { name: /Open README/i })).toBeInTheDocument();
+  expect(projectAttempts).toBe(3);
+  expect(screen.queryByRole("button", { name: /Retry projects/i })).not.toBeInTheDocument();
+});
+
+test("shows a project retry button after automatic attempts are exhausted", async () => {
+  let projectAttempts = 0;
+  mockPortfolioData({
+    projectHandler: () => {
+      projectAttempts += 1;
+      if (projectAttempts <= 3) {
+        return Promise.reject(new Error("project service unavailable"));
+      }
+      return Promise.resolve({ data: projectPayload });
+    },
+  });
+
+  await renderApp();
+
+  const retryButton = await screen.findByRole("button", { name: /Retry projects/i });
+  expect(retryButton).toBeInTheDocument();
+  expect(projectAttempts).toBe(3);
+
+  await userEvent.click(retryButton);
+
+  expect(await screen.findByRole("button", { name: /Open README/i })).toBeInTheDocument();
+  expect(projectAttempts).toBe(4);
+});
+
+test("shows a certification retry button after automatic attempts are exhausted", async () => {
+  let certificationAttempts = 0;
+  mockPortfolioData({
+    certificationHandler: () => {
+      certificationAttempts += 1;
+      return Promise.reject(new Error("certification service unavailable"));
+    },
+  });
+
+  await renderApp();
+
+  const retryButton = await screen.findByRole("button", { name: /Retry certifications/i });
+  expect(retryButton).toBeInTheDocument();
+  expect(certificationAttempts).toBe(3);
 });
 
 test("clicking a credential URL unlocks Credential Check", async () => {
