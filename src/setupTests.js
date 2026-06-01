@@ -6,6 +6,19 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { vi } from 'vitest';
 
+if (!window.localStorage) {
+  const storage = new Map();
+  const storagePrototype = globalThis.Storage?.prototype ?? {};
+  storagePrototype.clear = () => storage.clear();
+  storagePrototype.getItem = (key) => storage.get(String(key)) ?? null;
+  storagePrototype.removeItem = (key) => storage.delete(String(key));
+  storagePrototype.setItem = (key, value) => storage.set(String(key), String(value));
+  Object.defineProperty(window, "localStorage", {
+    configurable: true,
+    value: Object.create(storagePrototype),
+  });
+}
+
 const mockAxios = {
   get: vi.fn((url = "") => {
     if (String(url).includes("/id")) {

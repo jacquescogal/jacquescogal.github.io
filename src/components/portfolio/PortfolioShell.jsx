@@ -856,6 +856,18 @@ const PortfolioShell = () => {
                           <GithubButtonMark />
                           GitHub
                         </a>
+                        {project.websiteUrl && (
+                          <a
+                            href={project.websiteUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-2 text-slate-700")}
+                            onClick={() => unlockAchievement("source-curious")}
+                          >
+                            <IconExternalLink className="size-3.5" />
+                            Website
+                          </a>
+                        )}
                       </div>
                     </CardContent>
                   </Card>

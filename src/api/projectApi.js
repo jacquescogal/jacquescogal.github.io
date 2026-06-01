@@ -19,6 +19,7 @@ export const getProjects = async () => {
   return normalizeProjectPayload(response.data).map((project) => ({
     title: project.title,
     url: project.url_link || project.url,
+    websiteUrl: project.homepage_url || project.homepageUrl || "",
     description: project.description || "",
     tags: Array.isArray(project.tags) ? project.tags : [],
     readmeContent: project.readme_content || "",

@@ -19,6 +19,7 @@ const projectPayload = [
   {
     title: "AI Portfolio Assistant",
     url_link: "https://github.com/jacquescogal/portfolio",
+    homepage_url: "https://jacquescogal.github.io/portfolio",
     description: "Streaming portfolio assistant.",
     tags: ["React", "SSE"],
     readme_content: "## AI Portfolio Assistant\n\nUses streaming responses from pinned README content.",
@@ -194,6 +195,14 @@ test("opens the shadcn markdown project archive", async () => {
   expect(archiveDialog).toBeInTheDocument();
   expect(within(archiveDialog).getByRole("heading", { name: /AI Portfolio Assistant/i })).toBeInTheDocument();
   expect(within(archiveDialog).getByText(/streaming responses/i)).toBeInTheDocument();
+});
+
+test("shows a website link for pinned projects with a homepage URL", async () => {
+  await renderApp();
+
+  const websiteLink = await screen.findByRole("link", { name: /Website/i });
+
+  expect(websiteLink).toHaveAttribute("href", "https://jacquescogal.github.io/portfolio");
 });
 
 test("opening a project README unlocks Proof Reader", async () => {
