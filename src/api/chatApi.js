@@ -152,8 +152,8 @@ export const getChatSuggestions = async (chat_history) => {
       return rest;
     }).filter((message) => message.entity !== "SYSTEM" && message.entity !== "THINK");
 
-    // Get last 3 pairs (6 messages max: USER, AI, USER, AI, USER, AI)
-    const chat_history_payload = filtered_history.slice(-6);
+    // Keep enough context for durable suggestion ranking without sending the full transcript.
+    const chat_history_payload = filtered_history.slice(-10);
 
     const payload = {
       chat_history: chat_history_payload,

@@ -1,9 +1,23 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { parseSseChunk, streamChatMessage } from "./chatApi";
+import axios from "axios";
+import { getChatSuggestions, parseSseChunk, streamChatMessage } from "./chatApi";
+
+vi.mock("axios", () => ({
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
+
+vi.mock("../utils/Links", () => ({
+  linkToText: vi.fn(() => ""),
+}));
 
 describe("chat streaming API", () => {
   afterEach(() => {
     vi.restoreAllMocks();
+    axios.get.mockReset();
+    axios.post.mockReset();
     sessionStorage.clear();
   });
 
@@ -207,5 +221,25 @@ describe("chat streaming API", () => {
     expect(handlers.onError).toHaveBeenCalledTimes(1);
     expect(handlers.onError.mock.calls[0][0]).toBeInstanceOf(Error);
     expect(handlers.onError.mock.calls[0][0].message).toBe("Chat stream ended before completion");
+  });
+
+  test("getChatSuggestions sends the last ten non-system messages", async () => {
+    axios.post.mockResolvedValueOnce({ data: { suggestions: ["What experience does Jacques have?"] } });
+    const chatHistory = Array.from({ length: 12 }, (_, index) => ({
+      entity: index % 2 === 0 ? "USER" : "AI",
+      message: `Message ${index}`,
+      links: [],
+    }));
+    chatHistory.splice(3, 0, { entity: "SYSTEM", message: "error", links: [] });
+    chatHistory.splice(4, 0, { entity: "THINK", message: "thinking", links: [] });
+
+    await getChatSuggestions(chatHistory);
+
+    const payload = axios.post.mock.calls[0][1];
+    expect(payload.chat_history).toHaveLength(10);
+    expect(payload.chat_history[0].message).toBe("Message 2");
+    expect(payload.chat_history[9].message).toBe("Message 11");
+    expect(payload.chat_history.some((message) => message.entity === "SYSTEM")).toBe(false);
+    expect(payload.chat_history.some((message) => message.entity === "THINK")).toBe(false);
   });
 });
