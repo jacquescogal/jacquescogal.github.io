@@ -39,7 +39,7 @@ function CardTitle({ className, ...props }) {
     <div
       data-slot="card-title"
       className={cn(
-        "font-console text-[0.82rem] font-bold uppercase leading-snug tracking-console text-bone",
+        "font-console text-body font-bold uppercase leading-snug tracking-console text-bone",
         className
       )}
       {...props} />

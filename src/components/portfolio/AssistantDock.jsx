@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import { useDispatch, useSelector } from "react-redux";
 import {
   IconArrowUp,
-  IconBulb,
+  IconEraser,
   IconExternalLink,
 } from "@tabler/icons-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -21,11 +21,18 @@ import { cn } from "@/lib/utils";
 import remarkGfm from "remark-gfm";
 import {
   addChatMessage,
+  resetChatHistory,
   setAssistantPrompt,
   setThinking,
 } from "../../store/chatbotStateSlice";
-import { getChatSuggestions, streamChatMessage } from "../../api/chatApi";
+import { streamChatMessage } from "../../api/chatApi";
 import { linkTextParser } from "../../utils/Links";
+
+/* The opening question the console arrives with. It is loaded into the field
+   as real text, not as a hint: a placeholder cannot be sent, so a visitor who
+   liked the question still had to type it out. Typed in, Send works on the
+   first press and the question is theirs to edit or delete. */
+const FIRST_CONTACT_QUESTION = "Who are you? And how was this built?";
 
 const STREAM_STAGES = [
   { key: "message_received", label: "Message received" },
@@ -72,7 +79,7 @@ const markdownComponents = {
   ),
   pre: ({ ...props }) => (
     <pre
-      className="my-2 overflow-x-auto rounded-unit border border-amber/20 bg-void-deep p-2 font-console text-[0.68rem] text-bone/85 [&_code]:border-0 [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-inherit"
+      className="my-2 overflow-x-auto rounded-unit border border-amber/20 bg-void-deep p-2 font-console text-data text-bone/85 [&_code]:border-0 [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-inherit"
       {...props}
     />
   ),
@@ -179,17 +186,19 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement, onClose }) =
   const chatHistory = useSelector((state) => state.chatbotState.chatHistory);
   const isThinking = useSelector((state) => state.chatbotState.isThinking);
   const assistantPrompt = useSelector((state) => state.chatbotState.assistantPrompt);
-  const [message, setMessage] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
-  const [suggestionsMenuOpen, setSuggestionsMenuOpen] = useState(false);
+  /* Nothing to clear until the visitor has actually said something: the seed
+     greeting is the cleared state. */
+  const hasTranscript = chatHistory.length > 1;
+  // A visitor arriving mid-conversation (the mobile sheet mounts late) must
+  // not have the opening question dropped on top of what they were writing.
+  const [message, setMessage] = useState(() =>
+    chatHistory.length > 1 ? "" : FIRST_CONTACT_QUESTION
+  );
   const [streamState, setStreamState] = useState(INITIAL_STREAM_STATE);
   const chatHistoryRef = useRef(null);
   const isDeliveringRef = useRef(false);
-  const suggestionCacheRef = useRef({ aiMessageCount: null, suggestions: [] });
   const stageCollapseTimerRef = useRef(null);
   const streamedMessageRef = useRef("");
-  const aiMessageCount = chatHistory.filter((chatMessage) => chatMessage.entity === "AI").length;
 
   const clearStageCollapseTimer = () => {
     if (stageCollapseTimerRef.current) {
@@ -212,16 +221,6 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement, onClose }) =
   useEffect(() => () => {
     clearStageCollapseTimer();
   }, []);
-
-  useEffect(() => {
-    if (
-      suggestionCacheRef.current.aiMessageCount !== null &&
-      suggestionCacheRef.current.aiMessageCount !== aiMessageCount
-    ) {
-      suggestionCacheRef.current = { aiMessageCount: null, suggestions: [] };
-      setSuggestions([]);
-    }
-  }, [aiMessageCount]);
 
   useEffect(() => {
     if (assistantPrompt) {
@@ -248,7 +247,6 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement, onClose }) =
     onAchievement?.("first-contact");
     dispatch(addChatMessage({ message: trimmed, entity: "USER", links: [] }));
     setMessage("");
-    setSuggestionsMenuOpen(false);
     dispatch(setThinking(true));
     streamedMessageRef.current = "";
     clearStageCollapseTimer();
@@ -317,32 +315,14 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement, onClose }) =
     }
   };
 
-  const loadSuggestions = async () => {
-    if (suggestionsMenuOpen) {
-      setSuggestionsMenuOpen(false);
-      return;
-    }
-
-    setSuggestionsMenuOpen(true);
-    onAchievement?.("prompted-path");
-    if (suggestionCacheRef.current.aiMessageCount === aiMessageCount) {
-      setSuggestions(suggestionCacheRef.current.suggestions);
-      return;
-    }
-
-    setLoadingSuggestions(true);
-    try {
-      const nextSuggestions = await getChatSuggestions(chatHistory);
-      setSuggestions(nextSuggestions);
-      suggestionCacheRef.current = {
-        aiMessageCount,
-        suggestions: nextSuggestions,
-      };
-    } catch (error) {
-      setSuggestions([]);
-    } finally {
-      setLoadingSuggestions(false);
-    }
+  const clearTranscript = () => {
+    if (isThinking || isDeliveringRef.current) return;
+    clearStageCollapseTimer();
+    streamedMessageRef.current = "";
+    setStreamState(INITIAL_STREAM_STATE);
+    // A real reset: the composer goes back to the question it arrived with.
+    setMessage(FIRST_CONTACT_QUESTION);
+    dispatch(resetChatHistory());
   };
 
   return (
@@ -356,10 +336,10 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement, onClose }) =
           <span className="size-2 animate-lamp-pulse bg-amber" />
         </span>
         <div className="min-w-0 flex-1">
-          <div className="truncate font-console text-[0.72rem] font-bold uppercase tracking-console text-bone">
+          <div className="truncate font-console text-caption font-bold uppercase tracking-console text-bone">
             Jacques AI
           </div>
-          <div className="truncate font-console text-[0.52rem] uppercase tracking-console text-bone-faint">
+          <div className="truncate font-console text-micro uppercase tracking-console text-bone-faint">
             Analysis engine · all modules
           </div>
         </div>
@@ -379,18 +359,18 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement, onClose }) =
             instead, where it is a decorative surface rather than a backdrop. */}
         <div
           ref={chatHistoryRef}
-          className="rain-glass min-h-0 overflow-y-auto overscroll-contain rounded-unit border border-amber/15 bg-void-deep shadow-well"
+          className="min-h-0 overflow-y-auto overscroll-contain rounded-unit border border-amber/15 bg-void-deep shadow-well"
         >
           <div className="space-y-2.5 p-2.5">
             {!chatHistory.some((entry) => entry.entity === "USER") && !streamState.started && (
               <div className="rounded-unit border border-amber/20 bg-panel-2 px-3 py-2.5">
-                <div className="font-console text-[0.52rem] font-bold uppercase tracking-console-wide text-bone-faint">
+                <div className="font-console text-micro font-bold uppercase tracking-console-wide text-bone-faint">
                   Query interface
                 </div>
-                <p className="mt-2 font-read text-[0.84rem] leading-[1.7] text-bone/85">
+                <p className="mt-2 font-read text-body leading-[1.7] text-bone/85">
                   Ask about experience, projects, or fit. Answers are retrieved from the
-                  real repositories and credentials on this site, and the route to the
-                  evidence is drawn on the module graph.
+                  real repositories and credentials on this site, and the section holding
+                  the evidence is marked when the answer arrives.
                 </p>
               </div>
             )}
@@ -410,55 +390,20 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement, onClose }) =
         </div>
 
         <div className="space-y-2">
-          <div className="relative flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-2">
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              disabled={loadingSuggestions || isThinking}
-              onClick={loadSuggestions}
-              aria-expanded={suggestionsMenuOpen}
+              disabled={!hasTranscript || isThinking}
+              onClick={clearTranscript}
             >
-              <IconBulb />
-              Suggestions
+              <IconEraser />
+              Clear
             </Button>
-            <span className="font-console text-[0.55rem] tabular text-bone-faint">
+            <span className="font-console text-legend tabular text-bone-faint">
               {message.length}/{MAX_CHAT_MESSAGE_LENGTH}
             </span>
-            {suggestionsMenuOpen && (
-              <div
-                role="menu"
-                aria-label="Suggested questions"
-                className="absolute inset-x-0 bottom-full z-20 mb-2 max-w-full space-y-1.5 rounded-unit border border-amber/30 bg-panel-3 p-2.5 shadow-lift"
-              >
-                <div className="font-console text-[0.52rem] font-bold uppercase tracking-console-wide text-bone-soft">
-                  Suggested questions
-                </div>
-                {loadingSuggestions ? (
-                  <p className="font-console text-[0.62rem] uppercase tracking-console text-bone-faint">
-                    Loading…
-                  </p>
-                ) : suggestions.length ? (
-                  <div className="space-y-1.5">
-                    {suggestions.map((suggestion) => (
-                      <button
-                        key={suggestion}
-                        type="button"
-                        role="menuitem"
-                        className="w-full min-w-0 break-words rounded-unit border border-amber/15 bg-panel-2 px-2.5 py-2 text-left font-read text-[0.8rem] leading-5 text-bone-soft transition-colors [overflow-wrap:anywhere] hover:border-amber hover:bg-panel-4 hover:text-bone"
-                        onClick={() => deliverMessage(suggestion)}
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="font-console text-[0.62rem] uppercase tracking-console text-bone-faint">
-                    No suggestions available.
-                  </p>
-                )}
-              </div>
-            )}
           </div>
 
           <form
@@ -471,7 +416,7 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement, onClose }) =
             <Textarea
               aria-label="Message Jacques AI"
               data-assistant-input
-              className="h-14 min-h-14 min-w-0 flex-1 resize-none py-3 text-[0.72rem]"
+              className="h-14 min-h-14 min-w-0 flex-1 resize-none py-3 text-caption"
               placeholder="Ask about experience or projects…"
               maxLength={MAX_CHAT_MESSAGE_LENGTH}
               value={message}
@@ -522,7 +467,7 @@ const AssistantStreamingMessage = ({ streamState }) => {
             aria-hidden="true"
             className="h-2 w-2 shrink-0 animate-lamp-pulse bg-amber"
           />
-          <span className="phosphor text-[0.6rem] uppercase tracking-console">
+          <span className="phosphor text-label uppercase tracking-console">
             {activeStageLabel}
           </span>
         </div>
@@ -548,7 +493,7 @@ const AssistantStreamingMessage = ({ streamState }) => {
         </BoardShell>
       )}
       {streamState.message && (
-        <div className="animate-phosphor-in rounded-unit border border-amber/20 bg-panel-2 px-3 py-2.5 font-read text-[0.86rem] leading-[1.7] text-bone/90">
+        <div className="animate-phosphor-in rounded-unit border border-amber/20 bg-panel-2 px-3 py-2.5 font-read text-body leading-[1.7] text-bone/90">
           <MessageMarkdown>{streamState.message}</MessageMarkdown>
         </div>
       )}
@@ -565,11 +510,11 @@ const AssistantMessage = ({ chatMessage, onNavigate, onOpenProject, onAchievemen
             aria-hidden="true"
             className="h-1.5 w-1.5 shrink-0 animate-lamp-pulse bg-blood"
           />
-          <span className="font-console text-[0.5rem] font-bold uppercase tracking-console-wide text-blood">
+          <span className="font-console text-micro font-bold uppercase tracking-console-wide text-blood">
             Signal fault
           </span>
         </div>
-        <div className="break-words font-console text-[0.66rem] leading-5 text-blood/90 [overflow-wrap:anywhere]">
+        <div className="break-words font-console text-data leading-5 text-blood/90 [overflow-wrap:anywhere]">
           <MessageMarkdown tone="inverse">{chatMessage.message}</MessageMarkdown>
         </div>
       </div>
@@ -578,18 +523,18 @@ const AssistantMessage = ({ chatMessage, onNavigate, onOpenProject, onAchievemen
 
   if (chatMessage.entity === "USER") {
     return (
-      <div className="ml-auto max-w-[88%] rounded-unit border border-amber/30 bg-panel-3 px-3 py-2 font-console text-[0.74rem] leading-[1.6] text-bone">
+      <div className="ml-auto max-w-[88%] rounded-unit border border-amber/30 bg-panel-3 px-3 py-2 font-console text-caption leading-[1.6] text-bone">
         <MessageMarkdown tone="inverse">{chatMessage.message}</MessageMarkdown>
       </div>
     );
   }
 
   return (
-    <div className="mr-auto max-w-[92%] animate-phosphor-in rounded-unit border border-amber/20 bg-panel-2 px-3 py-2.5 font-read text-[0.86rem] leading-[1.7] text-bone/90">
+    <div className="mr-auto max-w-[92%] animate-phosphor-in rounded-unit border border-amber/20 bg-panel-2 px-3 py-2.5 font-read text-body leading-[1.7] text-bone/90">
       <MessageMarkdown>{chatMessage.message}</MessageMarkdown>
       {chatMessage.links?.length > 0 && (
         <div className="mt-3 border-t border-amber/20 pt-2.5">
-          <div className="mb-1.5 font-console text-[0.5rem] font-bold uppercase tracking-console-wide text-amber-dim">
+          <div className="mb-1.5 font-console text-micro font-bold uppercase tracking-console-wide text-amber-dim">
             Route to evidence
           </div>
           <div className="flex flex-wrap gap-1.5">

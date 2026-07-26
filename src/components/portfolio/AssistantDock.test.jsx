@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import chatbotStateReducer from "../../store/chatbotStateSlice";
+import chatbotStateReducer, { setAssistantPrompt } from "../../store/chatbotStateSlice";
 import AssistantDock from "./AssistantDock";
 import { getChatSuggestions, sendChatMessage, streamChatMessage } from "../../api/chatApi";
 
@@ -54,6 +54,9 @@ test("limits typed chat messages to 500 characters and shows the count", async (
   renderWithStore(<AssistantDock onNavigate={() => {}} />);
 
   const textbox = screen.getByRole("textbox", { name: /Message Jacques AI/i });
+  // The composer opens holding the first-contact question, so clear it before
+  // measuring what typing alone is allowed to add.
+  await userEvent.clear(textbox);
   await userEvent.type(textbox, "a".repeat(501));
 
   expect(textbox).toHaveAttribute("maxLength", "500");
@@ -163,136 +166,82 @@ test("breaks long unspaced assistant text inside message bubbles", async () => {
   ).toHaveClass("break-words", "[overflow-wrap:anywhere]");
 });
 
-test("shows suggestions in a popup menu and caches until a new AI message arrives", async () => {
-  getChatSuggestions
-    .mockResolvedValueOnce(["What did Jacques build at UBS?"])
-    .mockResolvedValueOnce(["Which AI projects are strongest?"]);
+test("opens with the first-contact question already sendable and never asks the suggestions API", async () => {
   streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
     handlers.onStage({ id: "crafting_response", label: "Crafting response" });
-    handlers.onDelta("Jacques builds AI products.");
+    handlers.onDelta("Built with Vite and a FastAPI retrieval backend.");
     handlers.onComplete({ done: true });
   });
 
   renderWithStore(<AssistantDock onNavigate={() => {}} />);
 
+  const textbox = screen.getByRole("textbox", { name: /Message Jacques AI/i });
+  // Real text, not a placeholder: Send has to work on the first press.
+  expect(textbox).toHaveValue("Who are you? And how was this built?");
+  expect(textbox).toHaveAttribute("placeholder", "Ask about experience or projects…");
+  expect(screen.queryByRole("button", { name: /Suggestions/i })).not.toBeInTheDocument();
+
+  const send = screen.getByRole("button", { name: /Send message/i });
+  expect(send).toBeEnabled();
   await act(async () => {
-    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
+    await userEvent.click(send);
   });
 
-  expect(await screen.findByRole("menu", { name: /Suggested questions/i })).toBeInTheDocument();
-  expect(screen.getByRole("menu", { name: /Suggested questions/i })).toHaveClass(
-    "inset-x-0",
-    "max-w-full",
-    "border-amber/30",
-    "bg-panel-3",
-    "rounded-unit"
+  expect(streamChatMessage).toHaveBeenCalledWith(
+    expect.any(Array),
+    "Who are you? And how was this built?",
+    expect.any(Object)
   );
-  expect(screen.getByRole("menuitem", { name: "What did Jacques build at UBS?" })).toHaveClass(
-    "min-w-0",
-    "break-words",
-    "[overflow-wrap:anywhere]"
-  );
-  expect(screen.queryByText("No suggestions available.")).not.toBeInTheDocument();
-  expect(getChatSuggestions).toHaveBeenCalledTimes(1);
-
-  await act(async () => {
-    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
-  });
-  expect(screen.queryByRole("menu", { name: /Suggested questions/i })).not.toBeInTheDocument();
-  await act(async () => {
-    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
-  });
-  expect(screen.getByRole("menuitem", { name: "What did Jacques build at UBS?" })).toBeInTheDocument();
-  expect(getChatSuggestions).toHaveBeenCalledTimes(1);
-
-  await userEvent.type(screen.getByRole("textbox", { name: /Message Jacques AI/i }), "Tell me more");
-  await act(async () => {
-    await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
-  });
-
-  await act(async () => {
-    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
-  });
-
-  expect(await screen.findByRole("menuitem", { name: "Which AI projects are strongest?" })).toBeInTheDocument();
-  expect(getChatSuggestions).toHaveBeenCalledTimes(2);
+  expect(await screen.findByText("Built with Vite and a FastAPI retrieval backend.")).toBeInTheDocument();
+  await waitFor(() => expect(textbox).toHaveValue(""));
+  expect(getChatSuggestions).not.toHaveBeenCalled();
 });
 
-test("opening suggestions unlocks prompted-path and closing does not double count", async () => {
-  const onAchievement = vi.fn();
-  getChatSuggestions.mockResolvedValue(["What did Jacques build at UBS?"]);
-
-  renderWithStore(<AssistantDock onNavigate={() => {}} onAchievement={onAchievement} />);
-
-  await act(async () => {
-    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
-  });
-
-  expect(await screen.findByRole("menu", { name: /Suggested questions/i })).toBeInTheDocument();
-  expect(onAchievement).toHaveBeenCalledTimes(1);
-  expect(onAchievement).toHaveBeenCalledWith("prompted-path");
-
-  await act(async () => {
-    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
-  });
-
-  expect(screen.queryByRole("menu", { name: /Suggested questions/i })).not.toBeInTheDocument();
-  expect(onAchievement).toHaveBeenCalledTimes(1);
-});
-
-test("clicking a suggestion unlocks prompted-path and sends the suggestion", async () => {
-  const onAchievement = vi.fn();
-  getChatSuggestions.mockResolvedValue(["What did Jacques build at UBS?"]);
+test("clear resets the transcript to the assistant greeting and is disabled when there is nothing to clear", async () => {
   streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
     handlers.onStage({ id: "crafting_response", label: "Crafting response" });
     handlers.onDelta("Jacques built AI products at UBS.");
     handlers.onComplete({ done: true });
   });
 
-  renderWithStore(<AssistantDock onNavigate={() => {}} onAchievement={onAchievement} />);
+  const { store } = renderWithStore(<AssistantDock onNavigate={() => {}} />);
 
+  expect(screen.getByRole("button", { name: /Clear/i })).toBeDisabled();
+
+  const composer = screen.getByRole("textbox", { name: /Message Jacques AI/i });
+  await userEvent.clear(composer);
+  await userEvent.type(composer, "What did Jacques build at UBS?");
   await act(async () => {
-    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
-  });
-  await act(async () => {
-    await userEvent.click(await screen.findByRole("menuitem", { name: "What did Jacques build at UBS?" }));
+    await userEvent.click(screen.getByRole("button", { name: /Send message/i }));
   });
 
-  expect(streamChatMessage).toHaveBeenCalledWith(
-    expect.any(Array),
-    "What did Jacques build at UBS?",
-    expect.any(Object)
-  );
   expect(await screen.findByText("Jacques built AI products at UBS.")).toBeInTheDocument();
-  expect(onAchievement.mock.calls.map(([achievement]) => achievement)).toEqual([
-    "prompted-path",
-    "first-contact",
+
+  const clear = screen.getByRole("button", { name: /Clear/i });
+  expect(clear).toBeEnabled();
+  await act(async () => {
+    await userEvent.click(clear);
+  });
+
+  expect(screen.queryByText("Jacques built AI products at UBS.")).not.toBeInTheDocument();
+  expect(screen.queryByText("What did Jacques build at UBS?")).not.toBeInTheDocument();
+  expect(store.getState().chatbotState.chatHistory).toEqual([
+    { entity: "AI", message: "Hello!", links: [] },
   ]);
+  expect(screen.getByText("Hello!")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Clear/i })).toBeDisabled();
+  // A full reset: the composer is back to the question the dock arrived with.
+  expect(composer).toHaveValue("Who are you? And how was this built?");
 });
 
-test("clamps long suggestion messages before sending", async () => {
-  const longSuggestion = "a".repeat(520);
-  getChatSuggestions.mockResolvedValue([longSuggestion]);
-  streamChatMessage.mockImplementation(async (_history, _message, handlers) => {
-    handlers.onStage({ id: "crafting_response", label: "Crafting response" });
-    handlers.onDelta("Short response.");
-    handlers.onComplete({ done: true });
-  });
-
-  renderWithStore(<AssistantDock onNavigate={() => {}} />);
+test("clamps an over-long assistant prompt before it reaches the composer", async () => {
+  const { store } = renderWithStore(<AssistantDock onNavigate={() => {}} />);
 
   await act(async () => {
-    await userEvent.click(screen.getByRole("button", { name: /Suggestions/i }));
-  });
-  await act(async () => {
-    await userEvent.click(await screen.findByRole("menuitem", { name: longSuggestion }));
+    store.dispatch(setAssistantPrompt("a".repeat(520)));
   });
 
-  expect(streamChatMessage).toHaveBeenCalledWith(
-    expect.any(Array),
-    "a".repeat(500),
-    expect.any(Object)
-  );
+  expect(screen.getByRole("textbox", { name: /Message Jacques AI/i })).toHaveValue("a".repeat(500));
 });
 
 test("clicking project section link unlocks follow-thread and deep-link and opens project link", async () => {

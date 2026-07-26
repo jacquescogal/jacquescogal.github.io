@@ -14,9 +14,9 @@ body {
   :root {
     /* ── The Esper Console ─────────────────────────────────────────────
        A forensic analysis terminal. Warm tungsten near-black, sodium-amber
-       phosphor as the signal, cold slat light as the counterpoint, brass and
-       steel hardware. Atmosphere comes from hard light and haze — never from
-       glow around neon. */
+       phosphor as the signal, cold light as the counterpoint, brass and steel
+       hardware. Atmosphere comes from haze and machined edges — never from a
+       pattern laid over a surface, and never from glow around neon. */
     --void: #0B0907;
     --void-deep: #060504;
     --panel-1: #14100C;
@@ -105,29 +105,6 @@ body {
 
   /* Venetian-blind light: the single most recognisable device in this world.
      Hard-edged bands of cold light falling across a surface at an angle. */
-  .slat-light {
-    position: relative;
-    isolation: isolate;
-  }
-  .slat-light::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background-image: repeating-linear-gradient(
-      -18deg,
-      rgba(207, 227, 232, 0.085) 0 9px,
-      rgba(207, 227, 232, 0) 9px 30px
-    );
-    mask-image: linear-gradient(105deg, #000 0%, rgba(0, 0, 0, 0.35) 46%, transparent 74%);
-    -webkit-mask-image: linear-gradient(105deg, #000 0%, rgba(0, 0, 0, 0.35) 46%, transparent 74%);
-  }
-  .slat-light > * {
-    position: relative;
-    z-index: 1;
-  }
-
   /* Atmospheric haze: smoke catching light in the corner of the room. */
   .haze {
     background-image:
@@ -179,16 +156,6 @@ body {
 
   /* The analyser's own overlay on a loaded frame: fine pitch, clearly present,
      with the cold register lines a scan pass leaves behind. */
-  .frame-overlay {
-    background-image:
-      linear-gradient(to right, rgba(242, 169, 59, 0.24) 0 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(242, 169, 59, 0.24) 0 1px, transparent 1px),
-      repeating-linear-gradient(to bottom,
-        rgba(11, 9, 7, 0.30) 0 1px,
-        rgba(11, 9, 7, 0) 1px 3px);
-    background-size: 14px 14px, 14px 14px, 100% 3px;
-  }
-
   /* Reticle brackets: four hard corners marking the region of interest.
      This is the world's framing device, used instead of a full border. */
   .reticle {
@@ -244,15 +211,6 @@ body {
     left: -1px;
     border-bottom-width: 2px;
     border-left-width: 2px;
-  }
-
-  /* Rain on glass: faint vertical streaking over dark surfaces. */
-  .rain-glass {
-    background-image: repeating-linear-gradient(
-      92deg,
-      rgba(207, 227, 232, 0.035) 0 1px,
-      rgba(207, 227, 232, 0) 1px 13px
-    );
   }
 
   /* ── Console type ──────────────────────────────────────────────────── */

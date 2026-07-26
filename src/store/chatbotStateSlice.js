@@ -2,17 +2,21 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 
+/* The transcript a visitor arrives to, and the one Clear returns them to.
+   Defined once so "reset" can never drift from "initial". */
+export const seedChatHistory = () => [{
+  entity: "AI",
+  message: "Hello!",
+  links: [],
+}];
+
 const initialState = {
   showChat: false,
   isThinking: false,
   isChatActive: false,
   assistantPrompt: "",
   dialogue: "Hey there, click on me. I'd like to chat with you!",
-  chatHistory: [{
-    entity: "AI",
-    message: "Hello!",
-    links: [],
-  }],
+  chatHistory: seedChatHistory(),
 };
 
 const chatbotStateSlice = createSlice({
@@ -34,6 +38,11 @@ const chatbotStateSlice = createSlice({
     addChatMessage: (state, action) => {
         state.chatHistory.push(action.payload);
     },
+    resetChatHistory: (state) => {
+        state.chatHistory = seedChatHistory();
+        state.isThinking = false;
+        state.assistantPrompt = "";
+    },
     setDialogue: (state, action) => {
     
         state.dialogue = action.payload;
@@ -45,7 +54,7 @@ const chatbotStateSlice = createSlice({
   },
 });
 
-export const { setShowChat, setThinking, toggleThinking, setChatActive, addChatMessage, setDialogue, setAssistantPrompt } = chatbotStateSlice.actions;
+export const { setShowChat, setThinking, toggleThinking, setChatActive, addChatMessage, resetChatHistory, setDialogue, setAssistantPrompt } = chatbotStateSlice.actions;
 export default chatbotStateSlice.reducer;
 
 // Redux Thunk for setTempDialogue

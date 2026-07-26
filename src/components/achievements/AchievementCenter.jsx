@@ -67,7 +67,7 @@ export function AchievementCenter({
             aria-hidden="true"
             className="flex h-3 w-3 items-center justify-center border-2 border-current"
           />
-          <span className="font-console text-[0.62rem] font-semibold tabular tracking-normal">
+          <span className="font-console text-label font-semibold tabular tracking-normal">
             {unlockedCount}/{totalCount}
           </span>
           <span
@@ -85,10 +85,10 @@ export function AchievementCenter({
       >
         <div className="border-b border-amber/20 bg-panel-3 px-3.5 py-3">
           <div className="flex items-baseline justify-between gap-3">
-            <h2 className="font-console text-[0.7rem] font-bold uppercase tracking-console text-bone">
+            <h2 className="font-console text-data font-bold uppercase tracking-console text-bone">
               Evidence log
             </h2>
-            <span className="font-console text-[0.55rem] tabular uppercase tracking-console text-bone-faint">
+            <span className="font-console text-legend tabular uppercase tracking-console text-bone-faint">
               {unlockedCount}/{totalCount} logged
             </span>
           </div>
@@ -125,10 +125,10 @@ function AchievementToastContent({ latestUnlock }) {
       <div className="flex items-center justify-between gap-2 border-b border-amber/20 bg-panel-3 px-3 py-1.5">
         {/* The live region still announces plainly what happened; the stamp is
             the world's way of showing it, not a replacement for saying it. */}
-        <span className="font-console text-[0.5rem] font-bold uppercase tracking-console-wide text-bone-soft">
+        <span className="font-console text-micro font-bold uppercase tracking-console-wide text-bone-soft">
           Achievement unlocked
         </span>
-        <span className="seal animate-reticle-snap px-1.5 text-[0.5rem] font-bold text-amber">
+        <span className="seal animate-reticle-snap px-1.5 text-micro font-bold text-amber">
           Logged
         </span>
       </div>
@@ -140,10 +140,10 @@ function AchievementToastContent({ latestUnlock }) {
           <latestUnlock.achievement.icon className="size-4" />
         </span>
         <div className="min-w-0">
-          <p className="font-console text-[0.74rem] font-bold uppercase tracking-console text-bone">
+          <p className="font-console text-caption font-bold uppercase tracking-console text-bone">
             {latestUnlock.achievement.name}
           </p>
-          <p className="mt-1.5 font-read text-[0.8rem] leading-5 text-bone-soft">
+          <p className="mt-1.5 font-read text-body leading-5 text-bone-soft">
             {latestUnlock.achievement.flavourText}
           </p>
         </div>
@@ -180,20 +180,20 @@ function AchievementRow({ achievement, unlocked }) {
       <span className="min-w-0 flex-1">
         <span
           className={cn(
-            "block font-console text-[0.64rem] font-bold uppercase tracking-console",
+            "block font-console text-label font-bold uppercase tracking-console",
             unlocked ? "text-bone" : "text-bone-soft",
           )}
         >
           {title}
         </span>
-        <span className="mt-1 block font-read text-[0.78rem] leading-5 text-bone-faint">
+        <span className="mt-1 block font-read text-caption leading-5 text-bone-faint">
           {detail}
         </span>
       </span>
       {unlocked && (
         <span
           aria-hidden="true"
-          className="mt-1 shrink-0 self-start font-console text-[0.5rem] font-bold uppercase tracking-console-wide text-amber"
+          className="mt-1 shrink-0 self-start font-console text-micro font-bold uppercase tracking-console-wide text-amber"
         >
           ✓
         </span>

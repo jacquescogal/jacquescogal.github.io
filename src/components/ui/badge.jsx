@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
  * Channel chips and console legends. Hard-cornered, small, letterspaced.
  */
 const badgeVariants = cva(
-  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1 rounded-unit border px-1.5 py-0.5 font-console text-[0.55rem] font-semibold uppercase tracking-console whitespace-nowrap [&>svg]:pointer-events-none [&>svg]:size-3!",
+  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1 rounded-unit border px-1.5 py-0.5 font-console text-legend font-semibold uppercase tracking-console whitespace-nowrap [&>svg]:pointer-events-none [&>svg]:size-3!",
   {
     variants: {
       variant: {

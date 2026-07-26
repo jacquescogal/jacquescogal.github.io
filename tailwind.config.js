@@ -84,6 +84,19 @@ module.exports = {
         'input': 'var(--input)',
         'ring': 'var(--ring)',
       },
+      /* The console's type ramp. The build had drifted to 27 arbitrary sizes,
+         eight of them inside a single 0.11rem band; these are the only steps. */
+      fontSize: {
+        'micro':   ['0.5rem',    { lineHeight: '1.4' }],
+        'legend':  ['0.5625rem', { lineHeight: '1.4' }],
+        'label':   ['0.625rem',  { lineHeight: '1.4' }],
+        'data':    ['0.6875rem', { lineHeight: '1.5' }],
+        'caption': ['0.75rem',   { lineHeight: '1.6' }],
+        'body':    ['0.875rem',  { lineHeight: '1.75' }],
+        'lede':    ['0.9375rem', { lineHeight: '1.6' }],
+        'title':   ['1.125rem',  { lineHeight: '1.25' }],
+        'display': ['clamp(1.7rem, 6vw, 2.6rem)', { lineHeight: '1.05' }],
+      },
       borderRadius: {
         'unit': '2px',
         'sign': '999px',

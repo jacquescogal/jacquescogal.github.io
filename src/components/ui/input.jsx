@@ -16,7 +16,7 @@ function Input({
       type={type}
       data-slot="input"
       className={cn(
-        "h-10 w-full min-w-0 rounded-unit border border-amber/20 bg-void-deep px-3 py-1 font-console text-[0.78rem] text-bone shadow-well caret-amber transition-colors outline-none placeholder:text-bone-faint focus-visible:border-amber focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-amber disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-panel-2 disabled:opacity-60",
+        "h-10 w-full min-w-0 rounded-unit border border-amber/20 bg-void-deep px-3 py-1 font-console text-caption text-bone shadow-well caret-amber transition-colors outline-none placeholder:text-bone-faint focus-visible:border-amber focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-amber disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-panel-2 disabled:opacity-60",
         className
       )}
       {...props} />

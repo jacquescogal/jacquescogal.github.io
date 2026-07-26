@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import ReactMarkdown from "react-markdown";
 import { FaAws } from "@react-icons/all-files/fa/FaAws";
 import { FaMicrosoft } from "@react-icons/all-files/fa/FaMicrosoft";
@@ -27,8 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AchievementCenter } from "../achievements/AchievementCenter";
 import { useAchievements } from "../achievements/useAchievements";
 import AssistantDock from "./AssistantDock";
-import NetworkDiagram from "./NetworkDiagram";
-import ServiceBoard from "./ServiceBoard";
+import { MissionProgress } from "./ServiceBoard";
 import { cn } from "@/lib/utils";
 import remarkGfm from "remark-gfm";
 import { getCertifications } from "../../api/certificationApi";
@@ -43,36 +41,22 @@ const emptyExperiences = {
 };
 
 /* ── Signal channels ─────────────────────────────────────────────────────
-   Six channels, drawn from the console's own palette so classification never
-   breaks the room's light. Amber is deliberately NOT spent on a module: it is
-   reserved for the live signal and the analysis engine. */
-const CHANNELS = [
-  "#F2A93B",
-  "#7FB2BF",
-  "#C4362B",
-  "#A8843C",
-  "#9186AE",
-  "#5F9E86",
-];
+   One colour per section, and nothing else. Colour on this page answers
+   exactly one question — which module am I in — so a sector nameplate, its
+   tab, and its records all carry the same hue.
 
+   Tags used to be tinted by a hash of their own text. That looked like
+   classification and encoded nothing: the same colour meant "Python" here and
+   "Docker" there, and no legend could have explained it. A palette that
+   asserts a category it does not have is the one thing this site is not
+   allowed to do, so tag chips are now uniform and colour stays where it is
+   readable. Amber is never spent on a module: it belongs to the live signal. */
 const MODULE_CHANNELS = {
   profile: "#7FB2BF",
   experiences: "#5F9E86",
   certifications: "#A8843C",
   projects: "#9186AE",
   contact: "#C4362B",
-};
-
-/* FNV-1a: a proper avalanche, so all six channels actually get used. A weaker
-   mix piles most tags onto one colour, which defeats classification. */
-const channelForTag = (tag) => {
-  const normalized = String(tag).toLowerCase();
-  let hash = 0x811c9dc5;
-  for (let index = 0; index < normalized.length; index += 1) {
-    hash ^= normalized.charCodeAt(index);
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  return CHANNELS[hash % CHANNELS.length];
 };
 
 const MODULES = [
@@ -207,15 +191,15 @@ const createArchiveMarkdownComponents = (activeHeadingSlug, onHeadingRef) => {
   );
 
   return {
-    h1: heading("h1", "mt-0 border-b border-amber/25 pb-3 text-lg font-bold leading-tight"),
-    h2: heading("h2", "mt-10 border-b border-amber/15 pb-2 text-[0.95rem] font-bold leading-snug first:mt-0"),
-    h3: heading("h3", "mt-8 text-[0.82rem] font-bold leading-6"),
-    h4: heading("h4", "mt-6 text-[0.75rem] font-bold leading-6"),
-    h5: heading("h5", "mt-6 text-[0.72rem] font-bold leading-6"),
-    h6: heading("h6", "mt-6 text-[0.66rem] font-bold leading-6 text-bone-soft"),
-    p: ({ ...props }) => <p className="mt-4 font-read text-[0.94rem] leading-[1.75] text-bone/90 first:mt-0" {...props} />,
-    ul: ({ ...props }) => <ul className="mt-4 list-disc space-y-2 pl-5 font-read text-[0.94rem] leading-[1.75] text-bone/90" {...props} />,
-    ol: ({ ...props }) => <ol className="mt-4 list-decimal space-y-2 pl-5 font-read text-[0.94rem] leading-[1.75] text-bone/90" {...props} />,
+    h1: heading("h1", "mt-0 border-b border-amber/25 pb-3 text-title font-bold leading-tight"),
+    h2: heading("h2", "mt-10 border-b border-amber/15 pb-2 text-lede font-bold leading-snug first:mt-0"),
+    h3: heading("h3", "mt-8 text-body font-bold leading-6"),
+    h4: heading("h4", "mt-6 text-caption font-bold leading-6"),
+    h5: heading("h5", "mt-6 text-caption font-bold leading-6"),
+    h6: heading("h6", "mt-6 text-data font-bold leading-6 text-bone-soft"),
+    p: ({ ...props }) => <p className="mt-4 font-read text-lede leading-[1.75] text-bone/90 first:mt-0" {...props} />,
+    ul: ({ ...props }) => <ul className="mt-4 list-disc space-y-2 pl-5 font-read text-lede leading-[1.75] text-bone/90" {...props} />,
+    ol: ({ ...props }) => <ol className="mt-4 list-decimal space-y-2 pl-5 font-read text-lede leading-[1.75] text-bone/90" {...props} />,
     li: ({ ...props }) => <li className="pl-1 marker:text-amber" {...props} />,
     strong: ({ ...props }) => <strong className="font-bold text-bone" {...props} />,
     em: ({ ...props }) => <em className="italic text-bone/90" {...props} />,
@@ -229,7 +213,7 @@ const createArchiveMarkdownComponents = (activeHeadingSlug, onHeadingRef) => {
     ),
     blockquote: ({ ...props }) => (
       <blockquote
-        className="mt-5 border-l-2 border-amber bg-amber/8 px-4 py-3 font-read text-[0.92rem] leading-[1.75] text-bone/85"
+        className="mt-5 border-l-2 border-amber bg-amber/8 px-4 py-3 font-read text-lede leading-[1.75] text-bone/85"
         {...props}
       />
     ),
@@ -244,7 +228,7 @@ const createArchiveMarkdownComponents = (activeHeadingSlug, onHeadingRef) => {
     ),
     pre: ({ ...props }) => (
       <pre
-        className="mt-5 overflow-x-auto rounded-unit border border-amber/20 bg-void-deep p-4 font-console text-[0.7rem] leading-6 text-bone/85 [&_code]:border-0 [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-inherit"
+        className="mt-5 overflow-x-auto rounded-unit border border-amber/20 bg-void-deep p-4 font-console text-data leading-6 text-bone/85 [&_code]:border-0 [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-inherit"
         {...props}
       />
     ),
@@ -255,12 +239,12 @@ const createArchiveMarkdownComponents = (activeHeadingSlug, onHeadingRef) => {
     ),
     th: ({ ...props }) => (
       <th
-        className="border-b border-amber/25 bg-panel-3 px-3 py-2 text-left font-console text-[0.6rem] font-bold uppercase tracking-console text-bone"
+        className="border-b border-amber/25 bg-panel-3 px-3 py-2 text-left font-console text-label font-bold uppercase tracking-console text-bone"
         {...props}
       />
     ),
     td: ({ ...props }) => (
-      <td className="border-b border-amber/10 px-3 py-2 align-top font-read text-[0.88rem] text-bone/85 last:border-b-0" {...props} />
+      <td className="border-b border-amber/10 px-3 py-2 align-top font-read text-body text-bone/85 last:border-b-0" {...props} />
     ),
     img: ({ ...props }) => (
       <img
@@ -286,7 +270,6 @@ const highlightTargetMap = {
 };
 
 const highlightDurationMs = 1800;
-const traceDurationMs = 2000;
 const experienceTabAliases = {
   work: "work",
   education: "education",
@@ -299,6 +282,17 @@ const EXPERIENCE_CHANNELS = {
   work: "#7FB2BF",
   education: "#5F9E86",
   achievements: "#9186AE",
+};
+
+/* What the composer opens with. Shown as placeholders so nothing has to be
+   deleted, and used as the fallback when a field is left untouched. */
+const DEFAULT_CONTACT_SUBJECT = "Hello";
+const DEFAULT_CONTACT_MESSAGE = "Hi there";
+
+const EXPERIENCE_LOG_CAPTIONS = {
+  work: "Work log",
+  education: "Education log",
+  achievements: "Hackathon log",
 };
 
 const normalizeNavigationTarget = (target) => {
@@ -340,13 +334,10 @@ const PortfolioShell = () => {
   const projectRef = useRef(null);
   const contactRef = useRef(null);
   const highlightTimeoutRef = useRef(null);
-  const traceTimeoutRef = useRef(null);
   const projectArchiveBodyRef = useRef(null);
   const projectArchiveHeadingRefs = useRef(new Map());
   const [highlightedSection, setHighlightedSection] = useState(null);
   const [currentSection, setCurrentSection] = useState("profile");
-  const [visitedSections, setVisitedSections] = useState(["profile"]);
-  const [traceTarget, setTraceTarget] = useState(null);
   const [experienceTab, setExperienceTab] = useState("work");
   const [projectArchiveOpen, setProjectArchiveOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -388,19 +379,6 @@ const PortfolioShell = () => {
     initialData: emptyExperiences,
   });
 
-  /* The engine's own row reports only what this client has observed: a fault
-     once a stream has failed, live once a real answer has come back, standby
-     until then. The seed greeting is not evidence that the backend answers. */
-  const chatHistory = useSelector((state) => state.chatbotState.chatHistory);
-  const engineFeed = useMemo(() => {
-    const hasFault = chatHistory.some((entry) => entry.entity === "SYSTEM");
-    const askedCount = chatHistory.filter((entry) => entry.entity === "USER").length;
-    const answeredCount = chatHistory.filter((entry) => entry.entity === "AI").length;
-    if (hasFault) return { value: "fault", status: "suspended" };
-    if (askedCount > 0 && answeredCount > 1) return { value: "live", status: "good" };
-    return { value: "standby", status: "idle" };
-  }, [chatHistory]);
-
   const refs = useMemo(
     () => ({
       profile: profileRef,
@@ -414,57 +392,6 @@ const PortfolioShell = () => {
       contact: contactRef,
     }),
     []
-  );
-
-  /* Diagnostics are derived, never asserted. A feed still loading reports as
-     acquiring; one that failed reports as offline. */
-  const serviceFeeds = useMemo(
-    () => [
-      {
-        label: "Experience feed",
-        value: experiencesLoading
-          ? "···"
-          : experiencesError
-            ? "offline"
-            : String(
-                (experiences.work?.length || 0) +
-                  (experiences.education?.length || 0) +
-                  (experiences.hackathons?.length || 0)
-              ),
-        status: experiencesLoading ? "delayed" : experiencesError ? "suspended" : "good",
-      },
-      {
-        label: "Source archive",
-        value: projectsLoading ? "···" : projectsError ? "offline" : String(projects.length),
-        status: projectsLoading ? "delayed" : projectsError ? "suspended" : "good",
-      },
-      {
-        label: "Credential index",
-        value: certificationsLoading
-          ? "···"
-          : certificationsError
-            ? "offline"
-            : String(certifications.length),
-        status: certificationsLoading ? "delayed" : certificationsError ? "suspended" : "good",
-      },
-      {
-        label: "Retrieval engine",
-        value: engineFeed.value,
-        status: engineFeed.status,
-      },
-    ],
-    [
-      experiences,
-      experiencesLoading,
-      experiencesError,
-      projects,
-      projectsLoading,
-      projectsError,
-      certifications,
-      certificationsLoading,
-      certificationsError,
-      engineFeed,
-    ]
   );
 
   const projectArchiveHeadings = useMemo(
@@ -530,15 +457,11 @@ const PortfolioShell = () => {
       if (highlightTimeoutRef.current) {
         window.clearTimeout(highlightTimeoutRef.current);
       }
-      if (traceTimeoutRef.current) {
-        window.clearTimeout(traceTimeoutRef.current);
-      }
     },
     []
   );
 
-  /* The addressed node tracks the real reading position, and every module
-     reached stays energised behind the visitor. */
+  /* The header rail tracks the real reading position. */
   useEffect(() => {
     const sectionNodes = MODULES.map((module) => ({
       id: module.id,
@@ -556,9 +479,6 @@ const PortfolioShell = () => {
         const match = sectionNodes.find((entry) => entry.node === visible[0].target);
         if (!match) return;
         setCurrentSection(match.id);
-        setVisitedSections((current) =>
-          current.includes(match.id) ? current : [...current, match.id]
-        );
       },
       { rootMargin: "-15% 0px -55% 0px", threshold: [0.05, 0.25, 0.5] }
     );
@@ -597,22 +517,6 @@ const PortfolioShell = () => {
     });
   }, [projectArchiveOpen, activeProjectHeadingSlug, selectedProject]);
 
-  /* The trace: the route the engine took to reach its evidence. Fired only for
-     assistant-initiated navigation, because that is the only time a route was
-     actually taken. */
-  const runTrace = (sectionKey) => {
-    if (!sectionKey) return;
-    if (traceTimeoutRef.current) {
-      window.clearTimeout(traceTimeoutRef.current);
-    }
-    setTraceTarget(null);
-    window.requestAnimationFrame(() => setTraceTarget(sectionKey));
-    traceTimeoutRef.current = window.setTimeout(() => {
-      setTraceTarget(null);
-      traceTimeoutRef.current = null;
-    }, traceDurationMs);
-  };
-
   const openProjectArchive = (project, headingSlug = null) => {
     unlockAchievement("proof-reader");
     projectArchiveHeadingRefs.current.clear();
@@ -626,12 +530,11 @@ const PortfolioShell = () => {
     const linkedProject =
       projects.find((project) => normalizeRepoUrl(project.url) === normalizedRepoUrl) ||
       projects[0];
-    runTrace("projects");
     if (linkedProject) {
       openProjectArchive(linkedProject, headingSlug);
       return;
     }
-    scrollTo("projects");
+    scrollTo("projects", { highlight: true });
   };
 
   const downloadResume = () => {
@@ -647,7 +550,7 @@ const PortfolioShell = () => {
     });
   };
 
-  const scrollTo = (target, { traced = false } = {}) => {
+  const scrollTo = (target, { highlight = false } = {}) => {
     const {
       where,
       experienceTab: targetExperienceTab,
@@ -673,12 +576,11 @@ const PortfolioShell = () => {
     }
     refs[where]?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
+    /* The flash is reserved for arrivals the engine caused. A visitor who
+       clicked the rail already knows where they are going; a visitor the
+       assistant sent needs to be shown which record answered them. */
     const sectionKey = highlightTargetMap[where];
-    if (!sectionKey) return;
-
-    if (traced) {
-      runTrace(sectionKey);
-    }
+    if (!sectionKey || !highlight) return;
 
     if (highlightTimeoutRef.current) {
       window.clearTimeout(highlightTimeoutRef.current);
@@ -690,7 +592,7 @@ const PortfolioShell = () => {
     }, highlightDurationMs);
   };
 
-  const navigateFromAssistant = (target) => scrollTo(target, { traced: true });
+  const navigateFromAssistant = (target) => scrollTo(target, { highlight: true });
 
   const getSectionClassName = (sectionKey) =>
     cn(
@@ -718,15 +620,24 @@ const PortfolioShell = () => {
       );
     }
 
-    return <ExperienceLog items={items} channel={EXPERIENCE_CHANNELS[experienceTab]} />;
+    return (
+      <ExperienceLog
+        items={items}
+        channel={EXPERIENCE_CHANNELS[experienceTab]}
+        caption={EXPERIENCE_LOG_CAPTIONS[experienceTab]}
+        markCurrent={experienceTab === "work"}
+      />
+    );
   };
 
+  /* The greeting used to be prepended here as well as offered in the field.
+     Now the message field opens with it, so the visitor writes their own and
+     the composer never doubles it up. */
   const sendEmail = () => {
     unlockAchievement("direct-line");
-    const subject = encodeURIComponent(contactForm.subject || "Work Opportunity");
-    const body = encodeURIComponent(
-      `Hi Jacques,\n\n${contactForm.message}\n\nRegards,\n${contactForm.name}`
-    );
+    const subject = encodeURIComponent(contactForm.subject || DEFAULT_CONTACT_SUBJECT);
+    const message = contactForm.message.trim() || DEFAULT_CONTACT_MESSAGE;
+    const body = encodeURIComponent(`${message}\n\nRegards,\n${contactForm.name}`);
     window.open(`mailto:jacques.tracy@gmail.com?subject=${subject}&body=${body}`);
   };
 
@@ -747,10 +658,10 @@ const PortfolioShell = () => {
               <span className="size-2 bg-amber" />
             </span>
             <span className="min-w-0">
-              <span className="block truncate font-console text-[0.72rem] font-bold uppercase tracking-console text-bone">
+              <span className="block truncate font-console text-caption font-bold uppercase tracking-console text-bone">
                 Jacques Cogal
               </span>
-              <span className="hidden truncate font-console text-[0.52rem] uppercase tracking-console text-bone-faint min-[380px]:block">
+              <span className="hidden truncate font-console text-micro uppercase tracking-console text-bone-faint min-[380px]:block">
                 Software engineer · Singapore
               </span>
             </span>
@@ -764,13 +675,13 @@ const PortfolioShell = () => {
                 onClick={() => scrollTo(module.target)}
                 aria-current={currentSection === module.id ? "true" : undefined}
                 className={cn(
-                  "flex items-baseline gap-1.5 rounded-unit px-2.5 py-1.5 font-console text-[0.6rem] font-semibold uppercase tracking-console transition-colors",
+                  "flex items-baseline gap-1.5 rounded-unit px-2.5 py-1.5 font-console text-label font-semibold uppercase tracking-console transition-colors",
                   currentSection === module.id
                     ? "bg-amber/12 text-amber"
                     : "text-bone-faint hover:bg-amber/8 hover:text-bone"
                 )}
               >
-                <span className="tabular text-[0.5rem] opacity-60">
+                <span className="tabular text-micro opacity-60">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 {module.label}
@@ -793,72 +704,74 @@ const PortfolioShell = () => {
           {/* ── The console ────────────────────────────────────────────── */}
           <section ref={profileRef} className={getSectionClassName("profile")}>
             <div className="overflow-hidden rounded-unit border border-amber/20">
-              <div className="slat-light haze bg-panel-1 px-4 py-6 sm:px-8 sm:py-9">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <Badge>Open to conversations</Badge>
-                  <span className="font-console text-[0.55rem] uppercase tracking-console text-bone-faint">
-                    Available for focused engineering conversations
-                  </span>
-                </div>
-                <h1 className="mt-5 max-w-[13ch] font-console text-[1.7rem] font-bold uppercase leading-[1.05] tracking-console text-bone sm:text-[2.6rem]">
-                  Software Engineer
-                </h1>
-                <p className="mt-5 max-w-xl font-read text-[0.95rem] leading-[1.75] text-bone-soft">
-                  Looking to solve meaningful problems and write impactful code across
-                  full-stack, data, and AI systems.
-                </p>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  <Button type="button" onClick={downloadResume}>
-                    <IconDownload />
-                    Resume
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => scrollTo("contact")}>
-                    <IconMail />
-                    Contact
-                  </Button>
+              {/* The subject and the claim share one plate. The portrait is the
+                  first thing loaded into the analyser, so it holds real size
+                  and sits level with the headline rather than filed beneath
+                  it. */}
+              <div className="haze grid gap-6 bg-panel-1 px-4 py-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-8 sm:px-8 sm:py-9 lg:gap-10">
+                <SubjectPortrait />
+
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <Badge>Open to conversations</Badge>
+                    <span className="font-console text-legend uppercase tracking-console text-bone-faint">
+                      Available for focused engineering conversations
+                    </span>
+                  </div>
+                  <p className="mt-5 font-console text-label font-semibold uppercase tracking-console-wide text-amber-dim">
+                    Jacques Cogal
+                  </p>
+                  <h1 className="mt-1.5 max-w-[13ch] font-console text-display font-bold uppercase tracking-console text-bone">
+                    Software Engineer
+                  </h1>
+                  <p className="mt-5 max-w-xl font-read text-lede leading-[1.75] text-bone-soft">
+                    Looking to solve meaningful problems and write impactful code across
+                    full-stack, data, and AI systems.
+                  </p>
+
+                  <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-3">
+                    <FileField label="Sector" value="Singapore" />
+                    <FileField label="Employer" value="UBS" />
+                    <FileField label="Focus" value="Full-stack · Data · AI systems" />
+                  </dl>
+
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    <Button type="button" onClick={downloadResume}>
+                      <IconDownload />
+                      Resume
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => scrollTo("contact")}>
+                      <IconMail />
+                      Contact
+                    </Button>
+                    <a
+                      href="https://github.com/jacquescogal"
+                      target="_blank"
+                      rel="noreferrer"
+                      className={cn(buttonVariants({ variant: "outline" }))}
+                      onClick={() => unlockAchievement("source-curious")}
+                    >
+                      <GithubButtonMark />
+                      GitHub
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/in/j-cogal/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className={cn(buttonVariants({ variant: "outline" }))}
+                    >
+                      <IconBrandLinkedin />
+                      LinkedIn
+                    </a>
+                  </div>
                 </div>
               </div>
 
-              {/* Subject file and live diagnostics side by side; the module
-                  graph gets the full width beneath them. */}
-              {/* Identity and live state side by side. The graph then takes the
-                  full width beneath them, because five labelled nodes need real
-                  room and a narrow column would force it upright and tall. */}
-              <div className="grid gap-px border-t border-amber/20 bg-amber/15 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
-                <SubjectFile onUnlockSource={() => unlockAchievement("source-curious")} />
-                <div className="bg-panel-1 px-4 py-4 sm:px-6 sm:py-5">
-                  <ServiceBoard feeds={serviceFeeds} className="w-full" />
-                </div>
-              </div>
-
-              <div className="border-t border-amber/20 bg-void-deep px-4 py-5 sm:px-6 sm:py-6">
-                <div className="mb-1 flex items-baseline justify-between gap-3">
-                  <span className="con-label-wide text-[0.55rem] text-bone-soft">
-                    Module graph
-                  </span>
-                  <span className="font-console text-[0.55rem] uppercase tracking-console text-amber-dim">
-                    Node addressed
-                  </span>
-                </div>
-                <p className="mb-6 max-w-lg font-read text-[0.8rem] leading-6 text-bone-faint">
-                  Five modules on one bus. Jacques AI is the analysis engine — ask it
-                  anything and watch the route it takes to the evidence.
-                </p>
-                <NetworkDiagram
-                  stations={MODULES}
-                  currentSection={currentSection}
-                  visitedSections={visitedSections}
-                  traceTarget={traceTarget}
-                  onSelect={(target) => scrollTo(target)}
-                  onSelectAssistant={() => {
-                    const dockInput = document.querySelector("[data-assistant-input]");
-                    if (dockInput) {
-                      dockInput.focus();
-                      dockInput.scrollIntoView({ behavior: "smooth", block: "center" });
-                    }
-                  }}
-                />
-              </div>
+              {/* The console's own readout: how far this visit has got. */}
+              <MissionProgress
+                unlocked={achievementsState.progress.unlocked}
+                total={achievementsState.progress.total}
+              />
             </div>
           </section>
 
@@ -933,7 +846,7 @@ const PortfolioShell = () => {
               index="04"
               name="Projects"
               color={MODULE_CHANNELS.projects}
-              note="Pinned public repositories. Tags run as signal channels, so the same technology holds its colour everywhere."
+              note="Pinned public repositories, straight from GitHub. Open a README to read the work behind the card."
             />
             {projectsLoading ? (
               <LoadingStateCard
@@ -970,10 +883,10 @@ const PortfolioShell = () => {
             />
             <div className="mt-5 overflow-hidden rounded-unit border border-amber/20">
               <div className="flex items-center justify-between gap-3 border-b border-amber/15 bg-panel-3 px-4 py-2">
-                <span className="con-label-wide text-[0.55rem] text-bone-soft">
+                <span className="con-label-wide text-legend text-bone-soft">
                   Outbound transmission
                 </span>
-                <span className="font-console text-[0.55rem] uppercase tracking-console text-bone-faint">
+                <span className="font-console text-legend uppercase tracking-console text-bone-faint">
                   Channel 1
                 </span>
               </div>
@@ -994,7 +907,7 @@ const PortfolioShell = () => {
                 <FormField label="Subject" htmlFor="subject">
                   <Input
                     id="subject"
-                    placeholder="Opportunity"
+                    placeholder={DEFAULT_CONTACT_SUBJECT}
                     value={contactForm.subject}
                     onChange={(event) =>
                       setContactForm((current) => ({ ...current, subject: event.target.value }))
@@ -1005,7 +918,7 @@ const PortfolioShell = () => {
                   <Textarea
                     id="message"
                     className="min-h-28"
-                    placeholder="Hello..."
+                    placeholder={DEFAULT_CONTACT_MESSAGE}
                     value={contactForm.message}
                     onChange={(event) =>
                       setContactForm((current) => ({ ...current, message: event.target.value }))
@@ -1027,7 +940,7 @@ const PortfolioShell = () => {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <span aria-hidden="true" className="h-[2px] w-12 bg-bone-faint" />
-                <span className="font-console text-[0.55rem] uppercase tracking-console text-bone-faint">
+                <span className="font-console text-legend uppercase tracking-console text-bone-faint">
                   End of bus
                 </span>
               </div>
@@ -1074,7 +987,7 @@ const PortfolioShell = () => {
                 className="h-2 w-2 shrink-0"
                 style={{ backgroundColor: MODULE_CHANNELS.projects }}
               />
-              <span className="font-console text-[0.55rem] uppercase tracking-console text-bone-faint">
+              <span className="font-console text-legend uppercase tracking-console text-bone-faint">
                 Source analysis
               </span>
             </div>
@@ -1095,7 +1008,7 @@ const PortfolioShell = () => {
                 aria-label="README sections"
                 className="min-w-0 border-b border-amber/15 bg-panel-1 px-4 py-3 sm:px-6 lg:min-h-0 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-4 lg:py-5"
               >
-                <div className="mb-2.5 font-console text-[0.55rem] font-bold uppercase tracking-console-wide text-bone-faint">
+                <div className="mb-2.5 font-console text-legend font-bold uppercase tracking-console-wide text-bone-faint">
                   Frame index
                 </div>
                 <div className="flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
@@ -1107,7 +1020,7 @@ const PortfolioShell = () => {
                         type="button"
                         aria-current={isActive ? "true" : undefined}
                         className={cn(
-                          "shrink-0 border-l-2 px-2.5 py-1.5 text-left font-console text-[0.6rem] font-semibold uppercase tracking-console transition-colors lg:shrink lg:whitespace-normal",
+                          "shrink-0 border-l-2 px-2.5 py-1.5 text-left font-console text-label font-semibold uppercase tracking-console transition-colors lg:shrink lg:whitespace-normal",
                           heading.depth === 2 && "lg:pl-4",
                           heading.depth >= 3 && "lg:pl-6",
                           isActive
@@ -1140,7 +1053,7 @@ const PortfolioShell = () => {
                     {selectedProject.readmeContent}
                   </ReactMarkdown>
                 ) : (
-                  <p className="font-read text-sm leading-7 text-bone-soft">
+                  <p className="font-read text-body text-bone-soft">
                     This pinned repository does not have a README.md available yet.
                   </p>
                 )}
@@ -1153,120 +1066,57 @@ const PortfolioShell = () => {
   );
 };
 
-/* ── The subject file ─────────────────────────────────────────────────────
-   The portrait, loaded into the analyser: reticle brackets on the frame, an
-   analysis grid over it, a scan sweep on load, and a coordinate readout.
-   Every printed field is a fact the site already states. */
-const SubjectFile = ({ onUnlockSource }) => (
-  <div className="flex flex-col bg-panel-1">
-    <div className="flex items-center justify-between gap-2 border-b border-amber/15 px-4 pt-3.5 pb-2.5">
-      <span className="font-console text-[0.55rem] font-bold uppercase tracking-console-wide text-bone-soft">
-        Subject file
+/* ── The subject ──────────────────────────────────────────────────────────
+   The portrait, loaded into the analyser: reticle brackets on the frame, a
+   scan sweep on load, and a coordinate readout. It sits in the headline plate
+   at a size that reads as a subject under examination rather than an avatar.
+
+   The graticule that used to sit over the image is gone. Framing devices
+   around the photograph do the analyser's work; a mesh printed across the
+   subject's face only made the photograph harder to read, which is the exact
+   opposite of what a portrait at this size is for. */
+const SubjectPortrait = () => (
+  /* Widest where it stands alone above the headline, trimmed at `sm` where it
+     shares the row, and back to full size once the plate can afford it. */
+  <div className="reticle relative w-60 shrink-0 self-start sm:w-52 lg:w-60">
+    <div className="relative overflow-hidden border border-amber/30">
+      <img
+        src="/jacques.jpg"
+        alt="Jacques Cogal"
+        className="block aspect-[4/5] w-full object-cover"
+      />
+      {/* The analyser's sweep, once, on load. */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-8 animate-scan-sweep bg-gradient-to-b from-transparent via-amber/35 to-transparent"
+      />
+      {/* Inset past the 13px reticle brackets, which otherwise print straight
+          through the readout. */}
+      <span
+        aria-hidden="true"
+        className="absolute bottom-1.5 left-4 font-console text-micro uppercase tracking-console text-amber/90"
+      >
+        224–176
       </span>
-      <span className="font-console text-[0.52rem] uppercase tracking-console text-bone-faint">
-        Module 01
+      <span
+        aria-hidden="true"
+        className="absolute bottom-1.5 right-4 font-console text-micro uppercase tracking-console text-amber/90"
+      >
+        Subject 01
       </span>
     </div>
-
-    <div className="flex gap-4 px-4 py-4">
-      <div className="reticle relative shrink-0 self-start">
-        <div className="relative overflow-hidden border border-amber/30">
-          <img
-            src="/jacques.jpg"
-            alt="Jacques Cogal"
-            className="block aspect-[4/5] w-28 object-cover sm:w-32"
-          />
-          {/* The analyser's overlay: grid, sweep, and coordinate tag. */}
-          <span aria-hidden="true" className="frame-overlay absolute inset-0" />
-          <span
-            aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-6 animate-scan-sweep bg-gradient-to-b from-transparent via-amber/35 to-transparent"
-          />
-          <span
-            aria-hidden="true"
-            className="absolute bottom-1 left-1 font-console text-[0.45rem] uppercase tracking-console text-amber/90"
-          >
-            224–176
-          </span>
-        </div>
-        <span aria-hidden="true" className="reticle-corners" />
-      </div>
-
-      <dl className="min-w-0 flex-1 space-y-2.5">
-        <FileField label="Subject" value="Jacques Cogal" strong />
-        <FileField label="Class" value="Software engineer" />
-        <FileField label="Sector" value="Singapore" />
-        <FileField label="Employer" value="UBS" />
-      </dl>
-    </div>
-
-    <div className="mt-auto">
-      <div className="px-4 pb-3.5">
-        <div className="mb-1.5 font-console text-[0.5rem] font-bold uppercase tracking-console-wide text-bone-faint">
-          Domains
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {["Full-stack", "Data", "AI systems"].map((domain) => (
-            <span
-              key={domain}
-              className="flex items-center gap-1 border border-amber/20 px-1.5 py-0.5 font-console text-[0.52rem] font-semibold uppercase tracking-console text-bone-soft"
-            >
-              <span
-                aria-hidden="true"
-                className="h-1.5 w-1.5"
-                style={{ backgroundColor: channelForTag(domain) }}
-              />
-              {domain}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-px border-t border-amber/15 bg-amber/15">
-        <a
-          href="https://github.com/jacquescogal"
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center justify-center gap-1.5 bg-panel-2 px-2 py-2.5 font-console text-[0.55rem] font-semibold uppercase tracking-console text-bone-soft transition-colors hover:bg-panel-3 hover:text-amber"
-          onClick={onUnlockSource}
-        >
-          <IconBrandGithubFilled size={13} className="stroke-none" aria-hidden="true" />
-          GitHub
-        </a>
-        <a
-          href="https://www.linkedin.com/in/j-cogal/"
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center justify-center gap-1.5 bg-panel-2 px-2 py-2.5 font-console text-[0.55rem] font-semibold uppercase tracking-console text-bone-soft transition-colors hover:bg-panel-3 hover:text-amber"
-        >
-          <IconBrandLinkedin size={13} aria-hidden="true" />
-          LinkedIn
-        </a>
-      </div>
-
-      <div className="flex items-center justify-between border-t border-amber/15 bg-void-deep px-4 py-2">
-        <span className="font-console text-[0.5rem] uppercase tracking-console-wide text-bone-faint">
-          jacquescogal.github.io
-        </span>
-        <span aria-hidden="true" className="h-1.5 w-1.5 animate-lamp-pulse bg-amber" />
-      </div>
-    </div>
+    <span aria-hidden="true" className="reticle-corners" />
   </div>
 );
 
-const FileField = ({ label, value, strong = false }) => (
+const FileField = ({ label, value }) => (
   <div className="min-w-0">
-    <dt className="font-console text-[0.5rem] font-bold uppercase tracking-console-wide text-bone-faint">
+    <dt className="font-console text-micro font-bold uppercase tracking-console-wide text-bone-faint">
       {label}
     </dt>
     {/* File fields wrap rather than truncate: a dossier never abbreviates the
         subject's class to an ellipsis. */}
-    <dd
-      className={cn(
-        "font-console uppercase leading-tight tracking-console text-bone",
-        strong ? "text-[0.82rem] font-bold" : "text-[0.68rem] font-semibold"
-      )}
-    >
+    <dd className="mt-1 font-console text-data font-semibold uppercase leading-tight tracking-console text-bone">
       {value}
     </dd>
   </div>
@@ -1275,29 +1125,36 @@ const FileField = ({ label, value, strong = false }) => (
 /* ── Sector header ────────────────────────────────────────────────────── */
 const SectorHeader = ({ index, name, color, note }) => (
   <div>
-    <div className="slat-light flex items-stretch overflow-hidden rounded-unit border border-amber/20 bg-panel-1">
+    {/* A machined nameplate. Depth comes from the lit top hairline and the
+        shadow it casts, not from a pattern printed across it. */}
+    <div className="flex items-stretch overflow-hidden rounded-unit border border-amber/20 bg-panel-1 shadow-raise">
       <span aria-hidden="true" className="w-1.5 shrink-0" style={{ backgroundColor: color }} />
       <div className="flex min-w-0 flex-1 items-center gap-3 px-3 py-2.5 sm:px-4">
-        <span className="font-console text-[0.62rem] font-semibold tabular text-bone-faint">
+        <span className="font-console text-label font-semibold tabular text-bone-faint">
           {index}
         </span>
-        <h2 className="min-w-0 truncate font-console text-base font-bold uppercase tracking-console text-bone sm:text-xl">
+        <h2 className="min-w-0 truncate font-console text-lede font-bold uppercase tracking-console text-bone sm:text-title">
           {name}
         </h2>
       </div>
     </div>
     {note && (
-      <p className="mt-2.5 max-w-2xl font-read text-[0.82rem] leading-6 text-bone-faint">{note}</p>
+      <p className="mt-2.5 max-w-2xl font-read text-body leading-6 text-bone-faint">{note}</p>
     )}
   </div>
 );
 
-/* ── Experience as a bus of records ──────────────────────────────────── */
-const ExperienceLog = ({ items, channel }) => {
+/* ── Experience as a log ──────────────────────────────────────────────────
+   One continuous ledger, hairline-ruled, with the date in its own gutter. The
+   earlier version hung each record off a drawn spine with a stub and a square
+   node — three floating primitives per row at half-pixel offsets, which read
+   as decoration pretending to be a diagram. A log needs a rule and a column,
+   not a wiring harness. */
+const ExperienceLog = ({ items, channel, caption, markCurrent = false }) => {
   if (!items?.length) {
     return (
       <div className="rounded-unit border border-amber/20 bg-panel-1 px-4 py-5">
-        <p className="font-console text-[0.65rem] uppercase tracking-console text-bone-faint">
+        <p className="font-console text-label uppercase tracking-console text-bone-faint">
           No records on this channel yet.
         </p>
       </div>
@@ -1305,80 +1162,85 @@ const ExperienceLog = ({ items, channel }) => {
   }
 
   return (
-    <ol className="relative">
-      {/* The channel runs the length of the log. */}
-      <span
-        aria-hidden="true"
-        className="absolute left-[6px] top-3 bottom-3 w-[2px] sm:left-[8px]"
-        style={{ backgroundColor: channel, opacity: 0.6 }}
-      />
-      {items.map((item, index) => (
-        <li key={`${item.company}-${item.role}`} className="relative pl-8 pb-4 last:pb-0 sm:pl-11">
-          {/* Node and stub onto the channel. */}
+    <div className="overflow-hidden rounded-unit border border-amber/20">
+      <div className="flex items-center justify-between gap-3 border-b border-amber/15 bg-panel-3 px-3 py-2 sm:px-4">
+        <span className="flex items-center gap-2">
           <span
             aria-hidden="true"
-            className="absolute left-0 top-[1.1rem] h-[2px] w-5 sm:w-7"
+            className="h-1.5 w-1.5 shrink-0"
             style={{ backgroundColor: channel }}
           />
-          <span
-            aria-hidden="true"
-            className="absolute left-[1px] top-[0.85rem] size-3 border-2 bg-void sm:left-[3px]"
-            style={{ borderColor: channel }}
-          />
-          <div className="overflow-hidden rounded-unit border border-amber/20 bg-panel-1">
-            <div className="grid gap-3 p-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)] md:gap-5 md:p-4">
-              <div className="min-w-0">
-                <div className="flex items-baseline justify-between gap-2 md:block">
-                  <h3 className="min-w-0 font-console text-[0.8rem] font-bold uppercase leading-tight tracking-console text-bone">
-                    {item.company}
-                  </h3>
-                  <span className="shrink-0 font-console text-[0.55rem] uppercase tracking-console text-bone-faint md:mt-2 md:block">
-                    {item.date}
+          <span className="con-label-wide text-legend text-bone-soft">{caption}</span>
+        </span>
+        <span className="font-console text-legend tabular uppercase tracking-console text-bone-faint">
+          {items.length} {items.length === 1 ? "record" : "records"}
+        </span>
+      </div>
+
+      <ol className="bg-panel-1">
+        {items.map((item, index) => (
+          <li
+            key={`${item.company}-${item.role}`}
+            className="border-t border-amber/12 first:border-t-0"
+          >
+            <div className="grid gap-2 px-3 py-4 sm:px-4 md:grid-cols-[9rem_minmax(0,1fr)] md:gap-6">
+              <div className="min-w-0 md:pt-0.5">
+                <span className="block font-console text-legend uppercase tracking-console text-bone-faint">
+                  {item.date}
+                </span>
+                {markCurrent && index === 0 && (
+                  <span className="mt-2 hidden font-console text-micro uppercase tracking-console text-amber md:inline-block">
+                    Current post
                   </span>
-                </div>
-                <p className="mt-1.5 font-console text-[0.64rem] font-semibold uppercase tracking-console text-amber-dim">
-                  {item.role}
-                </p>
+                )}
               </div>
+
               <div className="min-w-0">
-                <p className="font-read text-[0.88rem] leading-[1.7] text-bone/85">{item.summary}</p>
+                <h3 className="font-console text-body font-bold uppercase leading-tight tracking-console text-bone">
+                  {item.company}
+                </h3>
+                <p className="mt-1.5 font-console text-label font-semibold uppercase tracking-console text-amber-dim">
+                  {item.role}
+                  {markCurrent && index === 0 && (
+                    <span className="text-amber md:hidden"> · Current post</span>
+                  )}
+                </p>
+                <p className="mt-3 max-w-[68ch] font-read text-body leading-[1.7] text-bone/85">
+                  {item.summary}
+                </p>
                 {item.skills?.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {item.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="flex items-center gap-1 border border-amber/15 px-1.5 py-0.5 font-console text-[0.52rem] font-semibold uppercase tracking-console text-bone-soft"
-                      >
-                        <span
-                          aria-hidden="true"
-                          className="h-1.5 w-1.5"
-                          style={{ backgroundColor: channelForTag(skill) }}
-                        />
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
+                  <TagRow tags={item.skills} className="mt-3.5" />
                 )}
               </div>
             </div>
-            {index === 0 && (
-              <div className="border-t border-amber/15 bg-panel-2 px-3.5 py-1.5">
-                <span className="font-console text-[0.5rem] uppercase tracking-console text-amber-dim">
-                  Current post
-                </span>
-              </div>
-            )}
-          </div>
-        </li>
-      ))}
-    </ol>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 };
+
+/* ── Tags ─────────────────────────────────────────────────────────────────
+   One treatment, used everywhere a tag appears. Uniform on purpose: see the
+   note on MODULE_CHANNELS. A tag is a label, and this one is legible without
+   a key. */
+const TagRow = ({ tags, className }) => (
+  <div className={cn("flex flex-wrap gap-1.5", className)}>
+    {tags.map((tag) => (
+      <span
+        key={tag}
+        className="border border-amber/20 bg-panel-2 px-1.5 py-0.5 font-console text-micro font-semibold uppercase tracking-console text-bone-soft"
+      >
+        {tag}
+      </span>
+    ))}
+  </div>
+);
 
 const FormField = ({ label, htmlFor, children, className }) => (
   <div className={cn("space-y-1.5", className)}>
     <label
-      className="block font-console text-[0.55rem] font-bold uppercase tracking-console-wide text-bone-soft"
+      className="block font-console text-legend font-bold uppercase tracking-console-wide text-bone-soft"
       htmlFor={htmlFor}
     >
       {label}
@@ -1391,7 +1253,7 @@ const LoadingStateCard = ({ label, message }) => (
   <div className="mt-5 overflow-hidden rounded-unit border border-amber/20">
     <div role="status" aria-label={label} className="crt flex items-center gap-2.5 px-4 py-3.5">
       <span aria-hidden="true" className="h-2 w-2 shrink-0 animate-lamp-pulse bg-amber" />
-      <span className="phosphor text-[0.62rem] uppercase tracking-console">{message}</span>
+      <span className="phosphor text-label uppercase tracking-console">{message}</span>
     </div>
   </div>
 );
@@ -1401,7 +1263,7 @@ const ErrorStateCard = ({ message, retryLabel, onRetry }) => (
     <div className="flex flex-col gap-3 bg-blood/12 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-2.5">
         <span aria-hidden="true" className="h-2 w-2 shrink-0 animate-lamp-pulse bg-blood" />
-        <span className="font-console text-[0.64rem] font-semibold uppercase tracking-console text-blood">
+        <span className="font-console text-label font-semibold uppercase tracking-console text-blood">
           {message}
         </span>
       </div>
@@ -1481,7 +1343,7 @@ const CredentialRecords = ({
   if (!selected) {
     return (
       <div className="mt-5 rounded-unit border border-amber/20 bg-panel-1 px-4 py-5">
-        <p className="font-console text-[0.65rem] uppercase tracking-console text-bone-faint">
+        <p className="font-console text-label uppercase tracking-console text-bone-faint">
           No credentials on file yet.
         </p>
       </div>
@@ -1491,16 +1353,21 @@ const CredentialRecords = ({
   const isExpired = selected.status === "expired";
 
   return (
-    <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(17rem,0.75fr)] lg:items-start">
+    /* Record and index are one instrument read side by side, so they share a
+       row and a fixed height. Letting the pair grow to fit eight index rows
+       made the section the tallest thing on the page for no gain — the index
+       is a picker, and a picker scrolls. Both panes scroll inside the frame
+       instead. */
+    <div className="mt-5 grid gap-4 lg:h-80 lg:grid-cols-[minmax(0,1.25fr)_minmax(17rem,0.75fr)] lg:items-stretch">
       {/* The record under examination, with its authentication seal. */}
-      <div className="overflow-hidden rounded-unit border border-amber/25 bg-panel-1">
-        <div className="flex items-start justify-between gap-3 border-b border-amber/15 px-4 py-3 sm:px-5">
-          <span className="font-console text-[0.55rem] font-bold uppercase tracking-console-wide text-bone-soft">
+      <div className="flex min-h-0 flex-col overflow-hidden rounded-unit border border-amber/25 bg-panel-1">
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-amber/15 px-4 py-3 sm:px-5">
+          <span className="font-console text-legend font-bold uppercase tracking-console-wide text-bone-soft">
             Credential record
           </span>
           <span
             className={cn(
-              "seal animate-reticle-snap px-2 py-0.5 text-[0.55rem] font-bold",
+              "seal animate-reticle-snap px-2 py-0.5 text-legend font-bold",
               isExpired ? "text-bone-faint" : "text-amber"
             )}
           >
@@ -1508,23 +1375,23 @@ const CredentialRecords = ({
           </span>
         </div>
 
-        <div className="flex flex-col gap-4 px-4 py-4 sm:px-5">
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5">
           <div className="flex items-start gap-3">
             <CertificationLogo issuer={selected.issuer} iconName={selected.iconName} />
             <div className="min-w-0">
               <h3
-                className="font-console text-[0.85rem] font-bold uppercase leading-snug tracking-console text-bone"
+                className="font-console text-body font-bold uppercase leading-snug tracking-console text-bone"
                 title={selected.title}
               >
                 {selected.title}
               </h3>
-              <p className="mt-1.5 font-console text-[0.62rem] font-semibold uppercase tracking-console text-amber-dim">
+              <p className="mt-1.5 font-console text-label font-semibold uppercase tracking-console text-amber-dim">
                 {selected.issuer}
               </p>
             </div>
           </div>
 
-          <p className="font-read text-[0.88rem] leading-[1.7] text-bone/85">{selected.description}</p>
+          <p className="font-read text-body leading-[1.7] text-bone/85">{selected.description}</p>
 
           <dl className="grid gap-3 border-t border-amber/15 pt-3.5 sm:grid-cols-3">
             <RecordField label="Issued" value={selected.issuedOn || "Not specified"} />
@@ -1537,7 +1404,10 @@ const CredentialRecords = ({
               href={selected.credentialUrl}
               target="_blank"
               rel="noreferrer"
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-fit")}
+              /* Anchored to the plate's foot: matching the index's height
+                 leaves this card slack, and an action that floats mid-panel
+                 reads as content that got cut off. */
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-auto w-fit")}
               onClick={onCredentialOpen}
             >
               Show credential
@@ -1548,14 +1418,14 @@ const CredentialRecords = ({
       </div>
 
       {/* The index. */}
-      <div className="overflow-hidden rounded-unit border border-amber/20">
-        <div className="flex items-center justify-between gap-2 border-b border-amber/15 bg-panel-3 px-3 py-2">
-          <span className="con-label-wide text-[0.52rem] text-bone-soft">Index</span>
-          <span className="font-console text-[0.52rem] tabular uppercase tracking-console text-bone-faint">
+      <div className="flex min-h-0 flex-col overflow-hidden rounded-unit border border-amber/20">
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-amber/15 bg-panel-3 px-3 py-2">
+          <span className="con-label-wide text-micro text-bone-soft">Index</span>
+          <span className="font-console text-micro tabular uppercase tracking-console text-bone-faint">
             {sortedCertifications.length} on file
           </span>
         </div>
-        <div className="max-h-[22rem] space-y-1.5 overflow-y-auto overscroll-contain bg-panel-1 p-2">
+        <div className="max-h-[22rem] min-h-0 flex-1 space-y-1.5 overflow-y-auto overscroll-contain bg-panel-1 p-2">
           {sortedCertifications.map((certification) => {
             const isSelected = certification.title === selected.title;
             const rowExpired = certification.status === "expired";
@@ -1579,7 +1449,7 @@ const CredentialRecords = ({
                 />
                 <span className="min-w-0 flex-1">
                   <span
-                    className="block truncate font-console text-[0.64rem] font-bold uppercase tracking-console text-bone"
+                    className="block truncate font-console text-label font-bold uppercase tracking-console text-bone"
                     title={certification.title}
                   >
                     {certification.title}
@@ -1589,7 +1459,7 @@ const CredentialRecords = ({
                       aria-hidden="true"
                       className={cn("h-1.5 w-1.5", rowExpired ? "bg-bone-faint" : "bg-amber")}
                     />
-                    <span className="truncate font-console text-[0.52rem] uppercase tracking-console text-bone-faint">
+                    <span className="truncate font-console text-micro uppercase tracking-console text-bone-faint">
                       {certification.issuer} · {rowExpired ? "Lapsed" : "Valid"}
                     </span>
                   </span>
@@ -1605,10 +1475,10 @@ const CredentialRecords = ({
 
 const RecordField = ({ label, value }) => (
   <div className="min-w-0">
-    <dt className="font-console text-[0.5rem] font-bold uppercase tracking-console-wide text-bone-faint">
+    <dt className="font-console text-micro font-bold uppercase tracking-console-wide text-bone-faint">
       {label}
     </dt>
-    <dd className="mt-1 break-words font-console text-[0.66rem] font-semibold uppercase tracking-console text-bone">
+    <dd className="mt-1 break-words font-console text-data font-semibold uppercase tracking-console text-bone">
       {value}
     </dd>
   </div>
@@ -1617,51 +1487,23 @@ const RecordField = ({ label, value }) => (
 /* ── A source record ──────────────────────────────────────────────────── */
 const SourceRecord = ({ project, onOpenArchive, onExternal }) => (
   <article className="flex h-full flex-col overflow-hidden rounded-unit border border-amber/20">
-    {/* The channel strip: which signals this source carries. */}
-    <div className="flex h-[4px] shrink-0">
-      {(project.tags?.length ? project.tags : ["Repository"]).map((tag) => (
-        <span
-          key={tag}
-          className="flex-1"
-          style={{ backgroundColor: channelForTag(tag) }}
-          aria-hidden="true"
-        />
-      ))}
-    </div>
-
     <div className="flex flex-1 flex-col bg-panel-1">
       <div className="flex-1 px-4 pt-4">
-        <h3 className="font-console text-[0.8rem] font-bold uppercase leading-snug tracking-console text-bone">
+        <h3 className="font-console text-body font-bold uppercase leading-snug tracking-console text-bone">
           {project.title}
         </h3>
-        <p className="mt-2.5 font-read text-[0.86rem] leading-[1.7] text-bone/85">
+        <p className="mt-2.5 font-read text-body leading-[1.7] text-bone/85">
           {project.description || "Pinned GitHub repository."}
         </p>
 
-        {project.tags?.length > 0 && (
-          <div className="mt-3.5 flex flex-wrap gap-1.5">
-            {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className="flex items-center gap-1 border border-amber/15 px-1.5 py-0.5 font-console text-[0.52rem] font-semibold uppercase tracking-console text-bone-soft"
-              >
-                <span
-                  aria-hidden="true"
-                  className="h-1.5 w-1.5"
-                  style={{ backgroundColor: channelForTag(tag) }}
-                />
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
+        {project.tags?.length > 0 && <TagRow tags={project.tags} className="mt-3.5" />}
       </div>
 
       <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto] gap-px border-t border-amber/15 bg-amber/15">
         <button
           type="button"
           onClick={onOpenArchive}
-          className="flex items-center justify-center gap-1.5 bg-panel-2 px-3 py-2.5 font-console text-[0.55rem] font-semibold uppercase tracking-console text-bone transition-colors hover:bg-amber/20 hover:text-amber"
+          className="flex items-center justify-center gap-1.5 bg-panel-2 px-3 py-2.5 font-console text-legend font-semibold uppercase tracking-console text-bone transition-colors hover:bg-amber/20 hover:text-amber"
         >
           Open README
         </button>

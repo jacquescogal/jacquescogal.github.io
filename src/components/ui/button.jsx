@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
  * rest are unlit plate.
  */
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center gap-1.5 rounded-unit border font-console text-[0.62rem] font-semibold uppercase tracking-console whitespace-nowrap transition-[background-color,border-color,color,box-shadow,transform] duration-150 outline-none select-none disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=\'size-\'])]:size-3.5",
+  "group/button inline-flex shrink-0 items-center justify-center gap-1.5 rounded-unit border font-console text-label font-semibold uppercase tracking-console whitespace-nowrap transition-[background-color,border-color,color,box-shadow,transform] duration-150 outline-none select-none disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=\'size-\'])]:size-3.5",
   {
     variants: {
       variant: {
@@ -31,9 +31,9 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-9 px-3",
-        xs: "h-6 px-2 text-[0.55rem] [&_svg:not([class*=\'size-\'])]:size-3",
-        sm: "h-8 px-2.5 text-[0.58rem] [&_svg:not([class*=\'size-\'])]:size-3",
-        lg: "h-11 px-5 text-[0.72rem]",
+        xs: "h-6 px-2 text-legend [&_svg:not([class*=\'size-\'])]:size-3",
+        sm: "h-8 px-2.5 text-legend [&_svg:not([class*=\'size-\'])]:size-3",
+        lg: "h-11 px-5 text-caption",
         icon: "size-9",
         "icon-xs": "size-6 [&_svg:not([class*=\'size-\'])]:size-3",
         "icon-sm": "size-8 [&_svg:not([class*=\'size-\'])]:size-3",
