@@ -5,12 +5,8 @@ import {
   IconArrowUp,
   IconBulb,
   IconExternalLink,
-  IconSparkles,
 } from "@tabler/icons-react";
-import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -20,6 +16,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { BoardShell, BoardRow } from "./ServiceBoard";
 import { cn } from "@/lib/utils";
 import remarkGfm from "remark-gfm";
 import {
@@ -53,12 +50,12 @@ const markdownComponents = {
   ),
   strong: ({ ...props }) => <strong className="font-semibold" {...props} />,
   em: ({ ...props }) => <em className="italic" {...props} />,
-  ul: ({ ...props }) => <ul className="my-1 list-disc space-y-1 pl-4" {...props} />,
-  ol: ({ ...props }) => <ol className="my-1 list-decimal space-y-1 pl-4" {...props} />,
+  ul: ({ ...props }) => <ul className="my-1.5 list-disc space-y-1 pl-4" {...props} />,
+  ol: ({ ...props }) => <ol className="my-1.5 list-decimal space-y-1 pl-4" {...props} />,
   li: ({ ...props }) => <li className="break-words [overflow-wrap:anywhere]" {...props} />,
   a: ({ ...props }) => (
     <a
-      className="font-medium underline underline-offset-2"
+      className="font-semibold underline underline-offset-2"
       target="_blank"
       rel="noreferrer"
       {...props}
@@ -67,15 +64,20 @@ const markdownComponents = {
   code: ({ inline, ...props }) => (
     <code
       className={cn(
-        "break-words rounded bg-slate-100 px-1 py-0.5 text-[0.92em] [overflow-wrap:anywhere]",
+        "break-words rounded-unit border border-amber/20 bg-void-deep px-1 py-0.5 font-console text-[0.78em] text-amber [overflow-wrap:anywhere]",
         !inline && "block whitespace-pre-wrap p-2"
       )}
       {...props}
     />
   ),
-  pre: ({ ...props }) => <pre className="my-2 overflow-x-auto rounded-md bg-slate-100 p-2" {...props} />,
+  pre: ({ ...props }) => (
+    <pre
+      className="my-2 overflow-x-auto rounded-unit border border-amber/20 bg-void-deep p-2 font-console text-[0.68rem] text-bone/85 [&_code]:border-0 [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-inherit"
+      {...props}
+    />
+  ),
   blockquote: ({ ...props }) => (
-    <blockquote className="my-1 border-l-2 border-slate-300 pl-3 text-slate-600" {...props} />
+    <blockquote className="my-1.5 border-l-2 border-amber pl-3" {...props} />
   ),
 };
 
@@ -83,7 +85,8 @@ const MessageMarkdown = ({ children, className, tone = "default" }) => (
   <div
     className={cn(
       "space-y-1 break-words [overflow-wrap:anywhere]",
-      tone === "inverse" && "[&_code]:bg-white/15 [&_a]:text-white",
+      tone === "inverse" &&
+        "[&_code]:border-amber/25 [&_code]:bg-amber/10 [&_code]:text-amber [&_a]:text-amber",
       className
     )}
   >
@@ -118,7 +121,7 @@ const AssistantDock = ({ hideMobileTrigger = false, onNavigate, onOpenProject, o
     <>
       <aside
         aria-label="Jacques AI workspace"
-        className="sticky top-20 hidden h-[calc(100vh-6rem)] min-h-0 lg:block"
+        className="sticky top-[4.25rem] hidden h-[calc(100vh-5.5rem)] min-h-0 lg:block"
       >
         <AssistantPanel
           onNavigate={onNavigate}
@@ -131,16 +134,21 @@ const AssistantDock = ({ hideMobileTrigger = false, onNavigate, onOpenProject, o
         {!sheetOpen && !hideMobileTrigger && (
           <SheetTrigger
             className={cn(
-              buttonVariants(),
-              "fixed bottom-4 right-4 z-[1200] gap-2 rounded-full bg-slate-950 text-white shadow-lg hover:bg-slate-800 sm:bottom-5 sm:right-5 lg:hidden"
+              buttonVariants({ variant: "default" }),
+              "fixed bottom-4 right-4 z-[1200] h-11 gap-2 px-4 shadow-lift sm:bottom-5 sm:right-5 lg:hidden"
             )}
             onClick={() => setSheetOpen(true)}
           >
-            <IconSparkles className="size-4" />
+            <span
+              aria-hidden="true"
+              className="flex size-4 items-center justify-center border-2 border-[#17110A]"
+            >
+              <span className="size-1.5 bg-[#17110A]" />
+            </span>
             Ask Jacques AI
           </SheetTrigger>
         )}
-        <SheetContent className="w-full p-0 sm:max-w-md" side="right">
+        <SheetContent className="w-full p-0 sm:max-w-md" side="right" showCloseButton={false}>
           <SheetHeader className="sr-only">
             <SheetTitle>Jacques AI workspace</SheetTitle>
             <SheetDescription>Chat with the portfolio assistant.</SheetDescription>
@@ -157,6 +165,7 @@ const AssistantDock = ({ hideMobileTrigger = false, onNavigate, onOpenProject, o
                 onNavigate?.(target);
                 setSheetOpen(false);
               }}
+              onClose={() => setSheetOpen(false)}
             />
           </div>
         </SheetContent>
@@ -165,7 +174,7 @@ const AssistantDock = ({ hideMobileTrigger = false, onNavigate, onOpenProject, o
   );
 };
 
-const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
+const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement, onClose }) => {
   const dispatch = useDispatch();
   const chatHistory = useSelector((state) => state.chatbotState.chatHistory);
   const isThinking = useSelector((state) => state.chatbotState.isThinking);
@@ -248,13 +257,10 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
       started: true,
     });
 
-    let streamOpened = false;
-
     try {
       await streamChatMessage(chatHistory, trimmed, {
         onStage: (stage) => {
           const stageKey = getStageKey(stage);
-          streamOpened = true;
           setStreamState((current) => ({
             ...current,
             activeStage: stageKey,
@@ -268,7 +274,6 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
           }
         },
         onDelta: (delta) => {
-          streamOpened = true;
           streamedMessageRef.current += delta;
           setStreamState((current) => ({
             ...current,
@@ -278,7 +283,6 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
           }));
         },
         onComplete: () => {
-          streamOpened = true;
           clearStageCollapseTimer();
           const parsedMessage = linkTextParser(streamedMessageRef.current);
           if (/swim/i.test(parsedMessage.message)) {
@@ -342,28 +346,54 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
   };
 
   return (
-    <Card className="h-full min-h-0 gap-3 border-slate-200 bg-white/95 py-0 shadow-sm">
-      <CardHeader className="gap-3 border-b px-3 py-3 sm:px-4 sm:py-4">
-        <div className="flex items-center gap-3">
-          <div className="min-w-0">
-            <Badge variant="secondary" className="mb-2 gap-1 bg-emerald-50 text-emerald-700">
-              <IconSparkles className="size-3" />
-              Portfolio AI
-            </Badge>
-            <CardTitle className="text-base">Jacques AI workspace</CardTitle>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-unit border border-amber/20 bg-panel-1">
+      {/* The interchange's own nameplate. */}
+      <div className="flex shrink-0 items-center gap-2.5 border-b border-amber/20 bg-panel-3 px-3 py-2.5">
+        <span
+          aria-hidden="true"
+          className="flex size-6 shrink-0 items-center justify-center border-2 border-amber bg-void-deep"
+        >
+          <span className="size-2 animate-lamp-pulse bg-amber" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="truncate font-console text-[0.72rem] font-bold uppercase tracking-console text-bone">
+            Jacques AI
+          </div>
+          <div className="truncate font-console text-[0.52rem] uppercase tracking-console text-bone-faint">
+            Analysis engine · all modules
           </div>
         </div>
-        <p className="text-sm leading-5 text-slate-600">
-          Ask focused questions about Jacques' work, projects, and fit.
-        </p>
-      </CardHeader>
+        {onClose && (
+          <Button type="button" variant="outline" size="icon-sm" onClick={onClose}>
+            <span aria-hidden="true" className="text-sm leading-none">×</span>
+            <span className="sr-only">Close</span>
+          </Button>
+        )}
+      </div>
 
-      <CardContent className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_auto] gap-3 overflow-hidden p-2 sm:p-3">
+      <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_auto] gap-2.5 p-2.5">
+        {/* The transcript. Question slips are enamel; answers are printed on
+            information-panel stock, because answers are the evidence. */}
+        {/* A quiet recessed well, not moquette: this field is tall and holds
+            running text, so the woven pattern belongs on the diagram band
+            instead, where it is a decorative surface rather than a backdrop. */}
         <div
           ref={chatHistoryRef}
-          className="min-h-0 overflow-y-auto overscroll-contain rounded-xl border bg-slate-50"
+          className="rain-glass min-h-0 overflow-y-auto overscroll-contain rounded-unit border border-amber/15 bg-void-deep shadow-well"
         >
-          <div className="space-y-3 p-3">
+          <div className="space-y-2.5 p-2.5">
+            {!chatHistory.some((entry) => entry.entity === "USER") && !streamState.started && (
+              <div className="rounded-unit border border-amber/20 bg-panel-2 px-3 py-2.5">
+                <div className="font-console text-[0.52rem] font-bold uppercase tracking-console-wide text-bone-faint">
+                  Query interface
+                </div>
+                <p className="mt-2 font-read text-[0.84rem] leading-[1.7] text-bone/85">
+                  Ask about experience, projects, or fit. Answers are retrieved from the
+                  real repositories and credentials on this site, and the route to the
+                  evidence is drawn on the module graph.
+                </p>
+              </div>
+            )}
             {chatHistory.map((chatMessage, index) => (
               <AssistantMessage
                 key={`${chatMessage.entity}-${index}`}
@@ -380,55 +410,57 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
         </div>
 
         <div className="space-y-2">
-          <div className="relative flex items-center justify-between">
+          <div className="relative flex items-center justify-between gap-2">
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="gap-2 text-slate-600"
               disabled={loadingSuggestions || isThinking}
               onClick={loadSuggestions}
+              aria-expanded={suggestionsMenuOpen}
             >
-              <IconBulb className="size-4" />
+              <IconBulb />
               Suggestions
             </Button>
-            <span className="text-xs tabular-nums text-slate-400">
+            <span className="font-console text-[0.55rem] tabular text-bone-faint">
               {message.length}/{MAX_CHAT_MESSAGE_LENGTH}
             </span>
             {suggestionsMenuOpen && (
               <div
                 role="menu"
                 aria-label="Suggested questions"
-                className="absolute inset-x-0 bottom-full z-20 mb-2 max-w-full space-y-2 rounded-xl border border-slate-300 bg-slate-50 p-3 text-sm shadow-xl ring-1 ring-slate-900/10"
+                className="absolute inset-x-0 bottom-full z-20 mb-2 max-w-full space-y-1.5 rounded-unit border border-amber/30 bg-panel-3 p-2.5 shadow-lift"
               >
-                <div className="flex items-center gap-2 text-sm font-medium text-slate-800">
-                  <IconBulb className="size-4 text-amber-500" />
+                <div className="font-console text-[0.52rem] font-bold uppercase tracking-console-wide text-bone-soft">
                   Suggested questions
                 </div>
                 {loadingSuggestions ? (
-                  <p className="text-sm text-slate-500">Loading suggestions...</p>
+                  <p className="font-console text-[0.62rem] uppercase tracking-console text-bone-faint">
+                    Loading…
+                  </p>
                 ) : suggestions.length ? (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     {suggestions.map((suggestion) => (
-                      <Button
+                      <button
                         key={suggestion}
                         type="button"
                         role="menuitem"
-                        variant="outline"
-                        className="h-auto w-full min-w-0 justify-start whitespace-normal break-words text-left [overflow-wrap:anywhere]"
+                        className="w-full min-w-0 break-words rounded-unit border border-amber/15 bg-panel-2 px-2.5 py-2 text-left font-read text-[0.8rem] leading-5 text-bone-soft transition-colors [overflow-wrap:anywhere] hover:border-amber hover:bg-panel-4 hover:text-bone"
                         onClick={() => deliverMessage(suggestion)}
                       >
                         {suggestion}
-                      </Button>
+                      </button>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-500">No suggestions available.</p>
+                  <p className="font-console text-[0.62rem] uppercase tracking-console text-bone-faint">
+                    No suggestions available.
+                  </p>
                 )}
               </div>
             )}
           </div>
-          <Separator />
+
           <form
             className="flex items-end gap-2"
             onSubmit={(event) => {
@@ -438,8 +470,9 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
           >
             <Textarea
               aria-label="Message Jacques AI"
-              className="h-14 min-h-14 min-w-0 flex-1 resize-none bg-white py-3"
-              placeholder="Ask about experience, projects, or fit..."
+              data-assistant-input
+              className="h-14 min-h-14 min-w-0 flex-1 resize-none py-3 text-[0.72rem]"
+              placeholder="Ask about experience or projects…"
               maxLength={MAX_CHAT_MESSAGE_LENGTH}
               value={message}
               onChange={(event) => setMessage(clampChatMessage(event.target.value))}
@@ -453,7 +486,7 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
             <Button
               type="submit"
               size="icon"
-              className="h-14 w-14 shrink-0 rounded-xl bg-slate-950 text-white hover:bg-slate-800"
+              className="h-14 w-14 shrink-0"
               disabled={!message.trim() || isThinking}
             >
               <IconArrowUp className="size-5" />
@@ -461,11 +494,16 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement }) => {
             </Button>
           </form>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
+/**
+ * The assistant's stages, on the board they always were. An SSE stream of
+ * processing stages is structurally a departure board: rows that update in
+ * place as real state changes, with a lamp per row.
+ */
 const AssistantStreamingMessage = ({ streamState }) => {
   const activeStageIndex = STREAM_STAGES.findIndex((stage) => stage.key === streamState.activeStage);
   const visibleStageIndex = activeStageIndex >= 0 ? activeStageIndex : 0;
@@ -473,57 +511,46 @@ const AssistantStreamingMessage = ({ streamState }) => {
   const visibleStages = STREAM_STAGES.slice(0, visibleStageIndex + 1);
 
   return (
-    <div className="mr-auto max-w-[88%] rounded-xl border bg-white px-3 py-2.5 text-sm leading-6 text-slate-700 shadow-sm">
+    <div className="space-y-2">
       {streamState.collapsed ? (
         <div
           data-stream-collapsed-stage
-          className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700"
+          className="crt flex items-center gap-2.5 rounded-unit border border-amber/20 px-2.5 py-1.5"
         >
           <span
             data-stream-stage-dot
-            className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.14)]"
             aria-hidden="true"
+            className="h-2 w-2 shrink-0 animate-lamp-pulse bg-amber"
           />
-          <span>{activeStageLabel}</span>
+          <span className="phosphor text-[0.6rem] uppercase tracking-console">
+            {activeStageLabel}
+          </span>
         </div>
       ) : (
-        <div className="space-y-0.5">
-          {visibleStages.map((stage, index) => {
-            const isActive = stage.key === streamState.activeStage;
-            const isLast = index === visibleStages.length - 1;
-
-            return (
-              <div
-                key={stage.key}
-                className={cn(
-                  "grid grid-cols-[14px_minmax(0,1fr)] gap-2 text-xs font-medium",
-                  isActive ? "text-emerald-700" : "text-slate-500"
-                )}
-              >
-                <span className="relative flex justify-center pt-1.5" aria-hidden="true">
-                  <span
-                    data-stream-stage-dot
-                    className={cn(
-                      "relative z-10 h-2.5 w-2.5 rounded-full border-2 border-white",
-                      isActive
-                        ? "bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.16)]"
-                        : "bg-slate-300"
-                    )}
-                  />
-                  {!isLast && (
-                    <span className="absolute top-4 h-[calc(100%+0.25rem)] w-px bg-slate-200" />
-                  )}
-                </span>
-                <span className="min-w-0">{stage.label}</span>
-              </div>
-            );
-          })}
-        </div>
+        <BoardShell title="Working">
+          <div role="status" aria-label={`Assistant stage: ${activeStageLabel}`}>
+            {visibleStages.map((stage) => {
+              const isActive = stage.key === streamState.activeStage;
+              return (
+                // Every visible stage keeps its own lamp, so the whole route
+                // the request has travelled stays readable, not just the tip.
+                <BoardRow
+                  key={stage.key}
+                  label={stage.label}
+                  status={isActive ? "delayed" : "good"}
+                  value={isActive ? "···" : "done"}
+                  emphasis={isActive}
+                  lampProps={{ "data-stream-stage-dot": "" }}
+                />
+              );
+            })}
+          </div>
+        </BoardShell>
       )}
       {streamState.message && (
-        <MessageMarkdown className="mt-2 text-slate-700">
-          {streamState.message}
-        </MessageMarkdown>
+        <div className="animate-phosphor-in rounded-unit border border-amber/20 bg-panel-2 px-3 py-2.5 font-read text-[0.86rem] leading-[1.7] text-bone/90">
+          <MessageMarkdown>{streamState.message}</MessageMarkdown>
+        </div>
       )}
     </div>
   );
@@ -532,74 +559,90 @@ const AssistantStreamingMessage = ({ streamState }) => {
 const AssistantMessage = ({ chatMessage, onNavigate, onOpenProject, onAchievement }) => {
   if (chatMessage.entity === "SYSTEM") {
     return (
-      <div className="break-words rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 [overflow-wrap:anywhere]">
-        <MessageMarkdown>{chatMessage.message}</MessageMarkdown>
+      <div className="rounded-unit border border-blood/50 bg-blood/12 px-2.5 py-2">
+        <div className="mb-1 flex items-center gap-2">
+          <span
+            aria-hidden="true"
+            className="h-1.5 w-1.5 shrink-0 animate-lamp-pulse bg-blood"
+          />
+          <span className="font-console text-[0.5rem] font-bold uppercase tracking-console-wide text-blood">
+            Signal fault
+          </span>
+        </div>
+        <div className="break-words font-console text-[0.66rem] leading-5 text-blood/90 [overflow-wrap:anywhere]">
+          <MessageMarkdown tone="inverse">{chatMessage.message}</MessageMarkdown>
+        </div>
       </div>
     );
   }
 
   if (chatMessage.entity === "USER") {
     return (
-      <div className="ml-auto max-w-[85%] break-words rounded-xl bg-slate-950 px-3 py-2 text-sm text-white [overflow-wrap:anywhere]">
+      <div className="ml-auto max-w-[88%] rounded-unit border border-amber/30 bg-panel-3 px-3 py-2 font-console text-[0.74rem] leading-[1.6] text-bone">
         <MessageMarkdown tone="inverse">{chatMessage.message}</MessageMarkdown>
       </div>
     );
   }
 
   return (
-    <div className="mr-auto max-w-[88%] rounded-xl border bg-white px-3 py-2 text-sm leading-6 text-slate-700">
+    <div className="mr-auto max-w-[92%] animate-phosphor-in rounded-unit border border-amber/20 bg-panel-2 px-3 py-2.5 font-read text-[0.86rem] leading-[1.7] text-bone/90">
       <MessageMarkdown>{chatMessage.message}</MessageMarkdown>
       {chatMessage.links?.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {chatMessage.links.map((link, index) =>
-            link.type === "project" ? (
-              <Button
-                key={`${link.repoUrl}-${link.headingSlug}-${index}`}
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  onAchievement?.("follow-thread");
-                  if (link.headingSlug) {
-                    onAchievement?.("deep-link");
-                  }
-                  onOpenProject?.(link);
-                }}
-              >
-                {link.text}
-              </Button>
-            ) : link.type === "internal" ? (
-              <Button
-                key={`${link.where}-${link.experienceTab || link.certificationSlug || "section"}-${index}`}
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  onAchievement?.("follow-thread");
-                  onNavigate?.(link);
-                }}
-              >
-                {link.text}
-              </Button>
-            ) : (
-              <a
-                key={`${link.where}-${index}`}
-                href={link.where}
-                target="_blank"
-                rel="noreferrer"
-                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1")}
-                onClick={() => {
-                  onAchievement?.("follow-thread");
-                  if (isGitHubUrl(link.where)) {
-                    onAchievement?.("source-curious");
-                  }
-                }}
-              >
-                {link.text}
-                <IconExternalLink className="size-3" />
-              </a>
-            )
-          )}
+        <div className="mt-3 border-t border-amber/20 pt-2.5">
+          <div className="mb-1.5 font-console text-[0.5rem] font-bold uppercase tracking-console-wide text-amber-dim">
+            Route to evidence
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {chatMessage.links.map((link, index) =>
+              link.type === "project" ? (
+                <Button
+                  key={`${link.repoUrl}-${link.headingSlug}-${index}`}
+                  type="button"
+                  variant="secondary"
+                  size="xs"
+                  onClick={() => {
+                    onAchievement?.("follow-thread");
+                    if (link.headingSlug) {
+                      onAchievement?.("deep-link");
+                    }
+                    onOpenProject?.(link);
+                  }}
+                >
+                  {link.text}
+                </Button>
+              ) : link.type === "internal" ? (
+                <Button
+                  key={`${link.where}-${link.experienceTab || link.certificationSlug || "section"}-${index}`}
+                  type="button"
+                  variant="secondary"
+                  size="xs"
+                  onClick={() => {
+                    onAchievement?.("follow-thread");
+                    onNavigate?.(link);
+                  }}
+                >
+                  {link.text}
+                </Button>
+              ) : (
+                <a
+                  key={`${link.where}-${index}`}
+                  href={link.where}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={cn(buttonVariants({ variant: "secondary", size: "xs" }))}
+                  onClick={() => {
+                    onAchievement?.("follow-thread");
+                    if (isGitHubUrl(link.where)) {
+                      onAchievement?.("source-curious");
+                    }
+                  }}
+                >
+                  {link.text}
+                  <IconExternalLink />
+                </a>
+              )
+            )}
+          </div>
         </div>
       )}
     </div>

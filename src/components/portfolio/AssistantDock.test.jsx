@@ -183,11 +183,9 @@ test("shows suggestions in a popup menu and caches until a new AI message arrive
   expect(screen.getByRole("menu", { name: /Suggested questions/i })).toHaveClass(
     "inset-x-0",
     "max-w-full",
-    "border-slate-300",
-    "bg-slate-50",
-    "shadow-xl",
-    "ring-1",
-    "ring-slate-900/10"
+    "border-amber/30",
+    "bg-panel-3",
+    "rounded-unit"
   );
   expect(screen.getByRole("menuitem", { name: "What did Jacques build at UBS?" })).toHaveClass(
     "min-w-0",
@@ -406,7 +404,7 @@ test("keeps streaming nodes visible briefly after crafting starts", async () => 
   expect(screen.getByText("Starting answer")).toBeInTheDocument();
   expect(document.querySelectorAll("[data-stream-stage-dot]")).toHaveLength(3);
   document.querySelectorAll("[data-stream-stage-dot]").forEach((dot) => {
-    expect(dot).toHaveClass("h-2.5", "w-2.5");
+    expect(dot).toHaveClass("h-2", "w-2");
     expect(dot).not.toHaveClass("size-2");
   });
 
@@ -416,7 +414,7 @@ test("keeps streaming nodes visible briefly after crafting starts", async () => 
 
   expect(screen.getByText("Crafting response")).toBeInTheDocument();
   expect(screen.queryByText("Fetching related sources")).not.toBeInTheDocument();
-  expect(document.querySelector("[data-stream-collapsed-stage]")).toHaveClass("rounded-full");
+  expect(document.querySelector("[data-stream-collapsed-stage]")).toHaveClass("crt", "rounded-unit");
   expect(document.querySelector("[data-stream-stage-dot]")).toHaveClass("h-2", "w-2");
 });
 

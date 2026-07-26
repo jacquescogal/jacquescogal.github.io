@@ -1,10 +1,6 @@
 import React, { useEffect } from "react";
 import { toast } from "sonner";
-import {
-  IconCircleCheck,
-  IconLock,
-  IconTrophy,
-} from "@tabler/icons-react";
+import { IconLock } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -15,6 +11,10 @@ import { cn } from "@/lib/utils";
 
 const toastDurationMs = 3200;
 
+/**
+ * The evidence log. Entries are logged as the visitor actually turns things
+ * up; unlogged ones sit as empty dashed slots on the console.
+ */
 export function AchievementCenter({
   achievements,
   progress,
@@ -25,6 +25,8 @@ export function AchievementCenter({
   const unlockedCount = progress?.unlocked ?? 0;
   const totalCount = progress?.total ?? achievements.length;
   const progressRatio = Math.max(0, Math.min(progress?.ratio ?? 0, 1));
+  // The accessible name keeps the product's own term; "journey record" is the
+  // world's visible wording, not a rename of the feature.
   const progressLabel = `Achievements ${unlockedCount}/${totalCount}`;
 
   useEffect(() => {
@@ -52,60 +54,65 @@ export function AchievementCenter({
   }, [clearLatestUnlock, latestUnlock]);
 
   return (
-    <>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            aria-label={progressLabel}
-            className="relative h-8 overflow-hidden border-slate-300 bg-white/95 px-2.5 text-slate-800 shadow-sm"
-          >
-            <IconTrophy className="size-4 text-emerald-600" aria-hidden="true" />
-            <span className="text-xs font-semibold">{unlockedCount}/{totalCount}</span>
-            <span
-              data-achievement-progress-line
-              className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-emerald-500 transition-transform"
-              style={{ transform: `scaleX(${progressRatio})` }}
-            />
-          </Button>
-        </PopoverTrigger>
-
-        <PopoverContent
-          role="dialog"
-          aria-label="Achievements"
-          className="w-[min(calc(100vw-1rem),22rem)] overflow-hidden rounded-lg border-slate-300 bg-white shadow-xl"
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          aria-label={progressLabel}
+          className="relative overflow-hidden"
         >
-          <div className="border-b border-slate-200 px-3 py-2">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <h2 className="text-sm font-semibold text-slate-950">Achievements</h2>
-                <p className="text-xs text-slate-500">{unlockedCount} of {totalCount} unlocked</p>
-              </div>
-            </div>
-            <div className="mt-2 h-1 overflow-hidden rounded-full bg-slate-100">
-              <div
-                className="h-full rounded-full bg-emerald-500 transition-[width]"
-                style={{ width: `${progressRatio * 100}%` }}
-              />
-            </div>
-          </div>
+          <span
+            aria-hidden="true"
+            className="flex h-3 w-3 items-center justify-center border-2 border-current"
+          />
+          <span className="font-console text-[0.62rem] font-semibold tabular tracking-normal">
+            {unlockedCount}/{totalCount}
+          </span>
+          <span
+            data-achievement-progress-line
+            className="absolute inset-x-0 bottom-0 h-[2px] origin-left bg-amber transition-transform duration-500"
+            style={{ transform: `scaleX(${progressRatio})` }}
+          />
+        </Button>
+      </PopoverTrigger>
 
-          <div className="max-h-[min(70vh,27rem)] overflow-y-auto p-2">
-            <ul className="space-y-1.5">
-              {achievements.map((achievement) => (
-                <AchievementRow
-                  key={achievement.id}
-                  achievement={achievement}
-                  unlocked={isUnlocked(achievement.id)}
-                />
-              ))}
-            </ul>
+      <PopoverContent
+        role="dialog"
+        aria-label="Achievements"
+        className="w-[min(calc(100vw-1rem),23rem)] overflow-hidden"
+      >
+        <div className="border-b border-amber/20 bg-panel-3 px-3.5 py-3">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="font-console text-[0.7rem] font-bold uppercase tracking-console text-bone">
+              Evidence log
+            </h2>
+            <span className="font-console text-[0.55rem] tabular uppercase tracking-console text-bone-faint">
+              {unlockedCount}/{totalCount} logged
+            </span>
           </div>
-        </PopoverContent>
-      </Popover>
-    </>
+          <div className="mt-2.5 h-[4px] overflow-hidden bg-void-deep">
+            <div
+              className="h-full bg-amber transition-[width] duration-500"
+              style={{ width: `${progressRatio * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="max-h-[min(70vh,27rem)] overflow-y-auto p-2">
+          <ul className="space-y-1.5">
+            {achievements.map((achievement) => (
+              <AchievementRow
+                key={achievement.id}
+                achievement={achievement}
+                unlocked={isUnlocked(achievement.id)}
+              />
+            ))}
+          </ul>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -113,18 +120,30 @@ function AchievementToastContent({ latestUnlock }) {
   return (
     <div
       role="status"
-      className="w-[min(calc(100vw-2rem),20rem)] rounded-lg border border-emerald-200 bg-white p-3 text-slate-900 shadow-xl"
+      className="w-[min(calc(100vw-2rem),21rem)] overflow-hidden rounded-unit border border-amber/30 bg-panel-2 shadow-lift"
     >
-      <div className="flex gap-2">
-        <IconCircleCheck className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-hidden="true" />
+      <div className="flex items-center justify-between gap-2 border-b border-amber/20 bg-panel-3 px-3 py-1.5">
+        {/* The live region still announces plainly what happened; the stamp is
+            the world's way of showing it, not a replacement for saying it. */}
+        <span className="font-console text-[0.5rem] font-bold uppercase tracking-console-wide text-bone-soft">
+          Achievement unlocked
+        </span>
+        <span className="seal animate-reticle-snap px-1.5 text-[0.5rem] font-bold text-amber">
+          Logged
+        </span>
+      </div>
+      <div className="flex items-start gap-2.5 px-3 py-2.5">
+        <span
+          aria-hidden="true"
+          className="mt-0.5 flex size-7 shrink-0 items-center justify-center border border-amber/40 bg-amber/15 text-amber"
+        >
+          <latestUnlock.achievement.icon className="size-4" />
+        </span>
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase text-emerald-700">
-            Achievement unlocked
-          </p>
-          <p className="mt-0.5 text-sm font-semibold text-slate-950">
+          <p className="font-console text-[0.74rem] font-bold uppercase tracking-console text-bone">
             {latestUnlock.achievement.name}
           </p>
-          <p className="mt-0.5 text-xs leading-5 text-slate-600">
+          <p className="mt-1.5 font-read text-[0.8rem] leading-5 text-bone-soft">
             {latestUnlock.achievement.flavourText}
           </p>
         </div>
@@ -142,28 +161,43 @@ function AchievementRow({ achievement, unlocked }) {
   return (
     <li
       className={cn(
-        "flex gap-2 rounded-md border p-2",
+        "flex gap-2.5 rounded-unit border p-2.5",
         unlocked
-          ? "border-emerald-200 bg-emerald-50/70"
-          : "border-slate-200 bg-slate-50/80",
+          ? "border-amber/50 bg-amber/10"
+          : "border-dashed border-bone-faint/40 bg-transparent",
       )}
     >
       <span
         className={cn(
-          "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md",
-          unlocked ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-500",
+          "mt-0.5 flex size-7 shrink-0 items-center justify-center border",
+          unlocked
+            ? "border-amber/40 bg-amber/15 text-amber"
+            : "border-bone-faint/30 bg-void-deep text-bone-faint",
         )}
       >
         <Icon className="size-4" aria-hidden="true" />
       </span>
-      <span className="min-w-0">
-        <span className="block text-sm font-semibold leading-5 text-slate-950">
+      <span className="min-w-0 flex-1">
+        <span
+          className={cn(
+            "block font-console text-[0.64rem] font-bold uppercase tracking-console",
+            unlocked ? "text-bone" : "text-bone-soft",
+          )}
+        >
           {title}
         </span>
-        <span className="block text-xs leading-5 text-slate-600">
+        <span className="mt-1 block font-read text-[0.78rem] leading-5 text-bone-faint">
           {detail}
         </span>
       </span>
+      {unlocked && (
+        <span
+          aria-hidden="true"
+          className="mt-1 shrink-0 self-start font-console text-[0.5rem] font-bold uppercase tracking-console-wide text-amber"
+        >
+          ✓
+        </span>
+      )}
     </li>
   );
 }

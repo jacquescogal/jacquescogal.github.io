@@ -159,7 +159,7 @@ test("renders the portfolio profile section", async () => {
     expect(screen.getAllByRole("button", { name: /Resume/i }).length).toBeGreaterThan(0);
   });
   screen.getAllByRole("button", { name: /Resume/i }).forEach((button) => {
-    expect(button).toHaveClass("border-emerald-200", "bg-emerald-50", "text-emerald-700", "hover:bg-emerald-100");
+    expect(button).toHaveClass("bg-amber", "uppercase", "tracking-console");
   });
   expect(screen.getByRole("complementary", { name: /Jacques AI workspace/i })).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: /Software Engineer/i })).toBeInTheDocument();
@@ -223,7 +223,8 @@ test("renders certifications and promotes a supporting certification", async () 
   await userEvent.click(fundamentalsButton);
 
   const certificationsSection = screen.getByRole("region", { name: /Certifications/i });
-  expect(within(certificationsSection).getByText(/Credential ID: 4609/i)).toBeInTheDocument();
+  expect(within(certificationsSection).getByText(/Credential ID/i)).toBeInTheDocument();
+  expect(within(certificationsSection).getByText(/4609/)).toBeInTheDocument();
 });
 
 test("renders work, education, and hackathon cards from the experience endpoint", async () => {
@@ -363,5 +364,6 @@ test("chat certification links select the matching certification", async () => {
   await userEvent.click(await screen.findByRole("button", { name: /Open certification/i }));
 
   const certificationsSection = screen.getByRole("region", { name: /Certifications/i });
-  expect(within(certificationsSection).getByText(/Credential ID: 4609/i)).toBeInTheDocument();
+  expect(within(certificationsSection).getByText(/Credential ID/i)).toBeInTheDocument();
+  expect(within(certificationsSection).getByText(/4609/)).toBeInTheDocument();
 });

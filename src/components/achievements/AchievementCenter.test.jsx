@@ -51,7 +51,7 @@ test("progress button and hidden clues render", async () => {
 
   const trigger = screen.getByRole("button", { name: "Achievements 0/10" });
   expect(trigger).toHaveTextContent("0/10");
-  expect(trigger.querySelector("[data-achievement-progress-line]")).toHaveClass("bg-emerald-500");
+  expect(trigger.querySelector("[data-achievement-progress-line]")).toHaveClass("bg-amber");
 
   await userEvent.click(trigger);
 
