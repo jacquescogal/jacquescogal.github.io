@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { BoardShell, BoardRow } from "./ServiceBoard";
+import { MoteField } from "./Atmosphere";
 import { cn } from "@/lib/utils";
 import remarkGfm from "remark-gfm";
 import {
@@ -31,8 +32,12 @@ import { linkTextParser } from "../../utils/Links";
 /* The opening question the console arrives with. It is loaded into the field
    as real text, not as a hint: a placeholder cannot be sent, so a visitor who
    liked the question still had to type it out. Typed in, Send works on the
-   first press and the question is theirs to edit or delete. */
-const FIRST_CONTACT_QUESTION = "Who are you? And how was this built?";
+   first press and the question is theirs to edit or delete.
+
+   It appears once, on arrival. Clear leaves an empty field — a visitor who
+   has just wiped the transcript is starting their own question, not being
+   handed the opening one back. */
+const FIRST_CONTACT_QUESTION = "Who are you and how was this built?";
 
 const STREAM_STAGES = [
   { key: "message_received", label: "Message received" },
@@ -320,8 +325,7 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement, onClose }) =
     clearStageCollapseTimer();
     streamedMessageRef.current = "";
     setStreamState(INITIAL_STREAM_STATE);
-    // A real reset: the composer goes back to the question it arrived with.
-    setMessage(FIRST_CONTACT_QUESTION);
+    setMessage("");
     dispatch(resetChatHistory());
   };
 
@@ -359,9 +363,13 @@ const AssistantPanel = ({ onNavigate, onOpenProject, onAchievement, onClose }) =
             instead, where it is a decorative surface rather than a backdrop. */}
         <div
           ref={chatHistoryRef}
-          className="min-h-0 overflow-y-auto overscroll-contain rounded-unit border border-amber/15 bg-void-deep shadow-well"
+          className="relative min-h-0 overflow-y-auto overscroll-contain rounded-unit border border-amber/15 bg-void-deep shadow-well"
         >
-          <div className="space-y-2.5 p-2.5">
+          {/* The engine's well is the tallest empty surface on the page. Dust
+              in it is the same room, and it stops a waiting transcript from
+              reading as a dead panel. */}
+          <MoteField variant="dock" />
+          <div className="relative space-y-2.5 p-2.5">
             {!chatHistory.some((entry) => entry.entity === "USER") && !streamState.started && (
               <div className="rounded-unit border border-amber/20 bg-panel-2 px-3 py-2.5">
                 <div className="font-console text-micro font-bold uppercase tracking-console-wide text-bone-faint">

@@ -177,7 +177,7 @@ test("opens with the first-contact question already sendable and never asks the 
 
   const textbox = screen.getByRole("textbox", { name: /Message Jacques AI/i });
   // Real text, not a placeholder: Send has to work on the first press.
-  expect(textbox).toHaveValue("Who are you? And how was this built?");
+  expect(textbox).toHaveValue("Who are you and how was this built?");
   expect(textbox).toHaveAttribute("placeholder", "Ask about experience or projects…");
   expect(screen.queryByRole("button", { name: /Suggestions/i })).not.toBeInTheDocument();
 
@@ -189,7 +189,7 @@ test("opens with the first-contact question already sendable and never asks the 
 
   expect(streamChatMessage).toHaveBeenCalledWith(
     expect.any(Array),
-    "Who are you? And how was this built?",
+    "Who are you and how was this built?",
     expect.any(Object)
   );
   expect(await screen.findByText("Built with Vite and a FastAPI retrieval backend.")).toBeInTheDocument();
@@ -230,8 +230,10 @@ test("clear resets the transcript to the assistant greeting and is disabled when
   ]);
   expect(screen.getByText("Hello!")).toBeInTheDocument();
   expect(screen.getByRole("button", { name: /Clear/i })).toBeDisabled();
-  // A full reset: the composer is back to the question the dock arrived with.
-  expect(composer).toHaveValue("Who are you? And how was this built?");
+  // Clear leaves the composer empty. The opening question is an arrival
+  // gesture; handing it back to someone who just wiped the transcript would
+  // be putting words in the mouth of a visitor about to type their own.
+  expect(composer).toHaveValue("");
 });
 
 test("clamps an over-long assistant prompt before it reaches the composer", async () => {

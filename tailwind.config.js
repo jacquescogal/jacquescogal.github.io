@@ -17,15 +17,21 @@ module.exports = {
       },
       colors: {
         // Warm near-black. Tungsten and smoke, never blue-black, never pure #000.
+        //
+        // The ramp is wider than it looks. The first cut put the page field at
+        // #0B0907 and panels at #14100C — close enough that no panel read as an
+        // object sitting on anything, and a stripe pattern was doing the whole
+        // job of separating planes. The field drops, the panels lift, and each
+        // step is a real perceptual move (~0.045 OKLCH L) rather than a nudge.
         void: {
-          DEFAULT: '#0B0907',
-          deep: '#060504',
+          DEFAULT: '#080706',
+          deep: '#040302',
         },
         panel: {
-          1: '#14100C',
-          2: '#1D1811',
-          3: '#262019',
-          4: '#332B21',
+          1: '#191410',
+          2: '#221C15',
+          3: '#2D251C',
+          4: '#3A3126',
         },
         // Sodium-vapour phosphor: the signal colour of the whole console.
         amber: {
@@ -51,7 +57,10 @@ module.exports = {
         bone: {
           DEFAULT: '#EDE3D4',
           soft: '#A99C8A',
-          faint: '#8A7E6C',
+          // Lifted with the panels. At #8A7E6C this tier read 3.8:1 on the
+          // brighter plates — legible-looking and measurably not. The quiet
+          // tier stays quiet; it just stays above 4.5:1 while doing it.
+          faint: '#9A8E7A',
         },
         // Signal channels: six, drawn from the world's own palette so
         // classification never breaks the room's light.
@@ -107,6 +116,11 @@ module.exports = {
       },
       boxShadow:
       {
+        // One light source, high and to the left. Every raised surface takes a
+        // lit hairline along its top edge and casts down-right; every recessed
+        // surface takes an inset. Fill values alone cannot separate planes this
+        // close to black — the edge cue does most of the work.
+        'plate': 'inset 0 1px 0 rgba(242,169,59,0.11), inset 1px 0 0 rgba(242,169,59,0.045), 0 2px 4px rgba(0,0,0,0.55), 0 14px 30px -10px rgba(0,0,0,0.75)',
         'raise': '0 1px 0 rgba(242,169,59,0.08) inset, 0 6px 18px rgba(0,0,0,0.55)',
         'well': 'inset 0 2px 10px rgba(0,0,0,0.7)',
         'lift': '0 18px 50px rgba(0,0,0,0.7)',
@@ -137,6 +151,48 @@ module.exports = {
           '70%': { transform: 'scale(2.4)', opacity: '0' },
           '100%': { transform: 'scale(2.4)', opacity: '0' },
         },
+        // Dust in the keylight. Each mote carries its own duration, delay and
+        // drift vector, so nothing beats in unison.
+        'mote': {
+          '0%': { transform: 'translate3d(0, 0, 0)', opacity: '0' },
+          '12%': { opacity: 'var(--mote-peak, 0.16)' },
+          '76%': { opacity: 'var(--mote-peak, 0.16)' },
+          '100%': {
+            transform: 'translate3d(var(--mote-dx, -14px), var(--mote-dy, -120px), 0)',
+            opacity: '0',
+          },
+        },
+        // A single amber pass across a section the moment its feed lands.
+        // Caused, never looped: three of these per visit at most.
+        'feed-sweep': {
+          '0%': { transform: 'translateX(-100%)', opacity: '0' },
+          '18%': { opacity: '1' },
+          '82%': { opacity: '1' },
+          '100%': { transform: 'translateX(100%)', opacity: '0' },
+        },
+        // The key light breathing across the plate. Motes are small and can
+        // only ever be a texture; a soft mass this large is the thing the eye
+        // actually registers as the room being alive.
+        'light-drift': {
+          '0%, 100%': { transform: 'translate3d(-5%, 1%, 0) scale(1)', opacity: '0.5' },
+          '50%': { transform: 'translate3d(7%, -2%, 0) scale(1.14)', opacity: '1' },
+        },
+        // The analyser re-reading the frame. The sweep occupies the first fifth
+        // of the cycle and the rest is dead air, so it recurs without ever
+        // being a thing that is constantly moving.
+        'scan-repeat': {
+          '0%': { transform: 'translateY(-100%)', opacity: '0' },
+          '3%': { opacity: '1' },
+          '17%': { opacity: '1' },
+          '21%': { transform: 'translateY(1500%)', opacity: '0' },
+          '100%': { transform: 'translateY(1500%)', opacity: '0' },
+        },
+        // A readout cell coming up to power.
+        'cell-strike': {
+          '0%': { transform: 'scaleY(0.2)', opacity: '0' },
+          '70%': { transform: 'scaleY(1.06)', opacity: '1' },
+          '100%': { transform: 'scaleY(1)', opacity: '1' },
+        },
       },
       animation: {
         'scan-sweep': 'scan-sweep 2.6s linear 1',
@@ -146,6 +202,11 @@ module.exports = {
         'phosphor-in': 'phosphor-in 220ms ease-out both',
         'lamp-pulse': 'lamp-pulse 2.2s ease-in-out infinite',
         'node-ping': 'node-ping 900ms ease-out',
+        'mote': 'mote var(--mote-dur, 22s) linear var(--mote-delay, 0s) infinite',
+        'light-drift': 'light-drift 26s ease-in-out infinite',
+        'scan-repeat': 'scan-repeat 9s linear infinite',
+        'feed-sweep': 'feed-sweep 1100ms cubic-bezier(0.22, 1, 0.36, 1) both',
+        'cell-strike': 'cell-strike 240ms cubic-bezier(0.22, 1, 0.36, 1) both',
       },
     },
   },

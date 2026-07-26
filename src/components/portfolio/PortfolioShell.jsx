@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AchievementCenter } from "../achievements/AchievementCenter";
 import { useAchievements } from "../achievements/useAchievements";
 import AssistantDock from "./AssistantDock";
+import HeroAtmosphere, { MoteField, useSubjectParallaxStyle } from "./Atmosphere";
 import { MissionProgress } from "./ServiceBoard";
 import { cn } from "@/lib/utils";
 import remarkGfm from "remark-gfm";
@@ -33,6 +34,9 @@ import { getCertifications } from "../../api/certificationApi";
 import { getExperiences } from "../../api/experienceApi";
 import { getProjects } from "../../api/projectApi";
 import { useRetryableRequest } from "../../hooks/useRetryableRequest";
+import { useCountUp } from "../../hooks/useCountUp";
+import { useInViewOnce } from "../../hooks/useInViewOnce";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 
 const emptyExperiences = {
   work: [],
@@ -328,12 +332,15 @@ const normalizeNavigationTarget = (target) => {
 const PortfolioShell = () => {
   const achievementsState = useAchievements();
   const { unlockAchievement } = achievementsState;
+  const reducedMotion = useReducedMotion();
+  const subjectParallaxStyle = useSubjectParallaxStyle();
   const profileRef = useRef(null);
   const experienceRef = useRef(null);
   const certificationsRef = useRef(null);
   const projectRef = useRef(null);
   const contactRef = useRef(null);
   const highlightTimeoutRef = useRef(null);
+  const heroPlateRef = useRef(null);
   const projectArchiveBodyRef = useRef(null);
   const projectArchiveHeadingRefs = useRef(new Map());
   const [highlightedSection, setHighlightedSection] = useState(null);
@@ -642,7 +649,7 @@ const PortfolioShell = () => {
   };
 
   return (
-    <div className="min-h-screen bg-void text-bone">
+    <div className="keylight relative min-h-screen bg-void text-bone">
       {/* ── Console header rail ─────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 border-b border-amber/20 bg-panel-1/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-[86rem] items-center justify-between gap-3 px-3 py-2 sm:px-6 lg:px-8">
@@ -703,22 +710,33 @@ const PortfolioShell = () => {
         <main className="min-w-0 space-y-12 sm:space-y-16">
           {/* ── The console ────────────────────────────────────────────── */}
           <section ref={profileRef} className={getSectionClassName("profile")}>
-            <div className="overflow-hidden rounded-unit border border-amber/20">
+            <div className="overflow-hidden rounded-unit border border-amber/25 shadow-plate">
               {/* The subject and the claim share one plate. The portrait is the
                   first thing loaded into the analyser, so it holds real size
                   and sits level with the headline rather than filed beneath
-                  it. */}
-              <div className="haze grid gap-6 bg-panel-1 px-4 py-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-8 sm:px-8 sm:py-9 lg:gap-10">
-                <SubjectPortrait />
+                  it.
 
-                <div className="min-w-0">
+                  The plate sits a full step above the sections below it on
+                  panel-2, and carries the room: haze, dust, and parallax. It is
+                  the only surface on the page with ambient motion. */}
+              <div
+                ref={heroPlateRef}
+                className="relative isolate grid gap-6 overflow-hidden bg-panel-2 px-4 py-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-8 sm:px-8 sm:py-9 lg:gap-10"
+              >
+                <HeroAtmosphere plateRef={heroPlateRef} />
+                <SubjectPortrait style={subjectParallaxStyle} />
+
+                <div className="relative z-10 min-w-0">
                   <div className="flex flex-wrap items-center gap-2.5">
                     <Badge>Open to conversations</Badge>
                     <span className="font-console text-legend uppercase tracking-console text-bone-faint">
                       Available for focused engineering conversations
                     </span>
                   </div>
-                  <p className="mt-5 font-console text-label font-semibold uppercase tracking-console-wide text-amber-dim">
+                  {/* Amber-dim measured 4.47:1 on the lifted hero plate — the
+                      one placement of that token bright enough to fail. Bone
+                      also reads better here: a quiet name over a loud role. */}
+                  <p className="mt-5 font-console text-label font-semibold uppercase tracking-console-wide text-bone-soft">
                     Jacques Cogal
                   </p>
                   <h1 className="mt-1.5 max-w-[13ch] font-console text-display font-bold uppercase tracking-console text-bone">
@@ -881,7 +899,7 @@ const PortfolioShell = () => {
               color={MODULE_CHANNELS.contact}
               note="Roles, collaborations, or technical discussions. This composes a mail in your own client."
             />
-            <div className="mt-5 overflow-hidden rounded-unit border border-amber/20">
+            <div className="mt-5 overflow-hidden rounded-unit border border-amber/20 shadow-plate">
               <div className="flex items-center justify-between gap-3 border-b border-amber/15 bg-panel-3 px-4 py-2">
                 <span className="con-label-wide text-legend text-bone-soft">
                   Outbound transmission
@@ -1075,20 +1093,22 @@ const PortfolioShell = () => {
    around the photograph do the analyser's work; a mesh printed across the
    subject's face only made the photograph harder to read, which is the exact
    opposite of what a portrait at this size is for. */
-const SubjectPortrait = () => (
+const SubjectPortrait = ({ style }) => (
   /* Widest where it stands alone above the headline, trimmed at `sm` where it
      shares the row, and back to full size once the plate can afford it. */
-  <div className="reticle relative w-60 shrink-0 self-start sm:w-52 lg:w-60">
+  <div className="reticle relative z-10 w-60 shrink-0 self-start sm:w-52 lg:w-60" style={style}>
     <div className="relative overflow-hidden border border-amber/30">
       <img
         src="/jacques.jpg"
         alt="Jacques Cogal"
         className="block aspect-[4/5] w-full object-cover"
       />
-      {/* The analyser's sweep, once, on load. */}
+      {/* The analyser re-reading the frame every nine seconds. Once on load was
+          a moment most visitors never saw — they arrive, look at the headline,
+          and by the time they look at the portrait it has already happened. */}
       <span
         aria-hidden="true"
-        className="absolute inset-x-0 top-0 h-8 animate-scan-sweep bg-gradient-to-b from-transparent via-amber/35 to-transparent"
+        className="absolute inset-x-0 top-0 h-10 animate-scan-repeat bg-gradient-to-b from-transparent via-amber/45 to-transparent"
       />
       {/* Inset past the 13px reticle brackets, which otherwise print straight
           through the readout. */}
@@ -1122,12 +1142,60 @@ const FileField = ({ label, value }) => (
   </div>
 );
 
+/* ── Reactive instruments ─────────────────────────────────────────────────
+   Motion below the hero is caused, never ambient. A section sweeps once, the
+   moment its feed actually lands; a readout counts up once, the first time it
+   is looked at. Nothing here loops, so the page is still after a few seconds
+   and the movement carries information rather than mood. */
+
+/** One amber pass across a panel the instant its data arrives. */
+const FeedSweep = ({ armed }) => {
+  const [swept, setSwept] = useState(false);
+
+  useEffect(() => {
+    if (!armed || swept) return undefined;
+    const timer = window.setTimeout(() => setSwept(true), 1200);
+    return () => window.clearTimeout(timer);
+  }, [armed, swept]);
+
+  if (!armed || swept) return null;
+
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-y-0 left-0 z-20 w-1/3 animate-feed-sweep bg-gradient-to-r from-transparent via-amber/20 to-transparent"
+    />
+  );
+};
+
+/** A record count that comes up to its real value when first seen. */
+const CountReadout = ({ value, suffix, className }) => {
+  const ref = useRef(null);
+  const reduced = useReducedMotion();
+  const seen = useInViewOnce(ref);
+  const shown = useCountUp(value, { active: seen, reduced });
+
+  return (
+    <span ref={ref} className={className}>
+      {shown}
+      {suffix ? ` ${suffix}` : null}
+    </span>
+  );
+};
+
 /* ── Sector header ────────────────────────────────────────────────────── */
 const SectorHeader = ({ index, name, color, note }) => (
   <div>
     {/* A machined nameplate. Depth comes from the lit top hairline and the
-        shadow it casts, not from a pattern printed across it. */}
-    <div className="flex items-stretch overflow-hidden rounded-unit border border-amber/20 bg-panel-1 shadow-raise">
+        shadow it casts, not from a pattern printed across it — and from the
+        same dust as the hero, so the sections read as the same room rather
+        than as a lit plate followed by four flat ones. */}
+    <div className="relative flex items-stretch overflow-hidden rounded-unit border border-amber/20 bg-panel-1 shadow-raise">
+      {/* Four nameplates carry 44 motes between them. On a phone that is a
+          third of the page's composited layers for a band the visitor
+          scrolls past, so the plates keep their dust only where there is
+          room to see it. */}
+      <MoteField variant="plate" className="hidden sm:block" />
       <span aria-hidden="true" className="w-1.5 shrink-0" style={{ backgroundColor: color }} />
       <div className="flex min-w-0 flex-1 items-center gap-3 px-3 py-2.5 sm:px-4">
         <span className="font-console text-label font-semibold tabular text-bone-faint">
@@ -1162,7 +1230,8 @@ const ExperienceLog = ({ items, channel, caption, markCurrent = false }) => {
   }
 
   return (
-    <div className="overflow-hidden rounded-unit border border-amber/20">
+    <div className="relative overflow-hidden rounded-unit border border-amber/20 shadow-plate">
+      <FeedSweep armed />
       <div className="flex items-center justify-between gap-3 border-b border-amber/15 bg-panel-3 px-3 py-2 sm:px-4">
         <span className="flex items-center gap-2">
           <span
@@ -1172,9 +1241,11 @@ const ExperienceLog = ({ items, channel, caption, markCurrent = false }) => {
           />
           <span className="con-label-wide text-legend text-bone-soft">{caption}</span>
         </span>
-        <span className="font-console text-legend tabular uppercase tracking-console text-bone-faint">
-          {items.length} {items.length === 1 ? "record" : "records"}
-        </span>
+        <CountReadout
+          value={items.length}
+          suffix={items.length === 1 ? "record" : "records"}
+          className="font-console text-legend tabular uppercase tracking-console text-bone-faint"
+        />
       </div>
 
       <ol className="bg-panel-1">
@@ -1360,7 +1431,8 @@ const CredentialRecords = ({
        instead. */
     <div className="mt-5 grid gap-4 lg:h-80 lg:grid-cols-[minmax(0,1.25fr)_minmax(17rem,0.75fr)] lg:items-stretch">
       {/* The record under examination, with its authentication seal. */}
-      <div className="flex min-h-0 flex-col overflow-hidden rounded-unit border border-amber/25 bg-panel-1">
+      <div className="relative flex min-h-0 flex-col overflow-hidden rounded-unit border border-amber/25 bg-panel-1 shadow-plate">
+        <FeedSweep armed />
         <div className="flex shrink-0 items-start justify-between gap-3 border-b border-amber/15 px-4 py-3 sm:px-5">
           <span className="font-console text-legend font-bold uppercase tracking-console-wide text-bone-soft">
             Credential record
@@ -1418,12 +1490,14 @@ const CredentialRecords = ({
       </div>
 
       {/* The index. */}
-      <div className="flex min-h-0 flex-col overflow-hidden rounded-unit border border-amber/20">
+      <div className="flex min-h-0 flex-col overflow-hidden rounded-unit border border-amber/20 shadow-plate">
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-amber/15 bg-panel-3 px-3 py-2">
           <span className="con-label-wide text-micro text-bone-soft">Index</span>
-          <span className="font-console text-micro tabular uppercase tracking-console text-bone-faint">
-            {sortedCertifications.length} on file
-          </span>
+          <CountReadout
+            value={sortedCertifications.length}
+            suffix="on file"
+            className="font-console text-micro tabular uppercase tracking-console text-bone-faint"
+          />
         </div>
         <div className="max-h-[22rem] min-h-0 flex-1 space-y-1.5 overflow-y-auto overscroll-contain bg-panel-1 p-2">
           {sortedCertifications.map((certification) => {
@@ -1486,7 +1560,7 @@ const RecordField = ({ label, value }) => (
 
 /* ── A source record ──────────────────────────────────────────────────── */
 const SourceRecord = ({ project, onOpenArchive, onExternal }) => (
-  <article className="flex h-full flex-col overflow-hidden rounded-unit border border-amber/20">
+  <article className="group/record flex h-full flex-col overflow-hidden rounded-unit border border-amber/20 shadow-plate transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-amber/40 hover:shadow-lift">
     <div className="flex flex-1 flex-col bg-panel-1">
       <div className="flex-1 px-4 pt-4">
         <h3 className="font-console text-body font-bold uppercase leading-snug tracking-console text-bone">

@@ -76,16 +76,20 @@ export const MissionProgress = ({ unlocked, total, className }) => {
         Mission progress
       </span>
 
+      {/* The cells come up to power left to right, 40ms apart, once. A meter
+          that simply appears reads as a static graphic; one that strikes reads
+          as an instrument being switched on. */}
       <span aria-hidden="true" className="flex items-center gap-[3px]">
         {Array.from({ length: safeTotal }, (_, index) => (
           <span
             key={index}
             className={cn(
-              "h-2.5 w-3 shrink-0 border",
+              "h-2.5 w-3 shrink-0 origin-bottom animate-cell-strike border",
               index < safeUnlocked
                 ? "border-amber bg-amber"
                 : "border-amber/25 bg-transparent"
             )}
+            style={{ animationDelay: `${index * 40}ms` }}
           />
         ))}
       </span>
